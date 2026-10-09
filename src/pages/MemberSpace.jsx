@@ -3,7 +3,6 @@ import PageHeader from '../components/PageHeader'
 import { useAuth } from '../context/AuthContext'
 import { useProfile } from '../context/ProfileContext'
 import { useLang } from '../context/LangContext'
-import { mediaUrl } from '../api/client'
 import ProfileAvatar from '../components/ProfileAvatar'
 
 const LEARNER_ROLES = ['student', 'teacher', 'admin']
@@ -34,7 +33,6 @@ export default function MemberSpace() {
   const { t, lang } = useLang()
   const isLearner = LEARNER_ROLES.includes(user.role)
 
-  const avatar = mediaUrl(profile?.photo)
   const fullName = `${user.first_name} ${user.last_name}`.trim()
   const roleLabel = t(`auth.role.${user.role}`)
 
@@ -51,7 +49,7 @@ export default function MemberSpace() {
         {/* Member hero */}
         <div className="ms-hero ms-hero-member">
           <span className="ms-avatar">
-            <ProfileAvatar src={avatar} name={fullName} />
+            <ProfileAvatar name={fullName} />
           </span>
           <div className="ms-hero-info">
             <h2>{fullName}</h2>
