@@ -276,7 +276,7 @@ export default function Contribute() {
           title={t('donate.done.title')}
           breadcrumb={t('donate.title')}
         />
-        <div className="page">
+        <div className="page page-donate">
           <div className="donate-success card">
             <span className="wizard-success-icon"><i className="fa-solid fa-check" /></span>
             <h1>{t('donate.done.thanks', { name: form.donor_name.split(' ')[0] })}</h1>
@@ -312,7 +312,7 @@ export default function Contribute() {
         breadcrumb={t('donate.title')}
       />
 
-      <div className="page">
+      <div className="page page-donate">
         <div className="donate-layout">
           <aside className="donate-project-card card">
             {projectLoading ? (
@@ -423,6 +423,7 @@ export default function Contribute() {
                             onClick={() => selectMethod(m.value)}>
                       <img className="method-logo" src={m.logo} alt={t(`donate.method.${m.key}`)} />
                       <span>{t(`donate.method.${m.key}`)}</span>
+                      {form.method === m.value && <span className="method-check"><i className="fa-solid fa-check" /></span>}
                       {locked && <small><i className="mdi mdi-lock-outline" /></small>}
                     </button>
                   )
