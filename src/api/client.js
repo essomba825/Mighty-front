@@ -10,6 +10,11 @@ import axios from 'axios'
 
    En production le front est servi par Django : meme origine, `/api` suffit. */
 export function apiOrigin() {
+  /* URL du backend pilotee par l'environnement (VITE_API_URL dans .env) :
+     on bascule local <-> web sans toucher au code. */
+  const configure = import.meta.env.VITE_API_URL?.trim()
+  if (configure) return configure.replace(/\/+$/, '')
+  /* Aucune URL fournie : repli automatique. */
   /* Build de production servi par Django : meme origine, pas de port. */
   if (import.meta.env.PROD) return ''
   if (typeof window === 'undefined') return 'http://127.0.0.1:8000'

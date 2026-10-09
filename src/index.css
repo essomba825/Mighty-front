@@ -6821,7 +6821,11 @@ a.contact-info-value:hover {
   .nav-section-label{display:block;letter-spacing:1.6px;text-transform:uppercase;font-size:.7rem;font-weight:700;color:var(--gold-light);padding:16px 24px 7px;margin-top:6px;border-top:1px solid #ffffff14}
   .nav-main .nav-section-label{margin-top:0;border-top:0}
   .nav-drop-trigger,.nav-avatar-btn,.nav-bell{display:none}
-  .nav-more-panel,.nav-account-panel{position:static;opacity:1;visibility:visible;pointer-events:auto;transform:none;padding:0;background:none;border:0;box-shadow:none;border-radius:0;min-width:0;gap:0}
+  /* Les panneaux passent en flux (accordéon toujours déplié) mais ne doivent
+     devenir cliquables QUE lorsque le tiroir est ouvert : sinon leurs liens
+     invisibles se superposent au contenu (ex. formulaire de connexion). */
+  .nav-more-panel,.nav-account-panel{position:static;transform:none;padding:0;background:none;border:0;box-shadow:none;border-radius:0;min-width:0;gap:0}
+  .navbar-links.open .nav-more-panel,.navbar-links.open .nav-account-panel{opacity:1;visibility:visible;pointer-events:auto}
   .navbar-links.open .nav-more-panel a,.navbar-links.open .nav-account-panel a{animation:.34s both navItemIn;animation-delay:.19s}
   .navbar-links.open .nav-account-panel a:nth-child(n+2){animation-delay:.22s}
 
