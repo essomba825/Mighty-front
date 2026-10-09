@@ -17,9 +17,7 @@ const LIENS_PRINCIPAUX = [
 /* Liens secondaires : menu « Plus » sur bureau, section « Découvrir » sur mobile. */
 const LIENS_SUITE = [
   { to: '/a-propos', key: 'nav.about', icon: 'mdi-book-open-page-variant-outline' },
-  { to: '/archives', key: 'nav.archives', icon: 'mdi-archive-outline' },
   { to: '/partenaires', key: 'nav.partners', icon: 'mdi-handshake-outline' },
-  { to: '/galerie', key: 'nav.gallery', icon: 'mdi-image-multiple-outline' },
   { to: '/contact', key: 'nav.contact', icon: 'mdi-email-outline' },
   { to: '/annuaire', key: 'nav.directory', icon: 'mdi-account-group-outline' },
 ]

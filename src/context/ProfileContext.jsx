@@ -13,19 +13,46 @@ const ProfileContext = createContext({
   save: async () => {},
 })
 
+const CACHED_PROFILE_KEY = 'mms_profile'
+
+function readCachedProfile() {
+  try {
+    const raw = localStorage.getItem(CACHED_PROFILE_KEY)
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    return null
+  }
+}
+
 export function ProfileProvider({ children }) {
   const { user } = useAuth()
-  const [profile, setProfile] = useState(null)
+  const [profile, setProfile] = useState(readCachedProfile)
   const [loading, setLoading] = useState(true)
 
   const refresh = useCallback(async () => {
-    if (!user?.email) { setProfile(null); setLoading(false); return }
+    if (!user?.email) {
+      setProfile(null)
+      localStorage.removeItem(CACHED_PROFILE_KEY)
+      setLoading(false)
+      return
+    }
     setLoading(true)
     try {
       const { data } = await api.get('/alumni/profiles/')
       const list = data.results ?? data
-      setProfile(list.find((p) => p.email === user.email) ?? null)
-    } catch { setProfile(null) } finally { setLoading(false) }
+      const found = list.find((p) => p.email === user.email) ?? null
+      setProfile(found)
+      if (found) localStorage.setItem(CACHED_PROFILE_KEY, JSON.stringify(found))
+    } catch (error) {
+      /* Backend injoignable : on garde le profil en cache. Un 401/403
+         (session invalide) vide le cache. */
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        setProfile(null)
+        localStorage.removeItem(CACHED_PROFILE_KEY)
+      }
+    } finally {
+      setLoading(false)
+    }
   }, [user?.email])
 
   useEffect(() => { refresh() }, [refresh])
@@ -42,6 +69,7 @@ export function ProfileProvider({ children }) {
       ? await api.patch(`/alumni/profiles/${profile.id}/`, payload)
       : await api.post('/alumni/profiles/', payload)
     setProfile(res.data)
+    localStorage.setItem(CACHED_PROFILE_KEY, JSON.stringify(res.data))
     return res.data
   }
 

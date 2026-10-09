@@ -55,9 +55,16 @@ api.interceptors.response.use(
           localStorage.setItem('access_token', data.access)
           original.headers.Authorization = `Bearer ${data.access}`
           return api(original)
-        } catch {
+        } catch (refreshError) {
+          // Backend injoignable : on conserve la session locale et on remonte
+          // une erreur reseau pour ne pas deconnecter l'utilisateur.
+          if (!refreshError.response) {
+            return Promise.reject(new Error('Backend injoignable'))
+          }
+          // 401/403 : refresh token invalide, deconnexion reelle.
           localStorage.removeItem('access_token')
           localStorage.removeItem('refresh_token')
+          localStorage.removeItem('mms_user')
           // On garde la page demandee pour y revenir apres reconnexion
           if (!window.location.pathname.startsWith('/login')) {
             sessionStorage.setItem(

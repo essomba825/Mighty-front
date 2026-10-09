@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../api/client'
+import { useAuth } from '../context/AuthContext'
 import { useLang } from '../context/LangContext'
 
 const TYPES = [
@@ -113,14 +114,20 @@ function TrackingCard({ track, onRefresh, onNew }) {
 }
 
 export default function BecomePartner() {
+  const { user } = useAuth()
   const { t, lang } = useLang()
   const locale = lang === 'fr' ? 'fr-FR' : 'en-GB'
   const fmt = (n) => Number(n).toLocaleString(locale)
   const [projects, setProjects] = useState([])
   const [step, setStep] = useState(0)
   const [form, setForm] = useState({
-    organization: '', contact_name: '', email: '', phone: '',
-    partner_type: '', project: '', message: '',
+    organization: '',
+    contact_name: user ? (user.first_name ? `${user.first_name} ${user.last_name}`.trim() : user.username || '') : '',
+    email: user?.email || '',
+    phone: '',
+    partner_type: '',
+    project: '',
+    message: '',
   })
   const [hasOrg, setHasOrg] = useState(null) // null | true | false
   const [wantProject, setWantProject] = useState(null) // null | true | false
@@ -130,7 +137,18 @@ export default function BecomePartner() {
   const [lookupEmail, setLookupEmail] = useState('')
   const [lookupEmpty, setLookupEmpty] = useState(false)
 
-  // Récupération de l'état via le backend (email mémorisé en localStorage)
+  // Autocomplétion et synchronisation si l'utilisateur est connecté
+  useEffect(() => {
+    if (user) {
+      setForm((prev) => ({
+        ...prev,
+        email: prev.email || user.email || '',
+        contact_name: prev.contact_name || (user.first_name ? `${user.first_name} ${user.last_name}`.trim() : user.username || ''),
+      }))
+    }
+  }, [user])
+
+  // Récupération de l'état via le backend
   const fetchTrack = (email) => {
     if (!email) { setTrackLoading(false); return }
     setTrackLoading(true)
@@ -150,9 +168,13 @@ export default function BecomePartner() {
 
   useEffect(() => {
     api.get('/projects/').then(({ data }) => setProjects(data.results ?? data)).catch(() => {})
-    fetchTrack(localStorage.getItem(TRACK_KEY))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    const initialEmail = user?.email || localStorage.getItem(TRACK_KEY)
+    if (initialEmail) {
+      fetchTrack(initialEmail)
+    } else {
+      setTrackLoading(false)
+    }
+  }, [user])
 
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
