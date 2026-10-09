@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Laptop, books and graduation cap education illustration">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#e6e5e1"/>
+      <stop offset="100%" stop-color="#cfc9c0"/>
+    </linearGradient>
+    <linearGradient id="wood" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0%" stop-color="#6d4325"/>
+      <stop offset="50%" stop-color="#9a683e"/>
+      <stop offset="100%" stop-color="#724b2c"/>
+    </linearGradient>
+    <linearGradient id="screen" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#f9f5d7"/>
+      <stop offset="100%" stop-color="#b7d9eb"/>
+    </linearGradient>
+    <linearGradient id="blueBook" x1="0" x2="1">
+      <stop offset="0%" stop-color="#334d75"/>
+      <stop offset="100%" stop-color="#122b4d"/>
+    </linearGradient>
+    <linearGradient id="goldBook" x1="0" x2="1">
+      <stop offset="0%" stop-color="#e8b85d"/>
+      <stop offset="100%" stop-color="#bc8441"/>
+    </linearGradient>
+    <linearGradient id="navyBook" x1="0" x2="1">
+      <stop offset="0%" stop-color="#20324b"/>
+      <stop offset="100%" stop-color="#102136"/>
+    </linearGradient>
+    <radialGradient id="flowerCenter" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#f8dd7a"/>
+      <stop offset="100%" stop-color="#f0b936"/>
+    </radialGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="20" stdDeviation="18" flood-color="#000" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+
+  <g opacity="0.12">
+    <circle cx="330" cy="175" r="180" fill="#fff"/>
+    <circle cx="1280" cy="220" r="150" fill="#fff"/>
+    <circle cx="1120" cy="90" r="120" fill="#fff"/>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="213" y="358" width="820" height="430" rx="14" fill="#e8e5e0"/>
+    <rect x="235" y="380" width="775" height="385" rx="10" fill="url(#screen)"/>
+    <rect x="305" y="405" width="630" height="340" rx="8" fill="#dbeaff"/>
+    <circle cx="620" cy="575" r="122" fill="#f7d04d" opacity="0.9"/>
+    <g transform="translate(620 575)">
+      <g>
+        <ellipse cx="0" cy="0" rx="30" ry="95" fill="#f4c342" transform="rotate(0)"/>
+        <ellipse cx="0" cy="0" rx="30" ry="95" fill="#f4c342" transform="rotate(45)"/>
+        <ellipse cx="0" cy="0" rx="30" ry="95" fill="#f4c342" transform="rotate(90)"/>
+        <ellipse cx="0" cy="0" rx="30" ry="95" fill="#f4c342" transform="rotate(135)"/>
+        <circle cx="0" cy="0" r="38" fill="url(#flowerCenter)"/>
+      </g>
+    </g>
+    <path d="M245 795h760l-34 42H280z" fill="#c9b7a0"/>
+    <path d="M282 795h685l-30 44H310z" fill="#b99a7d"/>
+    <rect x="140" y="806" width="1100" height="20" fill="url(#wood)" opacity="0.96"/>
+    <rect x="140" y="820" width="1100" height="28" fill="#7d4a2a" opacity="0.8"/>
+  </g>
+
+  <g filter="url(#shadow)">
+    <g transform="translate(620 296)">
+      <g>
+        <rect x="0" y="236" width="300" height="82" rx="10" fill="url(#blueBook)" transform="rotate(3 150 280)"/>
+        <rect x="35" y="200" width="300" height="82" rx="10" fill="#2a4466" transform="rotate(4 185 241)"/>
+        <rect x="70" y="162" width="300" height="82" rx="10" fill="url(#goldBook)" transform="rotate(6 220 203)"/>
+        <rect x="120" y="120" width="300" height="82" rx="10" fill="url(#navyBook)" transform="rotate(8 270 161)"/>
+      </g>
+      <g transform="translate(112 0)">
+        <rect x="28" y="270" width="260" height="78" rx="10" fill="#d6b06f"/>
+        <rect x="86" y="250" width="260" height="78" rx="10" fill="#e7d08a"/>
+        <rect x="130" y="230" width="260" height="78" rx="10" fill="#d7865e"/>
+      </g>
+    </g>
+  </g>
+
+  <g filter="url(#shadow)">
+    <path d="M760 120 L865 300 L670 300 Z" fill="#1d2e4d"/>
+    <path d="M720 130 L761 290 L600 290 Z" fill="#183057" opacity="0.9"/>
+    <path d="M857 302 H602 L615 338 H844 Z" fill="#f2d995"/>
+    <path d="M620 302 L760 138 L900 302 Z" fill="#0f213e"/>
+    <path d="M1160 150 L1190 325 L1060 325" fill="none" stroke="#d0a95d" stroke-width="10" stroke-linecap="round"/>
+    <path d="M1180 325 L1195 463" stroke="#d0a95d" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="1195" cy="480" r="10" fill="#d0a95d"/>
+    <path d="M1185 448 C1203 442, 1210 420, 1195 408" fill="none" stroke="#d0a95d" stroke-width="5" stroke-linecap="round"/>
+  </g>
+
+  <g opacity="0.22">
+    <circle cx="1380" cy="420" r="180" fill="#fff"/>
+    <circle cx="1260" cy="520" r="120" fill="#fff"/>
+  </g>
+</svg>

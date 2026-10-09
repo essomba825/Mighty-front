@@ -1,0 +1,54 @@
+{
+  "name": "Mega Mighty Sixers — Association des anciens élèves",
+  "short_name": "Mega Mighty Sixers",
+  "description": "Préserver notre héritage, unir notre communauté, soutenir l'éducation. Association des anciens élèves du batch Mega Mighty Sixers.",
+  "lang": "fr",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#101e3c",
+  "theme_color": "#101e3c",
+  "categories": ["education", "social", "productivity"],
+  "icons": [
+    {
+      "src": "/pwa-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Espace d'apprentissage",
+      "short_name": "GCE",
+      "url": "/education",
+      "icons": [{ "src": "/pwa-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Prochains événements",
+      "short_name": "Événements",
+      "url": "/evenements",
+      "icons": [{ "src": "/pwa-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Mon espace membre",
+      "short_name": "Espace",
+      "url": "/espace-membre",
+      "icons": [{ "src": "/pwa-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ]
+}
