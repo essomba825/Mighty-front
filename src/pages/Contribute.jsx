@@ -7,12 +7,9 @@ import { useLang } from '../context/LangContext'
 import { detectNetwork, isMobileNumber, ussdCode as buildUssd, ussdTel as buildUssdTel } from '../lib/paynow'
 
 const METHODS = [
-  { value: 'mtn_momo', key: 'mtn', icon: 'mdi-cellphone' },
-  { value: 'orange_money', key: 'orange', icon: 'mdi-cellphone-wireless' },
-  { value: 'bank', key: 'bank', icon: 'mdi-bank-outline' },
-  { value: 'cash', key: 'cash', icon: 'mdi-cash' },
+  { value: 'mtn_momo', key: 'mtn', logo: '/operators/mtn.png' },
+  { value: 'orange_money', key: 'orange', logo: '/operators/orange.png' },
 ]
-const MOBILE_METHODS = ['mtn_momo', 'orange_money']
 const PRESETS = [1000, 2500, 5000, 10000, 25000]
 
 const STATUS = {
@@ -108,7 +105,7 @@ export default function Contribute() {
           if (f.method === '' || f.method === 'mtn_momo' || f.method === 'orange_money') return { ...f, method: matched }
           return f
         }
-        if (MOBILE_METHODS.includes(f.method)) return { ...f, method: '' }
+        if (METHODS.some((m) => m.value === f.method)) return { ...f, method: '' }
         return f
       })
     }
@@ -116,10 +113,10 @@ export default function Contribute() {
 
   const amount = Number(form.amount) || 0
   const method = METHODS.find((m) => m.value === form.method)
-  const isMobile = MOBILE_METHODS.includes(form.method)
+  const isMobile = Boolean(method)
 
   const networkLockedFor = (value) => {
-    if (!network || !MOBILE_METHODS.includes(value)) return false
+    if (!network) return false
     if (network === 'MTN') return value !== 'mtn_momo'
     if (network === 'Orange') return value !== 'orange_money'
     return true
@@ -197,17 +194,6 @@ export default function Contribute() {
         setLoading(false)
       }
       return
-    }
-
-    setLoading(true)
-    try {
-      await api.post('/donations/contributions/', { ...form, amount, project: id })
-      setResult({ mode: 'offline', status: 'pending' })
-      setDone(true)
-    } catch (submitErr) {
-      setError(apiError(submitErr))
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -294,13 +280,9 @@ export default function Contribute() {
           <div className="donate-success card">
             <span className="wizard-success-icon"><i className="fa-solid fa-check" /></span>
             <h1>{t('donate.done.thanks', { name: form.donor_name.split(' ')[0] })}</h1>
-            {result?.mode === 'online' ? (
-              <p className="donate-success-lead">
-                {t('donate.done.payment', { status: t('donate.status.confirmed') })}
-              </p>
-            ) : (
-              <p className="donate-success-lead">{t('donate.done.recorded')}</p>
-            )}
+            <p className="donate-success-lead">
+              {t('donate.done.payment', { status: t('donate.status.confirmed') })}
+            </p>
             <div className="donate-recap">
               <div className="donate-recap-row"><span>{t('donate.label.amount')}</span><strong>{fmt(amount)} FCFA</strong></div>
               <div className="donate-recap-row"><span>{t('donate.label.method')}</span><strong>{t(`donate.method.${method.key}`)}</strong></div>
@@ -439,7 +421,7 @@ export default function Contribute() {
                     <button type="button" key={m.value} disabled={locked}
                             className={`method-card ${form.method === m.value ? 'selected' : ''} ${locked ? 'locked' : ''}`}
                             onClick={() => selectMethod(m.value)}>
-                      <i className={`mdi ${m.icon}`} />
+                      <img className="method-logo" src={m.logo} alt={t(`donate.method.${m.key}`)} />
                       <span>{t(`donate.method.${m.key}`)}</span>
                       {locked && <small><i className="mdi mdi-lock-outline" /></small>}
                     </button>

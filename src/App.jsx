@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router-dom'
 import { useLang } from './context/LangContext'
 import { AuthProvider } from './context/AuthContext'
@@ -101,12 +102,24 @@ function LangBridge() {
   )
 }
 
+/* A chaque changement de page on remonte en haut. Sans cela le navigateur
+   garde la position precedente : cliquer sur un lien tout en bas d'une longue
+   page arrivait... tout en bas de la page suivante, "au niveau du footer". */
+function ScrollToTop() {
+  const { pathname } = useLocation()
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+  }, [pathname])
+  return null
+}
+
 function AppFrame() {
   const { pathname } = useLocation()
   const isLandingHome = pathname === '/'
 
   return (
     <>
+        <ScrollToTop />
         {!isLandingHome && <Navbar />}
         <InstallPrompt />
         <PushPrompt />

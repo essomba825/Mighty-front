@@ -1343,6 +1343,18 @@ to{opacity:1;transform:none}
 
 .method-card i{color:var(--navy);font-size:1.6rem;transition:color .2s}
 
+.method-logo{width:48px;height:48px;object-fit:contain;border-radius:8px}
+
+/* Chargement de la page programme (subject) : le temps de charger la liste des
+   matieres puis le cursus, on affiche un spinner visible + des blocs fantomes. */
+.subject-loading{display:flex;flex-direction:column;align-items:center;gap:14px;padding:48px 0 64px}
+
+.subject-loading-icon{font-size:2.2rem;color:var(--gold)}
+
+.subject-loading-text{color:var(--text-soft);font-weight:600;margin:0}
+
+.subject-loading-skeletons{display:grid;gap:12px;width:100%;max-width:720px}
+
 .method-card:hover{border-color:var(--gold)}
 
 .method-card.selected{border-color:var(--gold);color:var(--navy);background:#fff8e8;box-shadow:0 0 0 3px #f2b84b26}

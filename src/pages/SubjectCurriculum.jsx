@@ -202,8 +202,22 @@ export default function SubjectCurriculum() {
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
+  /* Pendant le chargement on montre un vrai etat d'attente (spinner + blocs
+     fantomes) : deux fines lignes skeleton seules donnaient l'impression que
+     la page etait figee apres le clic. */
   if (loading) {
-    return <div className="page"><div className="skeleton-line w60" /><div className="skeleton-line w90" /></div>
+    return (
+      <div className="page">
+        <div className="subject-loading" role="status" aria-live="polite">
+          <i className="mdi mdi-loading mdi-spin subject-loading-icon" aria-hidden="true" />
+          <p className="subject-loading-text">{T('loading')}</p>
+          <div className="subject-loading-skeletons">
+            <div className="skeleton-card"><div className="skeleton-line w40" /><div className="skeleton-line w90" /><div className="skeleton-line w60" /></div>
+            <div className="skeleton-card"><div className="skeleton-line w60" /><div className="skeleton-line w90" /><div className="skeleton-line w40" /></div>
+          </div>
+        </div>
+      </div>
+    )
   }
   if (!subject) {
     return (
