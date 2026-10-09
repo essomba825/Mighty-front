@@ -116,7 +116,11 @@ export default function MemberCard() {
 
                   <div className="mcard-main">
                     <div className="mcard-photo">
-                      <ProfileAvatar src={card.photo} name={card.full_name} />
+                      <ProfileAvatar
+                        src={card.photo}
+                        name={card.full_name}
+                        fallback="/mcard-photo-default.svg"
+                      />
                     </div>
                     <span className="mcard-chip" aria-hidden="true"><i /><i /></span>
                     <div className="mcard-id">

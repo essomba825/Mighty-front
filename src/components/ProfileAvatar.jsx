@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 
 const DEFAULT_AVATAR = '/profile-avatar-default.svg'
 
-export default function ProfileAvatar({ src, name = '', className = '' }) {
+export default function ProfileAvatar({ src, name = '', className = '', fallback = DEFAULT_AVATAR }) {
   const [failed, setFailed] = useState(false)
 
   useEffect(() => setFailed(false), [src])
@@ -19,11 +19,11 @@ export default function ProfileAvatar({ src, name = '', className = '' }) {
   return (
     <img
       className={className}
-      src={src || DEFAULT_AVATAR}
+      src={src || fallback}
       alt=""
       onError={(event) => {
-        if (event.currentTarget.src.endsWith(DEFAULT_AVATAR)) setFailed(true)
-        else event.currentTarget.src = DEFAULT_AVATAR
+        if (event.currentTarget.src.endsWith(fallback)) setFailed(true)
+        else event.currentTarget.src = fallback
       }}
     />
   )

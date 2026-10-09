@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="20" y1="10" x2="140" y2="152" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#14506B"/>
+      <stop offset="1" stop-color="#06213C"/>
+    </linearGradient>
+    <linearGradient id="foil" x1="40" y1="96" x2="120" y2="116" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F2B84B"/>
+      <stop offset="1" stop-color="#D99A2B"/>
+    </linearGradient>
+  </defs>
+  <rect width="160" height="160" rx="80" fill="url(#bg)"/>
+  <circle cx="80" cy="80" r="69" fill="#FFFFFF" fill-opacity="0.04"/>
+  <circle cx="80" cy="80" r="69" stroke="#F2B84B" stroke-width="1.5" stroke-opacity="0.45"/>
+  <text x="80" y="92" text-anchor="middle" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="46" font-weight="700" letter-spacing="2" fill="#F2B84B">MM</text>
+  <path d="M52 104h56" stroke="url(#foil)" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="80" cy="124" r="4" fill="#F2B84B" fill-opacity="0.85"/>
+</svg>
