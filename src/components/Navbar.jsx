@@ -28,6 +28,8 @@ export default function Navbar() {
   const [open, setOpen] = useState(false)
   const [ouvertPlus, setOuvertPlus] = useState(false)
   const [ouvertCompte, setOuvertCompte] = useState(false)
+  // Accordéon du tiroir mobile : une seule section ouverte à la fois.
+  const [sectionMobile, setSectionMobile] = useState(null) // 'discover' | 'account' | null
   const [unread, setUnread] = useState(0)
   const racine = useRef(null)
 
@@ -37,7 +39,10 @@ export default function Navbar() {
     setOpen(false)
     setOuvertPlus(false)
     setOuvertCompte(false)
+    setSectionMobile(null)
   }
+
+  const basculerSection = (nom) => setSectionMobile((v) => (v === nom ? null : nom))
 
   // Badge des notifications non lues : au montage puis toutes les minutes.
   useEffect(() => {
@@ -77,6 +82,19 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', onClic)
   }, [ouvertPlus, ouvertCompte])
 
+  // Tiroir mobile : ongele le defilement du fond et on ferme si l'ecran s'elargit.
+  useEffect(() => {
+    if (!open) return undefined
+    const precedent = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const onResize = () => { if (window.innerWidth > 860) setOpen(false) }
+    window.addEventListener('resize', onResize)
+    return () => {
+      document.body.style.overflow = precedent
+      window.removeEventListener('resize', onResize)
+    }
+  }, [open])
+
   const initials = user ? `${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}`.toUpperCase() : ''
 
   // Survol = ouverture naturelle sur bureau ; sur écran tactile, clic seul
@@ -89,6 +107,37 @@ export default function Navbar() {
     <span className="nav-notifs-badge" aria-label={t('notif.unread').replace('{n}', unread)}>
       {unread > 9 ? '9+' : unread}
     </span>
+  )
+
+  /* Liens du compte : partagés entre le menu bureau et le tiroir mobile. */
+  const liensCompte = user && (
+    <>
+      <NavLink to="/notifications" className="nav-notifs" onClick={close}>
+        <i className="mdi mdi-bell-outline" />
+        <span>{t('nav.notifications')}</span>
+        {badge}
+      </NavLink>
+      <NavLink to="/mentorat" onClick={close}><i className="mdi mdi-account-supervisor-outline" />{t('nav.mentorship')}</NavLink>
+      <NavLink to="/espace-membre" onClick={close}><i className="mdi mdi-view-dashboard-outline" />{t('nav.memberArea')}</NavLink>
+      <NavLink to="/profil" onClick={close}><i className="mdi mdi-account-edit-outline" />{t('nav.profile')}</NavLink>
+      {user.role === 'admin' && (
+        <NavLink to="/statistiques" onClick={close}><i className="mdi mdi-chart-box-outline" />{t('nav.stats')}</NavLink>
+      )}
+      {(user.is_staff || user.role === 'admin') && (
+        <NavLink to="/admin" onClick={close} className="admin-nav-link">
+          <i className="mdi mdi-shield-crown-outline" />{t('admin.title')}
+        </NavLink>
+      )}
+      {(user.role === 'teacher' || user.role === 'admin') && (
+        <NavLink to="/education/contribuer" onClick={close}><i className="mdi mdi-content-save-plus-outline" />Contribuer</NavLink>
+      )}
+      {user.is_staff && (
+        <NavLink to="/education/valider" onClick={close}><i className="mdi mdi-check-decagram-outline" />Valider</NavLink>
+      )}
+      <button type="button" className="btn-link mm-logout" onClick={() => { logout(); close() }}>
+        <i className="mdi mdi-logout" />{t('nav.logout')}
+      </button>
+    </>
   )
 
   return (
@@ -104,6 +153,7 @@ export default function Navbar() {
         onClick={() => setOpen(!open)}
         aria-label={open ? t('common.close') : t('nav.menu')}
         aria-expanded={open}
+        aria-controls="mobile-menu"
       >
         <span className="hamburger-icon"><span /><span /><span /></span>
         <span className="hamburger-label">{open ? t('common.close') : t('nav.menu')}</span>
@@ -112,19 +162,9 @@ export default function Navbar() {
       {/* Backdrop: close the menu by clicking outside */}
       {open && <div className="nav-backdrop" onClick={close} aria-hidden="true" />}
 
+      {/* ---------- Barre de bureau (masquée sur mobile) ---------- */}
       <div className={`navbar-links ${open ? 'open' : ''}`}>
-        {/* User card (mobile menu only) */}
-        {user && (
-          <div className="nav-user">
-            <span className="nav-user-avatar">{initials}</span>
-            <span className="nav-user-info">
-              <strong>{user.first_name} {user.last_name}</strong>
-              <small>{t(`auth.role.${roleKey[user.role] || 'alumni'}`)}</small>
-            </span>
-          </div>
-        )}
-
-        {/* ---------- Liens principaux : visibles tout de suite sur mobile ---------- */}
+        {/* ---------- Liens principaux ---------- */}
         <div className="nav-group nav-main">
           {LIENS_PRINCIPAUX.map((l) => (
             <NavLink
@@ -140,7 +180,7 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* ---------- Plus / Découvrir : menu déroulant bureau, accordéon mobile ---------- */}
+        {/* ---------- Plus : menu déroulant bureau ---------- */}
         <div
           className={`nav-group nav-more ${ouvertPlus ? 'open' : ''}`}
           onMouseEnter={survolOuvre(setOuvertPlus)}
@@ -154,7 +194,6 @@ export default function Navbar() {
             onClick={() => setOuvertPlus((v) => !v)}
           >
             <span className="nav-more-label">{t('nav.more')}</span>
-            <span className="nav-more-label-mobile">{t('nav.section.discover')}</span>
             <i className={`mdi mdi-chevron-down ${ouvertPlus ? 'open' : ''}`} />
           </button>
           <div className="nav-more-panel">
@@ -167,7 +206,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* ---------- Cloche (bureau uniquement ; mobile garde le lien dans Compte) ---------- */}
+        {/* ---------- Cloche (bureau) ---------- */}
         {user && (
           <NavLink to="/notifications" className="nav-bell nav-notifs" onClick={close}
                    aria-label={unread > 0 ? t('notif.unread').replace('{n}', unread) : t('nav.notifications')}>
@@ -178,7 +217,7 @@ export default function Navbar() {
 
         <LanguageSwitcher className="nav-lang" />
 
-        {/* ---------- Compte ---------- */}
+        {/* ---------- Compte (bureau) ---------- */}
         {user ? (
           <div
             className={`nav-group nav-account ${ouvertCompte ? 'open' : ''}`}
@@ -197,33 +236,7 @@ export default function Navbar() {
               <span className="nav-avatar-name">{user.first_name || user.username}</span>
               <i className="mdi mdi-menu-down" />
             </button>
-            <div className="nav-account-panel">
-              <NavLink to="/notifications" className="nav-notifs" onClick={close}>
-                <i className="mdi mdi-bell-outline" />
-                <span>{t('nav.notifications')}</span>
-                {badge}
-              </NavLink>
-              <NavLink to="/mentorat" onClick={close}><i className="mdi mdi-account-supervisor-outline" />{t('nav.mentorship')}</NavLink>
-              <NavLink to="/espace-membre" onClick={close}><i className="mdi mdi-view-dashboard-outline" />{t('nav.memberArea')}</NavLink>
-              <NavLink to="/profil" onClick={close}><i className="mdi mdi-account-edit-outline" />{t('nav.profile')}</NavLink>
-              {user.role === 'admin' && (
-                <NavLink to="/statistiques" onClick={close}><i className="mdi mdi-chart-box-outline" />{t('nav.stats')}</NavLink>
-              )}
-              {(user.is_staff || user.role === 'admin') && (
-                <NavLink to="/admin" onClick={close} className="admin-nav-link">
-                  <i className="mdi mdi-shield-crown-outline" />{t('admin.title')}
-                </NavLink>
-              )}
-              {(user.role === 'teacher' || user.role === 'admin') && (
-                <NavLink to="/education/contribuer" onClick={close}><i className="mdi mdi-content-save-plus-outline" />Contribuer</NavLink>
-              )}
-              {user.is_staff && (
-                <NavLink to="/education/valider" onClick={close}><i className="mdi mdi-check-decagram-outline" />Valider</NavLink>
-              )}
-              <button className="btn-link" onClick={() => { logout(); close() }}>
-                <i className="mdi mdi-logout" />{t('nav.logout')}
-              </button>
-            </div>
+            <div className="nav-account-panel">{liensCompte}</div>
           </div>
         ) : (
           <div className="nav-group nav-guest">
@@ -233,6 +246,114 @@ export default function Navbar() {
             </NavLink>
           </div>
         )}
+      </div>
+
+      {/* ---------- Tiroir mobile organisé (≤ 860px) ---------- */}
+      <div id="mobile-menu" className={`mobile-drawer ${open ? 'open' : ''}`} aria-hidden={!open}>
+        <div className="mm-inner">
+          {/* Identité + notifications */}
+          {user ? (
+            <div className="mm-user">
+              <span className="mm-avatar">{initials}</span>
+              <span className="mm-user-text">
+                <strong>{user.first_name} {user.last_name}</strong>
+                <small>{t(`auth.role.${roleKey[user.role] || 'alumni'}`)}</small>
+              </span>
+              <NavLink to="/notifications" className="mm-bell" onClick={close}
+                       aria-label={unread > 0 ? t('notif.unread').replace('{n}', unread) : t('nav.notifications')}>
+                <i className="mdi mdi-bell-outline" />
+                {unread > 0 && <span className="mm-bell-badge">{unread > 9 ? '9+' : unread}</span>}
+              </NavLink>
+              <button
+                type="button"
+                className="mm-logout-icon"
+                onClick={() => { logout(); close() }}
+                aria-label={t('nav.logout')}
+                title={t('nav.logout')}
+              >
+                <i className="mdi mdi-logout" />
+              </button>
+            </div>
+          ) : (
+            <div className="mm-user mm-user-guest">
+              <span className="mm-avatar"><i className="mdi mdi-account-outline" /></span>
+              <span className="mm-user-text">
+                <strong>Mega Mighty Sixers</strong>
+                <small>{t('app.tagline')}</small>
+              </span>
+            </div>
+          )}
+
+          {/* Accès compte / connexion visible dès l'ouverture, sans scroll */}
+          {!user && (
+            <div className="mm-guest-actions">
+              <NavLink to="/login" onClick={close} className="mm-btn mm-btn-ghost">
+                <i className="mdi mdi-login" />{t('nav.login')}
+              </NavLink>
+              <NavLink to="/inscription" onClick={close} className="mm-btn mm-btn-primary">
+                <i className="mdi mdi-account-plus-outline" />{t('nav.join')}
+              </NavLink>
+            </div>
+          )}
+
+          {/* Navigation principale en tuiles */}
+          <p className="mm-label">{t('nav.section.explore')}</p>
+          <nav className="mm-grid">
+            {LIENS_PRINCIPAUX.map((l) => (
+              <NavLink
+                key={l.to}
+                to={l.to}
+                end={l.exact}
+                className={`mm-tile${l.className ? ` ${l.className}` : ''}`}
+                onClick={close}
+              >
+                <i className={`mdi ${l.icon}`} />
+                <span>{t(l.key)}</span>
+              </NavLink>
+            ))}
+          </nav>
+
+          {/* Accordéon « Découvrir » */}
+          <div className={`mm-acc ${sectionMobile === 'discover' ? 'open' : ''}`}>
+            <button type="button" className="mm-acc-head"
+                    aria-expanded={sectionMobile === 'discover'}
+                    onClick={() => basculerSection('discover')}>
+              <span className="mm-acc-title"><i className="mdi mdi-compass-outline" />{t('nav.section.discover')}</span>
+              <i className="mdi mdi-chevron-down mm-acc-caret" />
+            </button>
+            <div className="mm-acc-body">
+              <div className="mm-acc-links">
+                {LIENS_SUITE.map((l) => (
+                  <NavLink key={l.to} to={l.to} onClick={close}>
+                    <i className={`mdi ${l.icon}`} />
+                    {t(l.key)}
+                  </NavLink>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Accordéon « Compte » ou boutons invité */}
+          {user ? (
+            <div className={`mm-acc ${sectionMobile === 'account' ? 'open' : ''}`}>
+              <button type="button" className="mm-acc-head"
+                      aria-expanded={sectionMobile === 'account'}
+                      onClick={() => basculerSection('account')}>
+                <span className="mm-acc-title"><i className="mdi mdi-account-circle-outline" />{t('nav.section.account')}</span>
+                <i className="mdi mdi-chevron-down mm-acc-caret" />
+              </button>
+              <div className="mm-acc-body">
+                <div className="mm-acc-links">{liensCompte}</div>
+              </div>
+            </div>
+          ) : null}
+
+          {/* Langue */}
+          <div className="mm-lang">
+            <span className="mm-lang-label"><i className="mdi mdi-translate" />{t('nav.lang')}</span>
+            <LanguageSwitcher />
+          </div>
+        </div>
       </div>
     </nav>
   )

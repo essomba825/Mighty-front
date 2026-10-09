@@ -125,23 +125,6 @@ const ADMIN_MODULES = [
       { labelKey: 'nav.education', defaultLabel: 'Education area', link: '/education' },
     ],
   },
-  {
-    id: 'django_admin',
-    categoryKey: 'admin.nav.group.system',
-    defaultCategory: 'System & Database',
-    titleKey: 'admin.nav.system',
-    defaultTitle: 'Django Admin (34 Models)',
-    descKey: 'admin.module.django.desc',
-    defaultDesc: 'Superuser database console: direct access to SQLite/PostgreSQL tables, audit logs, tokens and backups.',
-    icon: 'mdi-database-cog-outline',
-    link: 'http://127.0.0.1:8000/admin/',
-    isExternal: true,
-    actionKey: 'admin.module.django.action',
-    defaultAction: 'Open Django Admin',
-    quickLinks: [
-      { labelKey: 'admin.module.django.action', defaultLabel: 'Django Console ↗', link: 'http://127.0.0.1:8000/admin/', isExternal: true },
-    ],
-  },
 ]
 
 export default function AdminDashboard() {
