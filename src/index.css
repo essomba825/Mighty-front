@@ -2883,13 +2883,27 @@ to{opacity:1;transform:none}
 }
 
 @media (max-width:720px){
-.lp-nav{flex-wrap:wrap}
+.lp-nav{position:sticky;bottom:8px;z-index:9;gap:8px;background:color-mix(in srgb,var(--paper) 94%,transparent);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:999px;padding:8px;box-shadow:0 8px 22px rgba(7,31,63,.14)}
 .lp-nav button{flex:1 1 auto}
-.lp-dots{order:3;width:100%;margin-top:4px}
+.lp-dots{display:none}
 .lp-pairs{grid-template-columns:1fr}
 .lp-xp{margin-left:auto}
 .lp-keys{display:none}
+.lp{padding-bottom:6px}
 }
+
+/* Sections repliables : page legere sur mobile, l'eleve ouvre ce qu'il veut */
+.lp-accordion{border:1px solid var(--border);border-radius:14px;background:var(--paper);margin:26px 0 0;overflow:hidden}
+.lp-accordion>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:15px 16px;font-family:var(--font-title);font-weight:700;font-size:1.05rem;color:var(--navy);user-select:none}
+.lp-accordion>summary::-webkit-details-marker{display:none}
+.lp-accordion>summary>.mdi{font-size:1.2rem;color:var(--accent,var(--gold))}
+.lp-accordion[open]>summary{border-bottom:1px solid var(--border)}
+.lp-acc-chevron{margin-left:auto;transition:transform .2s}
+.lp-acc-count{margin-left:auto;margin-right:8px;font-size:.72rem;font-weight:800;color:var(--text-soft);border:1px solid var(--border);border-radius:999px;padding:2px 9px}
+.lp-accordion[open] .lp-acc-chevron{transform:rotate(180deg)}
+.lp-accordion>.lesson-resources{margin:0;padding:6px 14px 16px}
+.lp-accordion>.lesson-quizzes{margin:0;padding:6px 14px 16px}
+.lp-accordion>.lesson-resources>h2,.lp-accordion>.lesson-quizzes>h2{display:none}
 @media (max-width:480px){
 .lp-title{font-size:1.14rem}
 .lp-question{font-size:.98rem}

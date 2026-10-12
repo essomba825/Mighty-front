@@ -32,8 +32,13 @@ function LessonExtras({ lesson, T, lang, quizzes, results, history, submitting,
   return (
     <div id="lesson-extras" className="lesson-extras">
       {lesson.resources?.length > 0 && (
-        <section className="lesson-resources">
-          <h2><i className="mdi mdi-book-open-variant" /> {T('resources')}</h2>
+        <details className="lp-accordion">
+          <summary>
+            <i className="mdi mdi-book-open-variant" /> {T('resources')}
+            <span className="lp-acc-count">{lesson.resources.length}</span>
+            <i className="mdi mdi-chevron-down lp-acc-chevron" />
+          </summary>
+          <section className="lesson-resources">
           <div className="resource-grid">
             {lesson.resources.map((r) => {
               const meta = RESOURCE_META[r.kind] || RESOURCE_META.link
@@ -65,12 +70,18 @@ function LessonExtras({ lesson, T, lang, quizzes, results, history, submitting,
               )
             })}
           </div>
-        </section>
+          </section>
+        </details>
       )}
 
       {lesson.quizzes?.length > 0 && (
-        <section className="lesson-quizzes">
-          <h2><i className="mdi mdi-clipboard-check-outline" /> {T('exercises')}</h2>
+        <details className="lp-accordion">
+          <summary>
+            <i className="mdi mdi-clipboard-check-outline" /> {T('exercises')}
+            <span className="lp-acc-count">{lesson.quizzes.length}</span>
+            <i className="mdi mdi-chevron-down lp-acc-chevron" />
+          </summary>
+          <section className="lesson-quizzes">
           {lesson.quizzes.map((q) => {
             const quiz = quizzes[q.id]
             const result = results[q.id]
@@ -171,13 +182,14 @@ function LessonExtras({ lesson, T, lang, quizzes, results, history, submitting,
                     </button>
                   </>
                 )}
-              </section>
-            )
-          })}
-        </section>
+                    </section>
+                  )
+                })}
+          </section>
+        </details>
       )}
 
-      {/* Navigation inter-lecons : aussi en mode pas-a-pas */}
+          {/* Navigation inter-lecons : aussi en mode pas-a-pas */}
       <nav className="lesson-nav">
         {lesson.prev_lesson_id && (
           <Link to={`/cours/${lesson.prev_lesson_id}`} className="lesson-nav-link prev">
