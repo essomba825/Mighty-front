@@ -1928,6 +1928,20 @@ to{opacity:1;transform:none}
 .resource-license{opacity:.75;font-style:italic}
 .resource-icon{font-size:1.5rem;flex-shrink:0}
 
+/* --- Cartes ressources visuelles (videos, PDF, corriges) --- */
+.lesson-extras{scroll-margin-top:90px}
+.resource-body{gap:4px;display:flex;flex-direction:column;min-width:0}
+.resource-kind{color:var(--accent,var(--gold));font-size:.64rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.resource-thumb{position:relative;width:120px;aspect-ratio:16/9;flex-shrink:0;border-radius:10px;overflow:hidden;background:var(--navy)}
+.resource-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.resource-thumb i.mdi-play-circle{position:absolute;inset:0;justify-content:center;align-items:center;color:#fff;font-size:1.7rem;background:#071f6340;display:flex;transition:background .2s}
+.resource-card:hover .resource-thumb i.mdi-play-circle{background:#071f6318}
+.resource-tile{width:46px;height:46px;border-radius:12px;flex-shrink:0;justify-content:center;align-items:center;font-size:1.35rem;display:flex}
+.resource-tile-pdf{color:var(--gold);background:#f2b84b24;border:1px solid #f2b84b59}
+.resource-tile-exam_paper{color:#8e44ad;background:#9b59b61f;border:1px solid #9b59b655}
+.resource-tile-video{color:#c0392b;background:#e74c3c1f;border:1px solid #e74c3c55}
+.resource-tile-link{color:var(--navy);background:#2b5c8a1f;border:1px solid #2b5c8a4d}
+
 /* Recommandations visuelles : vignette video / tuile coloree par type */
 .lesson-extras{scroll-margin-top:84px}
 
