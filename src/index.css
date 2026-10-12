@@ -674,29 +674,33 @@ to{background-position:-200% 0}
 
 .btn-registered i{margin-right:0}
 
-.impact-band{background:linear-gradient(180deg, #edf3f6, var(--paper));border-bottom:1px solid var(--border);padding:34px 20px}
+.impact-band{background:linear-gradient(180deg, #edf3f6, var(--paper));border-bottom:1px solid var(--border);padding:16px 20px}
 
-.impact-grid{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;display:grid}
+.impact-grid{grid-template-columns:repeat(3,1fr);gap:0;display:grid}
 
-.impact-item{justify-content:center;align-items:center;gap:14px;display:flex}
+.impact-item{justify-content:center;align-items:center;gap:9px;display:flex;padding:2px 14px}
 
-.impact-icon{width:52px;height:52px;color:var(--gold);background:#f2b84b24;border:1px solid #f2b84b59;border-radius:14px;flex-shrink:0;justify-content:center;align-items:center;font-size:1.5rem;display:flex}
+.impact-item + .impact-item{border-left:1px solid var(--border)}
+
+.impact-icon{width:36px;height:36px;color:var(--gold);background:#f2b84b24;border:1px solid #f2b84b59;border-radius:10px;flex-shrink:0;justify-content:center;align-items:center;font-size:1.05rem;display:flex}
 
 .impact-text{text-align:left}
 
-.impact-value{font-family:var(--font-title);color:var(--navy);margin:0;font-size:1.5rem;font-weight:700;line-height:1.1}
+.impact-value{font-family:var(--font-title);color:var(--navy);margin:0;font-size:1.05rem;font-weight:700;line-height:1.15}
 
-.impact-label{text-transform:uppercase;letter-spacing:1px;color:var(--text-soft);margin:4px 0 0;font-size:.68rem}
+.impact-label{text-transform:uppercase;letter-spacing:.7px;color:var(--text-soft);margin:2px 0 0;font-size:.58rem}
 
-@media (width<=720px){.impact-band{padding:22px 16px}
+@media (width<=720px){.impact-band{padding:12px 14px}
 
-.impact-grid{grid-template-columns:1fr;gap:14px}
+.impact-grid{grid-template-columns:1fr;gap:8px}
 
-.impact-item{background:var(--paper);border:1px solid var(--border);border-radius:12px;justify-content:flex-start;padding:12px 16px}
+.impact-item{background:var(--paper);border:1px solid var(--border);border-radius:10px;justify-content:flex-start;padding:8px 12px}
 
-.impact-icon{border-radius:10px;width:44px;height:44px;font-size:1.25rem}
+.impact-item + .impact-item{border-left:1px solid var(--border)}
 
-.impact-value{font-size:1.25rem}
+.impact-icon{border-radius:9px;width:32px;height:32px;font-size:.95rem}
+
+.impact-value{font-size:.98rem}
 
 }
 
