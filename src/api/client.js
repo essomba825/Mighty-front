@@ -30,13 +30,28 @@ const api = axios.create({
   baseURL: API_URL,
 })
 
-/* Photo de profil, medias : les URL relatives renvoyees par Django doivent
-   partir vers l'hote qui a servi la page, sinon le telephone cherche ses
-   propres fichiers. */
+/* Photo de profil, medias : les URL renvoyees par Django doivent partir vers
+   le backend, sinon le telephone cherche ses propres fichiers.
+
+   Django (DRF) renvoie souvent une URL absolue batie depuis l'hote de la
+   requete. Derriere le reverse-proxy cet hote peut perdre son port
+   (`https://exemple.org` au lieu de `https://exemple.org:8443`) : l'image part
+   alors vers un autre service et renvoie 404. Les medias vivent toujours sous
+   MEDIA_URL (`/media/`) : on reprend donc le chemin et on l'ancre sur
+   l'origine reelle du backend. */
 export function mediaUrl(url) {
   if (!url) return null
-  if (/^https?:\/\//i.test(url)) return url
-  return `${apiOrigin()}${url}`
+  const origin = apiOrigin()
+  if (/^https?:\/\//i.test(url)) {
+    try {
+      const { pathname, search } = new URL(url)
+      if (pathname.startsWith('/media/')) return `${origin}${pathname}${search}`
+    } catch {
+      return url
+    }
+    return url
+  }
+  return `${origin}${url}`
 }
 
 // Ajoute le token JWT à chaque requête si présent
