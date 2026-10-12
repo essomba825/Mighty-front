@@ -6876,6 +6876,17 @@ to{opacity:1;transform:none}
   .mm-logout-icon:hover{background:#ff6b5524;border-color:#ff6b5566;color:#ffd0c7}
   .mm-logout-icon i{font-size:1.3rem}
 
+  /* Accès rapide back-office (administrateurs / personnel) */
+  .mm-admin-tile{display:flex;align-items:center;gap:12px;margin-top:12px;padding:12px;border-radius:16px;background:linear-gradient(135deg,#f2b84b2e,#f2b84b14);border:1px solid #f2b84b73;color:#fff;text-decoration:none;transition:background .15s,border-color .15s,transform .15s}
+  .mm-admin-tile:hover,.mm-admin-tile:active{background:linear-gradient(135deg,#f2b84b45,#f2b84b24);border-color:var(--gold)}
+  .mm-admin-tile:active{transform:scale(.99)}
+  .mm-admin-tile-icon{display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--navy)}
+  .mm-admin-tile-icon i{font-size:1.4rem}
+  .mm-admin-tile-text{display:flex;flex-direction:column;flex:1;min-width:0}
+  .mm-admin-tile-text strong{color:var(--gold-light);font-size:.98rem;font-weight:800;line-height:1.2}
+  .mm-admin-tile-text small{color:#c9d6e8;font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mm-admin-tile-arrow{flex-shrink:0;font-size:1.3rem;color:var(--gold-light)}
+
   /* Étiquettes de section */
   .mm-label{margin:16px 4px 8px;font-size:.7rem;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--gold-light)}
 

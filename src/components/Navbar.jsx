@@ -296,6 +296,18 @@ export default function Navbar() {
             </div>
           )}
 
+          {/* Accès rapide au back-office (administrateurs / personnel) */}
+          {user && (user.is_staff || user.role === 'admin') && (
+            <NavLink to="/admin" onClick={close} className="mm-admin-tile">
+              <span className="mm-admin-tile-icon"><i className="mdi mdi-shield-crown-outline" /></span>
+              <span className="mm-admin-tile-text">
+                <strong>{t('admin.title')}</strong>
+                <small>{t('admin.platform.title')}</small>
+              </span>
+              <i className="mdi mdi-chevron-right mm-admin-tile-arrow" />
+            </NavLink>
+          )}
+
           {/* Navigation principale en tuiles */}
           <p className="mm-label">{t('nav.section.explore')}</p>
           <nav className="mm-grid">
