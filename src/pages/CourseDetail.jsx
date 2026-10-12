@@ -30,7 +30,7 @@ function LessonExtras({ lesson, T, lang, quizzes, results, history, submitting,
                        answers, selectAnswer, submitQuiz, retryQuiz, revealQuiz,
                        isRevealed }) {
   return (
-    <>
+    <div id="lesson-extras" className="lesson-extras">
       {lesson.resources?.length > 0 && (
         <section className="lesson-resources">
           <h2><i className="mdi mdi-book-open-variant" /> {T('resources')}</h2>
@@ -40,16 +40,25 @@ function LessonExtras({ lesson, T, lang, quizzes, results, history, submitting,
               // file_url vient de build_absolute_uri : mediaUrl() re-ancre
               // le chemin /media/ sur la bonne origine (port inclus).
               const href = r.url || mediaUrl(r.file_url)
+              const ytId = r.url ? youtubeId(r.url) : null
               return (
                 <a key={r.id} href={href} target="_blank" rel="noreferrer"
-                   className="resource-card card resource-glass">
-                  <i className={`mdi ${meta.icon} resource-icon resource-${r.kind}`} />
-                  <div>
+                   className={`resource-card card resource-glass resource-${r.kind}`}>
+                  {ytId ? (
+                    <span className="resource-thumb">
+                      <img src={`https://i.ytimg.com/vi/${ytId}/hqdefault.jpg`} alt=""
+                           loading="lazy" onError={(e) => { e.currentTarget.style.display = 'none' }} />
+                      <i className="mdi mdi-play-circle" />
+                    </span>
+                  ) : (
+                    <span className={`resource-tile resource-tile-${r.kind}`}>
+                      <i className={`mdi ${meta.icon}`} />
+                    </span>
+                  )}
+                  <div className="resource-body">
+                    <span className="resource-kind">{T(`lesson_resource_${meta.labelKey}`)}</span>
                     <strong>{pick(r.title_fr, r.title, lang)}</strong>
-                    <small>
-                      {T(`lesson_resource_${meta.labelKey}`)}
-                      {r.source_name ? ` — ${r.source_name}` : ''}
-                    </small>
+                    {r.source_name && <small>{r.source_name}</small>}
                     {r.license_note && <small className="resource-license">{r.license_note}</small>}
                   </div>
                 </a>
@@ -184,7 +193,7 @@ function LessonExtras({ lesson, T, lang, quizzes, results, history, submitting,
           </Link>
         )}
       </nav>
-    </>
+    </div>
   )
 }
 

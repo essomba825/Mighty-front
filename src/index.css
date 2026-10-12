@@ -1927,6 +1927,24 @@ to{opacity:1;transform:none}
 .resource-card small{color:var(--text-soft);font-size:.78rem;display:block}
 .resource-license{opacity:.75;font-style:italic}
 .resource-icon{font-size:1.5rem;flex-shrink:0}
+
+/* Recommandations visuelles : vignette video / tuile coloree par type */
+.lesson-extras{scroll-margin-top:84px}
+
+.resource-thumb{position:relative;width:104px;aspect-ratio:16/9;border-radius:10px;flex-shrink:0;overflow:hidden;background:var(--navy)}
+.resource-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.resource-thumb > i.mdi-play-circle{position:absolute;inset:0;color:#fff;font-size:1.7rem;display:flex;align-items:center;justify-content:center;background:#071f3f35;transition:background .2s,transform .2s}
+.resource-card:hover .resource-thumb > i.mdi-play-circle{background:#071f3f18;transform:scale(1.08)}
+
+.resource-tile{width:46px;height:46px;border-radius:12px;flex-shrink:0;justify-content:center;align-items:center;font-size:1.4rem;display:flex}
+.resource-tile-pdf{color:var(--gold);background:#f2b84b24;border:1px solid #f2b84b59}
+.resource-tile-exam_paper{color:#8e44ad;background:#8e44ad1f;border:1px solid #8e44ad55}
+.resource-tile-link{color:var(--navy);background:#1565c018;border:1px solid #1565c040}
+.resource-tile-video{color:var(--navy);background:#071f3f14;border:1px solid #071f3f2b}
+
+.resource-kind{text-transform:uppercase;letter-spacing:.7px;color:var(--gold);margin:0 0 2px;font-size:.62rem;font-weight:800}
+.resource-body{min-width:0}
+.resource-body strong{line-height:1.25}
 .resource-video{color:#e0503c}.resource-pdf{color:#d9802a}.resource-link{color:var(--navy)}.resource-exam_paper{color:var(--gold)}
 .quiz-card{padding:24px;border-radius:16px;margin-bottom:18px}
 .quiz-card h3{color:var(--navy);margin:0 0 4px}

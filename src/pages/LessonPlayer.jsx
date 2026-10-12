@@ -495,11 +495,19 @@ export default function LessonPlayer({ lessonId, T, onMasteryChange, onLessonCom
             </li>
           ))}
         </ol>
-        <button type="button" className="btn-primary"
-                disabled={index === total - 1 || locked(index + 1)}
-                onClick={() => go(index + 1)}>
-          {T('next_lesson')} <i className="mdi mdi-arrow-right" />
-        </button>
+        {index === total - 1 ? (
+          /* Derniere etape : on enchaine vers les exercices et les documents
+             apposes sous le lecteur, plutot qu'un bouton grise sans issue. */
+          <a className="btn-primary" href="#lesson-extras">
+            {T('exercises')} · {T('resources')} <i className="mdi mdi-arrow-down" />
+          </a>
+        ) : (
+          <button type="button" className="btn-primary"
+                  disabled={locked(index + 1)}
+                  onClick={() => go(index + 1)}>
+            {T('next_lesson')} <i className="mdi mdi-arrow-right" />
+          </button>
+        )}
       </nav>
     </section>
   )
