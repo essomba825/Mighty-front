@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import api from '../api/client'
+import api, { mediaUrl } from '../api/client'
 import PageHeader from '../components/PageHeader'
 import { useLang } from '../context/LangContext'
 
@@ -111,7 +111,7 @@ export default function Gallery() {
                   style={{ cursor: 'zoom-in' }}
                   onClick={() => setLightbox(photoIndex(d.id))}
                 >
-                  <img src={d.file} alt={d.title} loading="lazy" />
+                  <img src={mediaUrl(d.file)} alt={d.title} loading="lazy" />
                   <div className="gallery-overlay">
                     <i className="mdi mdi-magnify-plus-outline" />
                     <div className="gallery-caption">
@@ -126,7 +126,7 @@ export default function Gallery() {
                   key={d.id}
                   className="gallery-item gallery-video-item"
                   style={{ cursor: 'pointer' }}
-                  onClick={() => window.open(d.file || d.url, '_blank')}
+                  onClick={() => window.open(mediaUrl(d.file) || d.url, '_blank')}
                 >
                   <div className="gallery-video-thumb">
                     <i className="mdi mdi-play-circle gallery-play-icon" />
@@ -170,7 +170,7 @@ export default function Gallery() {
             <i className="mdi mdi-chevron-left" />
           </button>
           <figure onClick={(e) => e.stopPropagation()}>
-            <img src={current.file} alt={current.title} />
+            <img src={mediaUrl(current.file)} alt={current.title} />
             <figcaption>
               <strong>{current.title}</strong>
               {current.year && <span className="gallery-year"> · {current.year}</span>}

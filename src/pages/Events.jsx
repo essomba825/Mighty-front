@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import api from '../api/client'
+import api, { mediaUrl } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import PageHeader from '../components/PageHeader'
 import { useLang } from '../context/LangContext'
@@ -108,7 +108,7 @@ export default function Events() {
                 <article key={e.id} className={`event-card ${isPast ? 'event-past' : ''}`}>
                   {e.image && (
                     <div className="event-media">
-                      <img src={e.image} alt={e.title} loading="lazy" />
+                      <img src={mediaUrl(e.image)} alt={e.title} loading="lazy" />
                       <DateBlock iso={e.date} />
                     </div>
                   )}

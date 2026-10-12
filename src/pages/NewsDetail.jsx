@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import api from '../api/client'
+import api, { mediaUrl } from '../api/client'
 import PageHeader from '../components/PageHeader'
 import { useLang } from '../context/LangContext'
 
@@ -37,7 +37,7 @@ export default function NewsDetail() {
         breadcrumb={article.title.slice(0, 40) + (article.title.length > 40 ? '…' : '')}
       />
       <div className="page" style={{ maxWidth: 760 }}>
-        {article.image && <img src={article.image} alt={article.title} className="article-cover" />}
+        {article.image && <img src={mediaUrl(article.image)} alt={article.title} className="article-cover" />}
         <div className="article-content card">
           <p style={{ whiteSpace: 'pre-line' }}>{article.content}</p>
         </div>

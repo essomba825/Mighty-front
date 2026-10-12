@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import api from '../api/client'
+import api, { mediaUrl } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import { useLang } from '../context/LangContext'
 
@@ -381,7 +381,7 @@ export default function BecomePartner() {
                                 className={`project-pick ${chosen ? 'selected' : ''}`}
                                 onClick={() => setForm({ ...form, project: p.id })}>
                           <span className="pick-media">
-                            {p.image && <img src={p.image} alt="" />}
+                            {p.image && <img src={mediaUrl(p.image)} alt="" />}
                             <span className="pick-percent">{percent}%</span>
                           </span>
                           <span className="pick-info">

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import api from '../api/client'
+import api, { mediaUrl } from '../api/client'
 import PageHeader from '../components/PageHeader'
 import { useLang } from '../context/LangContext'
 
@@ -168,7 +168,7 @@ export default function Projects() {
               <article className="project-featured">
                 {featured.image && (
                   <div className="project-featured-media">
-                    <img src={featured.image} alt={featured.title} />
+                    <img src={mediaUrl(featured.image)} alt={featured.title} />
                     <span className={`badge ${STATUS[featured.status].className} project-badge`}>
                       <i className={`mdi ${STATUS[featured.status].icon}`} /> {t(`projects.status.${STATUS[featured.status].labelKey}`)}
                     </span>
@@ -211,7 +211,7 @@ export default function Projects() {
                   <article key={p.id} className="project-card">
                     {p.image && (
                       <div className="event-media">
-                        <img src={p.image} alt={p.title} loading="lazy" />
+                        <img src={mediaUrl(p.image)} alt={p.title} loading="lazy" />
                         <span className={`badge ${s.className} project-badge`}>
                           <i className={`mdi ${s.icon}`} /> {t(`projects.status.${s.labelKey}`)}
                         </span>

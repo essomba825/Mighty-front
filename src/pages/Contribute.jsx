@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import api from '../api/client'
+import api, { mediaUrl } from '../api/client'
 import PageHeader from '../components/PageHeader'
 import { useAuth } from '../context/AuthContext'
 import { useLang } from '../context/LangContext'
@@ -329,7 +329,7 @@ export default function Contribute() {
               <>
                 {project.image && (
                   <div className="event-media">
-                    <img src={project.image} alt={project.title} loading="lazy" />
+                    <img src={mediaUrl(project.image)} alt={project.title} loading="lazy" />
                     <span className={`badge ${STATUS[project.status].className} project-badge`}>
                       <i className={`mdi ${STATUS[project.status].icon}`} />
                       {t(`donate.projectStatus.${STATUS[project.status].labelKey}`)}

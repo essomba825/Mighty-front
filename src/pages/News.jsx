@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import api from '../api/client'
+import api, { mediaUrl } from '../api/client'
 import PageHeader from '../components/PageHeader'
 import { useLang } from '../context/LangContext'
 
@@ -86,7 +86,7 @@ export default function News() {
               <Link to={`/actualites/${featured.id}`} className="news-featured">
                 {featured.image && (
                   <div className="news-featured-media">
-                    <img src={featured.image} alt={featured.title} />
+                    <img src={mediaUrl(featured.image)} alt={featured.title} />
                     <span className="date-pill">{shortDate(featured.published_at, locale)}</span>
                   </div>
                 )}
@@ -112,7 +112,7 @@ export default function News() {
                   <Link key={a.id} to={`/actualites/${a.id}`} className="news-card">
                     {a.image && (
                       <div className="news-card-media">
-                        <img src={a.image} alt={a.title} loading="lazy" />
+                        <img src={mediaUrl(a.image)} alt={a.title} loading="lazy" />
                         <span className="date-pill">{shortDate(a.published_at, locale)}</span>
                       </div>
                     )}

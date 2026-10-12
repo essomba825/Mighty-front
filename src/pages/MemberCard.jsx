@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import api from '../api/client'
+import api, { mediaUrl } from '../api/client'
 import PageHeader from '../components/PageHeader'
 import { useAuth } from '../context/AuthContext'
 import { useLang } from '../context/LangContext'
@@ -117,7 +117,7 @@ export default function MemberCard() {
                   <div className="mcard-main">
                     <div className="mcard-photo">
                       <ProfileAvatar
-                        src={card.photo}
+                        src={mediaUrl(card.photo)}
                         name={card.full_name}
                         fallback="/mcard-photo-default.svg"
                       />
