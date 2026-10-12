@@ -135,7 +135,7 @@ export default function LessonPlayer({ lessonId, T, onMasteryChange, onLessonCom
 
   const go = (target) => {
     if (target < 0 || target >= steps.length) return
-    if (!locked(target)) return
+    if (locked(target)) return
     setDir(target > index ? 1 : -1)
     setIndex(target)
     enteredAt.current = Date.now()
@@ -458,7 +458,7 @@ export default function LessonPlayer({ lessonId, T, onMasteryChange, onLessonCom
                       <i className="mdi mdi-refresh" /> {T('lp_try_again')}
                     </button>
                   )}
-                  {result.is_correct && locked(index + 1) && index < total - 1 && (
+                  {result.is_correct && !locked(index + 1) && index < total - 1 && (
                     <button type="button" className="btn-primary" onClick={() => go(index + 1)}>
                       {T('next_lesson')} <i className="mdi mdi-arrow-right" />
                     </button>
@@ -486,9 +486,9 @@ export default function LessonPlayer({ lessonId, T, onMasteryChange, onLessonCom
           {steps.map((s, i) => (
             <li key={s.id}>
               <button type="button"
-                      className={`${s.solved ? 'is-solved' : ''} ${s.required ? 'is-required' : ''} ${
+              className={`${s.solved ? 'is-solved' : ''} ${s.required ? 'is-required' : ''} ${
                         i === index ? 'is-current' : ''}`}
-                      disabled={!locked(i)}
+              disabled={locked(i)}
                       title={T((STEP_KINDS[s.kind] ?? STEP_KINDS.explain).key)}
                       aria-label={T('lp_step_of').replace('{n}', String(i + 1)).replace('{total}', String(total))}
                       onClick={() => go(i)} />
@@ -496,7 +496,7 @@ export default function LessonPlayer({ lessonId, T, onMasteryChange, onLessonCom
           ))}
         </ol>
         <button type="button" className="btn-primary"
-                disabled={index === total - 1 || !locked(index + 1)}
+                disabled={index === total - 1 || locked(index + 1)}
                 onClick={() => go(index + 1)}>
           {T('next_lesson')} <i className="mdi mdi-arrow-right" />
         </button>
