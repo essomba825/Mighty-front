@@ -63,6 +63,14 @@ export const T = {
   lesson_resource_pdf: { en: 'PDF', fr: 'PDF' },
   lesson_resource_link: { en: 'Link', fr: 'Lien' },
   lesson_resource_examPaper: { en: 'Exam paper', fr: "Sujet d'examen" },
+  rv_watch: { en: 'Watch', fr: 'Regarder' },
+  rv_open: { en: 'Open', fr: 'Ouvrir' },
+  rv_download: { en: 'Download', fr: 'Télécharger' },
+  rv_close: { en: 'Close', fr: 'Fermer' },
+  rv_media_unavailable: {
+    en: "This content can't be displayed here. Open it in a new tab instead.",
+    fr: "Ce contenu ne peut pas s'afficher ici. Ouvre-le dans un nouvel onglet.",
+  },
   no_weak: { en: 'No weak spots, congratulations!', fr: 'Aucune lacune, félicitations !' },
 
   /* ---------- libellés ajoutés (EN base) ---------- */

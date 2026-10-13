@@ -5,6 +5,8 @@ import api from '../api/client'
 import LangToggle from '../components/LangToggle'
 import { pick, useLang } from '../context/LangContext'
 import { tr } from '../i18n/education'
+import ResourceCard from '../components/education/ResourceCard'
+import ResourceViewer from '../components/education/ResourceViewer'
 import LessonPlayer from './LessonPlayer'
 
 const youtubeId = (url) => {
@@ -13,13 +15,6 @@ const youtubeId = (url) => {
 }
 
 const slugify = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-')
-
-const RESOURCE_META = {
-  video: { icon: 'mdi-play-circle-outline', labelKey: 'video' },
-  pdf: { icon: 'mdi-file-pdf-box', labelKey: 'pdf' },
-  link: { icon: 'mdi-open-in-new', labelKey: 'link' },
-  exam_paper: { icon: 'mdi-file-certificate-outline', labelKey: 'examPaper' },
-}
 
 const quizKey = (quizId) => String(quizId)
 
@@ -179,6 +174,153 @@ export default function CourseDetail() {
 
   const isRevealed = (quizId) => selected.has(quizId)
 
+  const [viewer, setViewer] = useState(null)
+  const openViewer = (r) => setViewer(r)
+
+  /* Ressources, quiz et navigation entre lecons : un seul rendu, reutilise en
+     mode texte long comme en mode pas-a-pas. Sinon les lecons a etapes
+     n'affichaient jamais ni les documents ni le bilan final. */
+  const renderExtras = () => (
+    <div id="lesson-extras" className="lesson-extras">
+      {lesson.resources?.length > 0 && (
+        <section className="lesson-resources">
+          <h2><i className="mdi mdi-book-open-variant" /> {T('resources')}</h2>
+          <div className="resource-grid">
+            {lesson.resources.map((r) => (
+              <ResourceCard key={r.id} resource={r} onOpen={openViewer} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {lesson.quizzes?.length > 0 && (
+        <section className="lesson-quizzes">
+          <h2><i className="mdi mdi-clipboard-check-outline" /> {T('exercises')}</h2>
+          {lesson.quizzes.map((q) => {
+            const quiz = quizzes[q.id]
+            const result = results[q.id]
+            const wrong = result?.review?.filter((r) => !r.is_correct).length ?? 0
+            const isPassed = result?.passed
+            const best = history[quizKey(q.id)]
+            return (
+              <section key={q.id}
+                       className={`card quiz-card ${result ? (isPassed ? 'is-passed' : 'is-failed') : ''}`}>
+                <div className="quiz-head">
+                  <h3>{q.title}</h3>
+                  <span className={`quiz-badge ${isPassed ? 'ok' : result ? 'ko' : ''}`}>
+                    {isPassed ? T('passed') : result ? T('retry') : `${q.pass_score}%`}
+                  </span>
+                </div>
+                <small>
+                  {T('pass_score')} : {q.pass_score}% — {q.questions_count} {T('questions')}
+                  {best != null && ` · ${T('best_score')} : ${best}%`}
+                </small>
+
+                {result ? (
+                  <div className={`quiz-result ${isPassed ? 'success' : 'fail'}`}>
+                    <div className="quiz-score-row">
+                      <strong className="quiz-score">{result.percentage}%</strong>
+                      <div>
+                        <h4>{isPassed ? '🎉 ' + T('passed') : '💪 ' + T('retry')}</h4>
+                        <p>
+                          {T('score')} : {result.score}/{result.total}
+                          {wrong > 0 && !isPassed && (
+                            <> · {wrong} {T('to_review')}</>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="quiz-actions">
+                      {!isPassed && (
+                        <button type="button" className="btn-secondary" onClick={() => retryQuiz(q.id)}>
+                          <i className="mdi mdi-refresh" /> {T('retry')}
+                        </button>
+                      )}
+                      <button type="button"
+                              className="btn-primary btn-ghost"
+                              onClick={() => revealQuiz(q.id)}
+                              aria-expanded={isRevealed(q.id)}>
+                        <i className="mdi mdi-lightbulb-on-outline" /> {T('see_corrections')}
+                      </button>
+                    </div>
+
+                    {result.review && isRevealed(q.id) && (
+                      <div className="quiz-review">
+                        {result.review.map((rev, i) => (
+                          <div key={rev.question_id} className={`quiz-review-row ${rev.is_correct ? 'ok' : 'ko'}`}>
+                            <p className="quiz-review-q">
+                              <i className={`mdi ${rev.is_correct ? 'mdi-check-circle' : 'mdi-close-circle'}`} />
+                              {' '}{i + 1}. {pick(rev.text_fr, rev.text, lang)}
+                            </p>
+                            <p className="quiz-review-a">
+                              <strong>{T('your_answer')}:</strong>{' '}
+                              {pick(rev.choice_text_fr, rev.choice_text, lang) || '—'}
+                              <br />
+                              <strong>{T('correct_answer')}:</strong>{' '}
+                              {pick(rev.correct_choice_text_fr, rev.correct_choice_text, lang)}
+                            </p>
+                            {pick(rev.explanation_fr, rev.explanation, lang) && (
+                              <p className="quiz-review-expl">
+                                <i className="mdi mdi-lightbulb-on-outline" />{' '}
+                                {pick(rev.explanation_fr, rev.explanation, lang)}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : !quiz ? (
+                  <div className="skeleton-line w90" />
+                ) : (
+                  <>
+                    {quiz.questions.map((question) => (
+                      <div key={question.id} className="quiz-question">
+                        <p><strong>{question.order}. {pick(question.text_fr, question.text, lang)}</strong></p>
+                        {question.choices.map((c) => (
+                          <label key={c.id} className="quiz-choice">
+                            <input type="radio" name={`q-${question.id}`}
+                                   checked={answers[`${q.id}-${question.id}`] === c.id}
+                                   onChange={() => selectAnswer(q.id, question.id, c.id)} />
+                            {pick(c.text_fr, c.text, lang)}
+                          </label>
+                        ))}
+                      </div>
+                    ))}
+                    <button className="btn-primary"
+                            disabled={submitting === q.id || quiz.questions.some(
+                              (question) => !answers[`${q.id}-${question.id}`])}
+                            onClick={() => submitQuiz(quiz)}>
+                      {submitting === q.id ? T('correcting') : T('submit')}
+                    </button>
+                  </>
+                )}
+              </section>
+            )
+          })}
+        </section>
+      )}
+
+      {/* Navigation inter-lecons : aussi en mode pas-a-pas */}
+      <nav className="lesson-nav">
+        {lesson.prev_lesson_id && (
+          <Link to={`/cours/${lesson.prev_lesson_id}`} className="lesson-nav-link prev">
+            <i className="mdi mdi-arrow-left" /> {T('prev_lesson')}
+          </Link>
+        )}
+        <Link to={`/education/matieres/${lesson.subject_slug}`} className="lesson-nav-link home">
+          <i className="mdi mdi-view-grid-outline" /> {T('curriculum')}
+        </Link>
+        {lesson.next_lesson_id && (
+          <Link to={`/cours/${lesson.next_lesson_id}`} className="lesson-nav-link next">
+            {T('next_lesson')} <i className="mdi mdi-arrow-right" />
+          </Link>
+        )}
+      </nav>
+    </div>
+  )
+
   if (loading) return <p className="page">{T('loading')}</p>
 
   if (needLogin) {
@@ -252,10 +394,15 @@ export default function CourseDetail() {
 
       <div className="page lesson-page">
         {hasSteps ? (
-          <LessonPlayer lessonId={id} T={T} onLessonComplete={() => {
-            setCompleted(true)
-            api.post(`/education/lessons/${id}/complete/`).catch(() => {})
-          }} />
+          <>
+            <LessonPlayer lessonId={id} T={T} onLessonComplete={() => {
+              setCompleted(true)
+              api.post(`/education/lessons/${id}/complete/`).catch(() => {})
+            }} />
+            <div className="lesson-grid">
+              <div className="lesson-main">{renderExtras()}</div>
+            </div>
+          </>
         ) : (
           <>
         <div className="lesson-toolbar">
@@ -329,163 +476,15 @@ export default function CourseDetail() {
               </div>
             )}
 
-            {lesson.resources?.length > 0 && (
-              <section className="lesson-resources">
-                <h2><i className="mdi mdi-book-open-variant" /> {T('resources')}</h2>
-                <div className="resource-grid">
-                  {lesson.resources.map((r) => {
-                    const meta = RESOURCE_META[r.kind] || RESOURCE_META.link
-                    const href = r.url || r.file_url
-                    return (
-                      <a key={r.id} href={href} target="_blank" rel="noreferrer"
-                         className="resource-card card resource-glass">
-                        <i className={`mdi ${meta.icon} resource-icon resource-${r.kind}`} />
-                        <div>
-                          <strong>{pick(r.title_fr, r.title, lang)}</strong>
-                          <small>
-                            {T(`lesson_resource_${meta.labelKey}`)}
-                            {r.source_name ? ` — ${r.source_name}` : ''}
-                          </small>
-                          {r.license_note && <small className="resource-license">{r.license_note}</small>}
-                        </div>
-                      </a>
-                    )
-                  })}
-                </div>
-              </section>
-            )}
-
-            {lesson.quizzes?.length > 0 && (
-              <section className="lesson-quizzes">
-                <h2><i className="mdi mdi-clipboard-check-outline" /> {T('exercises')}</h2>
-                {lesson.quizzes.map((q) => {
-                  const quiz = quizzes[q.id]
-                  const result = results[q.id]
-                  const wrong = result?.review?.filter((r) => !r.is_correct).length ?? 0
-                  const isPassed = result?.passed
-                  const best = history[quizKey(q.id)]
-                  return (
-                    <section key={q.id}
-                             className={`card quiz-card ${result ? (isPassed ? 'is-passed' : 'is-failed') : ''}`}>
-                      <div className="quiz-head">
-                        <h3>{q.title}</h3>
-                        <span className={`quiz-badge ${isPassed ? 'ok' : result ? 'ko' : ''}`}>
-                          {isPassed ? T('passed') : result ? T('retry') : `${q.pass_score}%`}
-                        </span>
-                      </div>
-                      <small>
-                        {T('pass_score')} : {q.pass_score}% — {q.questions_count} {T('questions')}
-                        {best != null && ` · ${T('best_score')} : ${best}%`}
-                      </small>
-
-                      {result ? (
-                        <div className={`quiz-result ${isPassed ? 'success' : 'fail'}`}>
-                          <div className="quiz-score-row">
-                            <strong className="quiz-score">{result.percentage}%</strong>
-                            <div>
-                              <h4>{isPassed ? '🎉 ' + T('passed') : '💪 ' + T('retry')}</h4>
-                              <p>
-                                {T('score')} : {result.score}/{result.total}
-                                {wrong > 0 && !isPassed && (
-                                  <> · {wrong} {T('to_review')}</>
-                                )}
-                              </p>
-                            </div>
-                          </div>
-
-                          <div className="quiz-actions">
-                            {!isPassed && (
-                              <button type="button" className="btn-secondary" onClick={() => retryQuiz(q.id)}>
-                                <i className="mdi mdi-refresh" /> {T('retry')}
-                              </button>
-                            )}
-                            <button type="button"
-                                    className="btn-primary btn-ghost"
-                                    onClick={() => revealQuiz(q.id)}
-                                    aria-expanded={isRevealed(q.id)}>
-                              <i className="mdi mdi-lightbulb-on-outline" /> {T('see_corrections')}
-                            </button>
-                          </div>
-
-                          {result.review && isRevealed(q.id) && (
-                            <div className="quiz-review">
-                              {result.review.map((rev, i) => (
-                                <div key={rev.question_id} className={`quiz-review-row ${rev.is_correct ? 'ok' : 'ko'}`}>
-                                  <p className="quiz-review-q">
-                                    <i className={`mdi ${rev.is_correct ? 'mdi-check-circle' : 'mdi-close-circle'}`} />
-                                    {' '}{i + 1}. {pick(rev.text_fr, rev.text, lang)}
-                                  </p>
-                                  <p className="quiz-review-a">
-                                    <strong>{T('your_answer')}:</strong>{' '}
-                                    {pick(rev.choice_text_fr, rev.choice_text, lang) || '—'}
-                                    <br />
-                                    <strong>{T('correct_answer')}:</strong>{' '}
-                                    {pick(rev.correct_choice_text_fr, rev.correct_choice_text, lang)}
-                                  </p>
-                                  {pick(rev.explanation_fr, rev.explanation, lang) && (
-                                    <p className="quiz-review-expl">
-                                      <i className="mdi mdi-lightbulb-on-outline" />{' '}
-                                      {pick(rev.explanation_fr, rev.explanation, lang)}
-                                    </p>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      ) : !quiz ? (
-                        <div className="skeleton-line w90" />
-                      ) : (
-                        <>
-                          {quiz.questions.map((question) => (
-                            <div key={question.id} className="quiz-question">
-                              <p><strong>{question.order}. {pick(question.text_fr, question.text, lang)}</strong></p>
-                              {question.choices.map((c) => (
-                                <label key={c.id} className="quiz-choice">
-                                  <input type="radio" name={`q-${question.id}`}
-                                         checked={answers[`${q.id}-${question.id}`] === c.id}
-                                         onChange={() => selectAnswer(q.id, question.id, c.id)} />
-                                  {pick(c.text_fr, c.text, lang)}
-                                </label>
-                              ))}
-                            </div>
-                          ))}
-                          <button className="btn-primary"
-                                  disabled={submitting === q.id || quiz.questions.some(
-                                    (question) => !answers[`${q.id}-${question.id}`])}
-                                  onClick={() => submitQuiz(quiz)}>
-                            {submitting === q.id ? T('correcting') : T('submit')}
-                          </button>
-                        </>
-                      )}
-                    </section>
-                  )
-                })}
-              </section>
-            )}
-
-            {/* Navigation inter-leçons */}
-            <nav className="lesson-nav">
-              {lesson.prev_lesson_id && (
-                <Link to={`/cours/${lesson.prev_lesson_id}`} className="lesson-nav-link prev">
-                  <i className="mdi mdi-arrow-left" /> {T('prev_lesson')}
-                </Link>
-              )}
-              <Link to={`/education/matieres/${lesson.subject_slug}`} className="lesson-nav-link home">
-                <i className="mdi mdi-view-grid-outline" /> {T('curriculum')}
-              </Link>
-              {lesson.next_lesson_id && (
-                <Link to={`/cours/${lesson.next_lesson_id}`} className="lesson-nav-link next">
-                  {T('next_lesson')} <i className="mdi mdi-arrow-right" />
-                </Link>
-              )}
-            </nav>
+            {renderExtras()}
           </div>
         </div>
           </>
         )}
       </div>
 
+      {/* Lecteur commun (video ou document), monte seulement a la demande */}
+      <ResourceViewer resource={viewer} onClose={() => setViewer(null)} />
     </div>
   )
 }
