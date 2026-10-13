@@ -1978,6 +1978,18 @@ to{opacity:1;transform:none}
   .sc-progress{min-width:74px}.sc-bar{width:74px}
 }
 
+/* ——— Page matiere facon maquette ——— */
+.subject-hero-progress{margin-top:16px}
+.subject-hero-progress-top{display:flex;align-items:baseline;justify-content:space-between;color:#dce8f6;font-size:.78rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.subject-hero-progress-top strong{color:#fff;font-family:var(--font-title);font-size:.95rem;letter-spacing:0}
+.subject-hero-progress-bar{margin-top:6px;height:8px;border-radius:999px;background:rgba(255,255,255,.14);overflow:hidden}
+.subject-hero-progress-bar>span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--gold),var(--gold-light,#ffd97a));transition:width .6s cubic-bezier(.22,1,.36,1)}
+.chapter-eyebrow{display:block;margin-bottom:2px;text-transform:uppercase;letter-spacing:.08em;color:var(--accent,var(--gold));font-size:.66rem;font-weight:800}
+.chapter-titles>small{display:block;margin-top:2px;color:var(--text-soft);font-size:.76rem}
+.lesson-order-media{background:var(--navy);color:#fff;border:1px solid #071f3f22;font-size:1.05rem}
+.lesson-order-media i{display:grid;place-items:center}
+.lesson-row.done .lesson-order-media{background:#1e7140}
+
 /* --- Recommandations visuelles de ressources --- */
 .lesson-extras{scroll-margin-top:90px}
 .resource-body{gap:4px;display:flex;flex-direction:column;min-width:0}

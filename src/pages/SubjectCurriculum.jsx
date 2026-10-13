@@ -259,15 +259,20 @@ export default function SubjectCurriculum() {
           <div className="subject-hero-facts">
             <span><i className="mdi mdi-book-open-page-variant-outline" /> {allLessons.length} {T('lessons')}</span>
             <span><i className="mdi mdi-format-list-numbered" /> {filledChapters.length} {T('chapters')}</span>
-            {user && (
-              <span className="subject-hero-facts-progress">
-                <span className="subject-progress-bar">
-                  <span style={{ width: `${progress}%`, background: subject.color }} />
-                </span>
-                {progress}% {T('done')}
-              </span>
-            )}
           </div>
+          {/* Barre de progression plein cadre, a la maniere de la maquette :
+              seulement quand l'eleve est connecte (donnees reelles). */}
+          {user && allLessons.length > 0 && (
+            <div className="subject-hero-progress">
+              <div className="subject-hero-progress-top">
+                <span>{T('your_progress')}</span>
+                <strong>{progress}%</strong>
+              </div>
+              <div className="subject-hero-progress-bar">
+                <span style={{ width: `${progress}%` }} />
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
@@ -357,7 +362,11 @@ export default function SubjectCurriculum() {
                           {String(chapterNumber.get(chapter.id) ?? chapter.order).padStart(2, '0')}
                         </span>
                         <span className="chapter-titles">
+                          <span className="chapter-eyebrow">
+                            {T('chapter')} {chapterNumber.get(chapter.id) ?? chapter.order}
+                          </span>
                           <h2>{pick(chapter.title_fr, chapter.title, lang)}</h2>
+                          <small>{chapter.lessons.length} {T('lessons')}</small>
                         </span>
                         {user && chapter.lessons.length > 0 && (
                           <span className="chapter-progress">
@@ -378,7 +387,14 @@ export default function SubjectCurriculum() {
                                     className={`lesson-row ${lesson.completed ? 'done' : ''} ${
                                       isWeak(lesson) ? 'weak' : ''
                                     }`}>
-                                <span className="lesson-order">{lesson.order}</span>
+                                {/* Icone de type comme sur la maquette : disque
+                                    lecture pour un cours, certificat pour un sujet. */}
+                                <span className={`lesson-order lesson-order-media ${
+                                  lesson.completed ? 'is-done' : ''}`}
+                                      title={lesson.kind_display || T('lesson')}>
+                                  <i className={`mdi ${lesson.kind === 'exam_paper'
+                                    ? 'mdi-file-certificate-outline' : 'mdi-play'}`} />
+                                </span>
                                 <span className="lesson-main">
                                   <strong>
                                     {searching
