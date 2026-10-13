@@ -5,6 +5,31 @@ import { useAuth } from '../context/AuthContext'
 import { useLang } from '../context/LangContext'
 import LanguageSwitcher from './LanguageSwitcher'
 
+/* Barre d'onglets mobile façon application : les 4 destinations-cles restent
+   sous le pouce sur telephone, au lieu d'un tiroir a ouvrir a chaque trajet. */
+function MobileTabBar({ t }) {
+  return (
+    <nav className="mobile-tabbar" aria-label={t('nav.menu')}>
+      <NavLink to="/" end
+               className={({ isActive }) => `mtb-item${isActive ? ' is-active' : ''}`}>
+        <i className="mdi mdi-home-outline" /><span>{t('nav.home')}</span>
+      </NavLink>
+      <NavLink to="/education"
+               className={({ isActive }) => `mtb-item${isActive ? ' is-active' : ''}`}>
+        <i className="mdi mdi-school-outline" /><span>{t('nav.education')}</span>
+      </NavLink>
+      <NavLink to="/espace-membre"
+               className={({ isActive }) => `mtb-item${isActive ? ' is-active' : ''}`}>
+        <i className="mdi mdi-view-dashboard-outline" /><span>{t('nav.memberArea')}</span>
+      </NavLink>
+      <NavLink to="/profil"
+               className={({ isActive }) => `mtb-item${isActive ? ' is-active' : ''}`}>
+        <i className="mdi mdi-account-outline" /><span>{t('nav.profile')}</span>
+      </NavLink>
+    </nav>
+  )
+}
+
 /* Liens principaux : visibles en ligne dans la barre de bureau. */
 const LIENS_PRINCIPAUX = [
   { to: '/', key: 'nav.home', icon: 'mdi-home-outline', exact: true },
@@ -367,6 +392,9 @@ export default function Navbar() {
           </div>
         </div>
       </div>
+
+      {/* Barre d'onglets mobile — rendue seulement sur petit ecran. */}
+      <MobileTabBar t={t} />
     </nav>
   )
 }

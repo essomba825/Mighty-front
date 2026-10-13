@@ -1978,6 +1978,24 @@ to{opacity:1;transform:none}
   .sc-progress{min-width:74px}.sc-bar{width:74px}
 }
 
+/* ——— Barre d'onglets mobile (application) ——— */
+.mobile-tabbar{display:none}
+@media (max-width:720px){
+  .mobile-tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:90;
+    background:#fff;border-top:1px solid var(--border);box-shadow:0 -6px 20px rgba(7,31,63,.08);
+    padding:6px 8px calc(6px + env(safe-area-inset-bottom))}
+  .mtb-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
+    padding:7px 4px;border-radius:12px;color:var(--text-soft);font-size:.68rem;font-weight:700;
+    text-decoration:none;transition:color .18s,background .18s}
+  .mtb-item i{font-size:1.3rem;color:var(--navy);opacity:.75;transition:opacity .18s}
+  .mtb-item.is-active{color:var(--navy)}
+  .mtb-item.is-active i{color:var(--accent,var(--gold));opacity:1}
+  .mtb-item:active{background:var(--bg-alt,#eef1f6)}
+  /* Le contenu ne finit jamais sous la barre fixe */
+  body{padding-bottom:calc(58px + env(safe-area-inset-bottom))}
+}
+@media (prefers-reduced-motion:reduce){.mtb-item,.mtb-item i{transition:none}}
+
 /* ——— Page matiere facon maquette ——— */
 .subject-hero-progress{margin-top:16px}
 .subject-hero-progress-top{display:flex;align-items:baseline;justify-content:space-between;color:#dce8f6;font-size:.78rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
