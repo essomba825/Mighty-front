@@ -5,8 +5,9 @@
    qui suffit à faire demarrer l'application hors ligne.
 */
 /* Changer ce nom a chaque deploiement important : la strategie "cache d'abord"
-   des assets statiques sert sinon l'ancien JS au premier chargement suivant. */
-const VERSION = 'mms-v2'
+   des assets statiques sert sinon l'ancien JS au premier chargement suivant.
+   Bumped : nettoie le cache du bundle casse par le moteur de chargement. */
+const VERSION = 'mms-v3'
 const COQUILLE = `${VERSION}-coquille`
 const STATIQUES = `${VERSION}-statiques`
 
