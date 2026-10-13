@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+﻿import { useEffect } from 'react'
 import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router-dom'
 import { useLang } from './context/LangContext'
 import { AuthProvider } from './context/AuthContext'
@@ -68,7 +68,7 @@ function LangBridge() {
             <span>Mega Mighty Sixers</span>
           </Link>
           <p className="footer-tagline">{t('footer.tagline')}</p>
-          <p className="footer-copy">© {new Date().getFullYear()} — {t('app.tagline')}</p>
+          <p className="footer-copy">Â© {new Date().getFullYear()} â€” {t('app.tagline')}</p>
         </div>
 
         <nav className="footer-nav" aria-label="Liens de pied de page">
@@ -136,15 +136,15 @@ function AppFrame() {
           <Route path="/partenaires" element={<BecomePartner />} />
           <Route path="/login" element={<Login />} />
           <Route path="/inscription" element={<Register />} />
-          {/* Catalogue éducatif public (leçons/quiz ouverts aux membres connectés) */}
+          {/* Catalogue Ã©ducatif public (leÃ§ons/quiz ouverts aux membres connectÃ©s) */}
           <Route path="/education" element={<Education />} />
           <Route path="/education/matieres/:slug" element={<SubjectCurriculum />} />
-          {/* Espace membre (compte validé requis) */}
+          {/* Espace membre (compte validÃ© requis) */}
           <Route path="/espace-membre" element={<ProtectedRoute><MemberSpace /></ProtectedRoute>} />
           <Route path="/profil" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/annuaire" element={<Directory />} />
           <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
-          {/* Espace éducatif détaillé : la page gère elle-même l'accès (login requis côté API) */}
+          {/* Espace Ã©ducatif dÃ©taillÃ© : la page gÃ¨re elle-mÃªme l'accÃ¨s (login requis cÃ´tÃ© API) */}
           <Route path="/cours/:id" element={<CourseDetail />} />
           <Route path="/education/revision-du-jour" element={<ProtectedRoute><DailyReview /></ProtectedRoute>} />
           <Route path="/education/contribuer" element={<ProtectedRoute><TutorContribute /></ProtectedRoute>} />
@@ -153,10 +153,10 @@ function AppFrame() {
           <Route path="/ma-carte" element={<ProtectedRoute><MemberCard /></ProtectedRoute>} />
           <Route path="/mentorat" element={<ProtectedRoute><Mentorship /></ProtectedRoute>} />
           <Route path="/statistiques" element={<ProtectedRoute><Stats /></ProtectedRoute>} />
-          {/* Nouvelles pages publiques (§4, §8, §11 Phase 1) */}
+          {/* Nouvelles pages publiques (Â§4, Â§8, Â§11 Phase 1) */}
           <Route path="/contact" element={<Contact />} />
           <Route path="/galerie" element={<Gallery />} />
-          {/* Back-office React dédié (§6) — accessible aux admins uniquement */}
+          {/* Back-office React dÃ©diÃ© (Â§6) â€” accessible aux admins uniquement */}
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="membres"      element={<AdminUsers />} />
@@ -169,7 +169,7 @@ function AppFrame() {
           {/* Route inconnue */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-        {!isLandingHome && <LangBridge />}
+        {<LangBridge />}
     </>
   )
 }
