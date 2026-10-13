@@ -1948,6 +1948,31 @@ to{opacity:1;transform:none}
 .edu-hero2-guest{margin:0;color:#dce8f6;font-size:.9rem;line-height:1.5}
 .edu-hero2-guest .link-accent{color:var(--gold-light);font-weight:700}
 
+/* Règles du selecteur de langue sur mobile : contraste renforce dans le hero
+   sombre, libelles masques de cote, zero debordement horizontal. */
+.lang-label-short{display:none}
+@media (max-width:520px){
+  .lang-toggle{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.35)}
+  .lang-toggle button{padding:8px 11px;min-height:34px;color:#eef3fa;gap:5px}
+  .lang-toggle .lang-label-full{display:none}
+  .lang-toggle .lang-label-short{display:inline;font-weight:800;font-size:.76rem;letter-spacing:.04em}
+  .edu-hero2-brand{font-size:.84rem}
+  .edu-hero2-brand span{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+}
+@media (max-width:720px){ html, body{overflow-x:clip} }
+
+/* Cartes education : le texte d'un lien ne doit pas etre souligne */
+.subject-card.sc{text-decoration:none}
+.subject-card.sc .sc-meta strong,.subject-card.sc .sc-meta small{text-decoration:none}
+.sc-soon{white-space:nowrap;font-size:.72rem}
+@media (max-width:430px){.sc-soon .mdi{display:none}}
+
+/* Cartes education : le texte d'un lien ne doit pas etre souligne */
+.subject-card.sc{text-decoration:none}
+.subject-card.sc .sc-meta strong,.subject-card.sc .sc-meta small{text-decoration:none}
+.sc-soon{white-space:nowrap;font-size:.72rem}
+@media (max-width:430px){.sc-soon .mdi{display:none}}
+
 /* Anneau de progression (évite de répéter le % en texte partout) */
 .edu-ring-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;color:#dce8f6;font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
 .edu-ring{--sz:58px;position:relative;width:var(--sz);height:var(--sz);border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--gold) calc(var(--p)*1%),rgba(255,255,255,.12) 0);flex-shrink:0}

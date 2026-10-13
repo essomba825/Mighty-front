@@ -81,9 +81,7 @@ export default function Education() {
             <span className="sc-bar"><span style={{ width: `${pct}%` }} /></span>
             <em>{pct}%</em>
           </span>
-        ) : (
-          <i className="mdi mdi-chevron-right sc-go" aria-hidden="true" />
-        )}
+        ) : null}
       </>
     )
     if (empty) {

@@ -45,63 +45,6 @@ import AdminContributions from './pages/admin/AdminContributions'
 import AdminPartnerships from './pages/admin/AdminPartnerships'
 import NotFound from './pages/NotFound'
 
-/* Le pied de page est rendu dans App, donc hors des pages, mais il a besoin des
-   traductions et du routeur. Ce composant isole cette dependance au lieu de
-   disperser `t()` dans App. */
-
-const SOCIAL_LINKS = [
-  { icon: 'mdi-facebook', label: 'Facebook', href: 'https://facebook.com/megamightysixers' },
-  { icon: 'mdi-twitter', label: 'X / Twitter', href: 'https://twitter.com/megamightysixers' },
-  { icon: 'mdi-instagram', label: 'Instagram', href: 'https://instagram.com/megamightysixers' },
-  { icon: 'mdi-youtube', label: 'YouTube', href: 'https://youtube.com/@megamightysixers' },
-  { icon: 'mdi-whatsapp', label: 'WhatsApp', href: 'https://wa.me/237600000000' },
-]
-
-function LangBridge() {
-  const { t } = useLang()
-  return (
-    <footer className="footer">
-      <div className="footer-inner">
-        <div className="footer-brand">
-          <Link to="/" className="footer-logo">
-            <img src="/logo-mark.png" alt="Mega Mighty Sixers" onError={(e) => e.target.style.display = 'none'} />
-            <span>Mega Mighty Sixers</span>
-          </Link>
-          <p className="footer-tagline">{t('footer.tagline')}</p>
-          <p className="footer-copy">Â© {new Date().getFullYear()} â€” {t('app.tagline')}</p>
-        </div>
-
-        <nav className="footer-nav" aria-label="Liens de pied de page">
-          <Link to="/a-propos">{t('nav.about')}</Link>
-          <Link to="/archives">{t('nav.archives')}</Link>
-          <Link to="/education">{t('nav.education')}</Link>
-          <Link to="/partenaires">{t('nav.partners')}</Link>
-          <Link to="/galerie">{t('nav.gallery')}</Link>
-          <Link to="/contact">{t('nav.contact')}</Link>
-        </nav>
-
-        <div className="footer-social">
-          <p className="footer-social-label">{t('footer.social')}</p>
-          <div className="footer-social-links">
-            {SOCIAL_LINKS.map((s) => (
-              <a
-                key={s.label}
-                href={s.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={s.label}
-                className="footer-social-btn"
-              >
-                <i className={`mdi ${s.icon}`} />
-              </a>
-            ))}
-          </div>
-        </div>
-      </div>
-    </footer>
-  )
-}
-
 /* A chaque changement de page on remonte en haut. Sans cela le navigateur
    garde la position precedente : cliquer sur un lien tout en bas d'une longue
    page arrivait... tout en bas de la page suivante, "au niveau du footer". */
@@ -169,7 +112,7 @@ function AppFrame() {
           {/* Route inconnue */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-        {<LangBridge />}
+
     </>
   )
 }
