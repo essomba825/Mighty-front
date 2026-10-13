@@ -1929,8 +1929,8 @@ to{opacity:1;transform:none}
 .resource-icon{font-size:1.5rem;flex-shrink:0}
 
 /* ============ /education — panneau d'accueil navy, style mockup ============ */
-.edu-hero2{background:linear-gradient(155deg,#071f3f 0%,#0b2d58 60%,color-mix(in srgb,var(--gold) 24%,#0b2d58) 140%);color:#fff;border-radius:22px;margin:18px auto 0;padding:20px 18px 18px;max-width:1120px}
-.edu-hero2-inner{display:flex;flex-direction:column;gap:14px}
+.edu-hero2{background:linear-gradient(160deg,#071f3f 0%,#0b2d58 58%,color-mix(in srgb,var(--gold) 26%,#0b2d58) 145%),radial-gradient(circle at 88% -20%,#f2b84b30,transparent 46%);color:#fff;border-radius:0 0 26px 26px;margin:-18px 0 0;padding:calc(16px + env(safe-area-inset-top)) 16px 22px;box-shadow:0 12px 30px rgba(7,31,63,.28)}
+.edu-hero2-inner{display:flex;flex-direction:column;gap:15px;max-width:1120px;margin:0 auto}
 .edu-hero2-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .edu-hero2-brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:.92rem;color:#fff}
 .edu-hero2-brand img{width:26px;height:26px;border-radius:8px;background:#fff;padding:2px}
@@ -1955,27 +1955,28 @@ to{opacity:1;transform:none}
 .edu-ring em{position:relative;z-index:1;font-style:normal;font-family:var(--font-title);font-weight:800;color:#fff;font-size:.92rem}
 
 /* Cartes matières en lignes compactes (comme la maquette) */
-.subject-grid-list{grid-template-columns:1fr;gap:12px;display:grid}
-.subject-card.sc{flex-direction:row;align-items:center;gap:14px;padding:14px 16px;border-radius:14px}
-.subject-card.sc::before{content:"";position:absolute;top:0;left:0;bottom:0;width:4px;height:auto;background:var(--accent,var(--gold))}
-.sc-icon{flex:0 0 50px;width:50px;height:50px;border-radius:14px;display:grid;place-items:center;background:color-mix(in srgb,var(--accent,var(--gold)) 16%,#fff);color:var(--navy);font-size:1.45rem;border:1px solid color-mix(in srgb,var(--accent,var(--gold)) 34%,#fff)}
+.subject-grid-list{grid-template-columns:1fr;gap:10px;display:grid}
+.subject-card.sc{flex-direction:row;align-items:center;gap:13px;padding:14px 15px;border-radius:16px;background:#fff;border:1px solid #e7ebf1;box-shadow:0 1px 3px rgba(16,30,60,.06)}
+.subject-card.sc:hover{border-color:#d9dfe8;box-shadow:0 4px 14px rgba(16,30,60,.1)}
+.subject-card.sc::before{display:none}
+.sc-icon{flex:0 0 52px;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:var(--accent,var(--gold));color:#fff;font-size:1.42rem;box-shadow:0 2px 6px color-mix(in srgb,var(--accent,var(--gold)) 42%,transparent)}
 .sc-meta{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
 .sc-meta strong{color:var(--navy);font-size:.98rem;line-height:1.25}
 .sc-meta small{color:var(--text-soft);font-size:.78rem;line-height:1.35}
 .sc-weak{color:#a5352a;font-weight:700}
 .sc-soon{flex-shrink:0;color:var(--text-soft);font-size:.78rem;font-weight:700;display:inline-flex;align-items:center;gap:6px}
-.sc-progress{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:5px;min-width:86px}
-.sc-bar{width:86px;height:7px;border-radius:99px;background:rgba(7,31,63,.1);overflow:hidden}
+.sc-progress{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:4px;min-width:82px}
+.sc-bar{width:82px;height:6px;border-radius:99px;background:#e8ecf2;overflow:hidden}
 .sc-bar>span{display:block;height:100%;border-radius:99px;background:var(--accent,var(--gold))}
-.sc-progress em{font-style:normal;font-weight:800;font-size:.78rem;color:var(--navy)}
+.sc-progress em{font-style:normal;font-weight:700;font-size:.74rem;color:var(--text-soft)}
 .sc-go{color:var(--text-soft);font-size:1.35rem;transition:transform .2s,color .2s}
 .subject-card.sc:hover .sc-go{color:var(--accent,var(--gold));transform:translateX(3px)}
 .sc-skeleton{padding:18px;display:flex;flex-direction:column;gap:10px}
 @media (min-width:700px){.subject-grid-list{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:560px){
-  .edu-hero2{border-radius:18px;margin-top:12px;padding:18px 14px 16px}
+  .edu-hero2{border-radius:0 0 22px 22px;padding:calc(14px + env(safe-area-inset-top)) 14px 18px}
   .edu-hero2-head{flex-wrap:wrap}
-  .sc-progress{min-width:74px}.sc-bar{width:74px}
+  .sc-icon{flex-basis:48px;width:48px;height:48px;font-size:1.3rem}
 }
 
 /* ——— Barre d'onglets mobile (application) ——— */
@@ -2081,7 +2082,7 @@ button.resource-card{font:inherit;text-align:left;border:1px solid var(--border)
 .breadcrumb-back-hero{color:#dce8f6;font-size:.85rem;font-weight:600;align-items:center;gap:6px;text-decoration:none;display:inline-flex}
 .breadcrumb-back-hero:hover{color:var(--gold-light)}
 .subject-hero-body{gap:20px;align-items:center;display:flex;flex-wrap:wrap}
-.subject-icon.hero{width:72px;height:72px;font-size:2.1rem;border-radius:20px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);display:grid;place-items:center;flex-shrink:0;color:var(--accent,var(--gold-light))}
+.subject-icon.hero{width:66px;height:66px;font-size:1.9rem;border-radius:50%;background:rgba(255,255,255,.09);border:2px solid color-mix(in srgb,var(--accent,var(--gold)) 75%,#ffffff00);display:grid;place-items:center;flex-shrink:0;color:var(--accent,var(--gold-light));box-shadow:0 0 0 8px color-mix(in srgb,var(--accent,var(--gold)) 12%,transparent)}
 .subject-hero-level{margin:0;text-transform:uppercase;letter-spacing:2.4px;font-size:.68rem;color:var(--gold-light);font-weight:700}
 .subject-hero-body h1{margin:2px 0 0;font-family:var(--font-title);font-size:clamp(1.6rem,4vw,2.3rem);color:#fff}
 .subject-hero-desc{margin:6px 0 0;color:#dce8f6;max-width:560px;font-size:.92rem;line-height:1.55}
