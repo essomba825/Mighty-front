@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import api from '../api/client'
+import { useApi } from '../api/cache'
 import LangToggle from '../components/LangToggle'
+import PageLoader from '../components/PageLoader'
 import { useAuth } from '../context/AuthContext'
 import { useLang } from '../context/LangContext'
 import { tr } from '../i18n/education'
@@ -18,37 +19,15 @@ export default function Education() {
   const { user } = useAuth()
   const { lang } = useLang()
   const T = (k) => tr(k, lang)
-  const [subjects, setSubjects] = useState([])
   const [search, setSearch] = useState('')
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
   const [mineOnly, setMineOnly] = useState(false)
 
-  useEffect(() => {
-    const startedAt = performance.now()
-    let active = true
-    let loadingTimer
-
-    api.get('/education/subjects/')
-      .then(({ data }) => {
-        if (active) setSubjects(data.results ?? data)
-      })
-      .catch(() => {
-        if (active) setError(true)
-      })
-      .finally(() => {
-        if (!active) return
-        const remaining = Math.max(0, 420 - (performance.now() - startedAt))
-        loadingTimer = window.setTimeout(() => {
-          if (active) setLoading(false)
-        }, remaining)
-      })
-
-    return () => {
-      active = false
-      window.clearTimeout(loadingTimer)
-    }
-  }, [])
+  /* Le cache partage les matieres entre les pages : deuxieme visite = rendu
+     immediat, le rafraichissement se fait derriere. */
+  const { data: subjectsData, loading, error } =
+    useApi('/education/subjects/', { ttlMs: 120000 })
+  const subjects = useMemo(
+    () => (subjectsData?.results ?? subjectsData ?? []), [subjectsData])
 
   const q = search.trim().toLowerCase()
   const visible = useMemo(() => subjects.filter((s) => {
@@ -193,15 +172,7 @@ export default function Education() {
             </button>
           </div>
         ) : loading ? (
-          <>
-            <div className="edu-loading-state" role="status">
-              <i className="mdi mdi-loading edu-loading-spinner" aria-hidden="true" />
-              <span>{T('loading')}</span>
-            </div>
-            <div className="subject-grid" aria-busy="true">
-              {[1, 2, 3].map((i) => <div key={i} className="card sc sc-skeleton"><div className="skeleton-line w60" /><div className="skeleton-line w90" /></div>)}
-            </div>
-          </>
+          <PageLoader label={T('loading')} />
         ) : byLevel.length === 0 ? (
           <div className="empty-state">
             <i className="mdi mdi-school-outline empty-icon" />

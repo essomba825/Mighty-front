@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
-import api from '../api/client'
+import { useApi } from '../api/cache'
 import LangToggle from '../components/LangToggle'
+import PageLoader from '../components/PageLoader'
 import { useAuth } from '../context/AuthContext'
 import { pick, useLang } from '../context/LangContext'
 import { tr } from '../i18n/education'
@@ -71,9 +72,6 @@ export default function SubjectCurriculum() {
   const { lang } = useLang()
   const T = (k) => tr(k, lang)
   const [searchParams, setSearchParams] = useSearchParams()
-  const [subject, setSubject] = useState(null)
-  const [chapters, setChapters] = useState([])
-  const [loading, setLoading] = useState(true)
   const [onlyWeak, setOnlyWeak] = useState(false)
   const searchRef = useRef(null)
   const query = searchParams.get('q') ?? ''
@@ -85,19 +83,19 @@ export default function SubjectCurriculum() {
     setSearchParams(next, { replace: true })
   }
 
-  useEffect(() => {
-    api.get('/education/subjects/')
-      .then(({ data }) => {
-        const list = data.results ?? data
-        const found = list.find((s) => s.slug === slug)
-        if (!found) return
-        setSubject(found)
-        return api.get(`/education/subjects/${found.id}/curriculum/`)
-      })
-      .then((res) => { if (res) setChapters(res.data) })
-      .catch(() => {})
-      .finally(() => setLoading(false))
-  }, [slug])
+  /* Cache partage : catalogue puis curriculum. Deuxieme fois sur la page ->
+     affichage immediat, rafraichissement silencieux derriere. */
+  const { data: subjectsData, loading: loadingCatalogue } =
+    useApi('/education/subjects/', { ttlMs: 120000 })
+  const subject = useMemo(() => {
+    const list = subjectsData?.results ?? subjectsData ?? null
+    return list ? list.find((s) => s.slug === slug) || null : null
+  }, [subjectsData, slug])
+  const { data: curriculumData, loading: loadingCurriculum } = useApi(
+    subject ? `/education/subjects/${subject.id}/curriculum/` : null,
+    { ttlMs: 120000, enabled: Boolean(subject) })
+  const chapters = useMemo(() => curriculumData ?? [], [curriculumData])
+  const loading = loadingCatalogue || (subject ? loadingCurriculum : false)
 
   const allLessons = useMemo(
     () => chapters.flatMap((c) => c.lessons).filter(Boolean), [chapters])
@@ -202,20 +200,11 @@ export default function SubjectCurriculum() {
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
-  /* Pendant le chargement on montre un vrai etat d'attente (spinner + blocs
-     fantomes) : deux fines lignes skeleton seules donnaient l'impression que
-     la page etait figee apres le clic. */
+  /* Chargement : l'animation du projet, pas une barre de texte. */
   if (loading) {
     return (
       <div className="page">
-        <div className="subject-loading" role="status" aria-live="polite">
-          <i className="mdi mdi-loading mdi-spin subject-loading-icon" aria-hidden="true" />
-          <p className="subject-loading-text">{T('loading')}</p>
-          <div className="subject-loading-skeletons">
-            <div className="skeleton-card"><div className="skeleton-line w40" /><div className="skeleton-line w90" /><div className="skeleton-line w60" /></div>
-            <div className="skeleton-card"><div className="skeleton-line w60" /><div className="skeleton-line w90" /><div className="skeleton-line w40" /></div>
-          </div>
-        </div>
+        <PageLoader label={T('loading')} />
       </div>
     )
   }

@@ -1,8 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import api from '../api/client'
+import { invalidate, useApi } from '../api/cache'
 import LangToggle from '../components/LangToggle'
+import PageLoader from '../components/PageLoader'
+import { useAuth } from '../context/AuthContext'
 import { pick, useLang } from '../context/LangContext'
 import { tr } from '../i18n/education'
 import ResourceCard from '../components/education/ResourceCard'
@@ -20,13 +23,10 @@ const quizKey = (quizId) => String(quizId)
 
 export default function CourseDetail() {
   const { id } = useParams()
+  const { user } = useAuth()
   const { lang } = useLang()
   const T = (k) => tr(k, lang)
-  const [lesson, setLesson] = useState(null)
-  const [needLogin, setNeedLogin] = useState(false)
-  const [loading, setLoading] = useState(true)
   const [completed, setCompleted] = useState(false)
-  const [hasSteps, setHasSteps] = useState(false)
   const [answers, setAnswers] = useState({})
   const [results, setResults] = useState({})
   const [selected, setSelected] = useState(() => new Set())
@@ -37,49 +37,50 @@ export default function CourseDetail() {
   const [toc, setToc] = useState([])
   const contentRef = useRef(null)
 
+  /* Detail de la lecon, parcours d'etapes et historique des scores passent par
+     le cache partage : revenir sur une lecon est instantane, puis on rafraichit
+     silencieusement en arriere-plan. */
+  const { data: lesson, loading, error: lessonError } =
+    useApi(`/education/lessons/${id}/`, { ttlMs: 60000 })
+  const { data: stepsData } = useApi(`/education/lessons/${id}/steps/`, { ttlMs: 30000 })
+  const { data: resultsData } = useApi('/education/results/', { ttlMs: 60000 })
+
+  const hasSteps = useMemo(
+    () => Array.isArray(stepsData) && stepsData.length > 0, [stepsData])
+
+  // La case "terminee" suit la lecon servie (hydratee ou rafraichie).
+  useEffect(() => { if (lesson) setCompleted(Boolean(lesson.completed)) }, [lesson])
+
+  // Le detail complet de chaque quiz se charge toujours a part, quand il y a
+  // une lecon affichee (point de depart du systeme).
   useEffect(() => {
-    setLoading(true)
-    setLesson(null)
+    lesson?.quizzes?.forEach((q) => {
+      api.get(`/education/quizzes/${q.id}/`)
+        .then(({ data: full }) => setQuizzes((prev) => ({ ...prev, [q.id]: full })))
+        .catch(() => {})
+    })
+  }, [lesson])
+
+  // Meilleur score par quiz, calcule depuis l'historique mis en cache.
+  useEffect(() => {
+    if (!resultsData) return
+    const list = Array.isArray(resultsData) ? resultsData : (resultsData.results ?? [])
+    const best = {}
+    list
+      .filter((a) => a.lesson_id === Number(id))
+      .forEach((a) => {
+        const k = quizKey(a.quiz)
+        if (best[k] == null || a.percentage > best[k]) best[k] = a.percentage
+      })
+    setHistory(best)
+  }, [resultsData, id])
+
+  // Un changement de lecon nettoie les brouillons de quiz de la precedente.
+  useEffect(() => {
     setAnswers({})
     setResults({})
     setQuizzes({})
-    api.get(`/education/lessons/${id}/`)
-      .then(({ data }) => {
-        setLesson(data)
-        setCompleted(data.completed)
-        data.quizzes?.forEach((q) => {
-          api.get(`/education/quizzes/${q.id}/`)
-            .then(({ data: full }) =>
-              setQuizzes((prev) => ({ ...prev, [q.id]: full })))
-            .catch(() => {})
-        })
-      })
-      .catch((err) => {
-        if (err.response?.status === 401 || err.response?.status === 403) {
-          setNeedLogin(true)
-        }
-      })
-      .finally(() => setLoading(false))
-
-    // Meilleurs scores deja obtenus sur les quiz de cette lecon
-    api.get('/education/results/')
-      .then(({ data }) => {
-        const best = {}
-        data
-          .filter((a) => a.lesson_id === Number(id))
-          .forEach((a) => {
-            const k = quizKey(a.quiz)
-            if (best[k] == null || a.percentage > best[k]) best[k] = a.percentage
-          })
-        setHistory(best)
-      })
-      .catch(() => {})
-
-    // La version pas-a-pas remplace l'ancien corps de lecon quand elle existe
-    setHasSteps(false)
-    api.get(`/education/lessons/${id}/steps/`)
-      .then(({ data }) => setHasSteps(Array.isArray(data) && data.length > 0))
-      .catch(() => setHasSteps(false))
+    setHistory({})
   }, [id])
 
   const md = lesson && (lang === 'fr' && lesson.content_fr ? lesson.content_fr : lesson.content)
@@ -120,6 +121,10 @@ export default function CourseDetail() {
         await api.post(`/education/lessons/${id}/complete/`)
         setCompleted(true)
       }
+      /* Les completcompletees changent la progression : on invalide le cache
+         des catalogues pour que la prochaine visite reparte dessus. */
+      invalidate('/education/subjects')
+      invalidate(`/education/lessons/${id}/`)
     } catch { /* silencieux */ }
   }
 
@@ -141,6 +146,9 @@ export default function CourseDetail() {
         setCompleted(true)
         api.post(`/education/lessons/${id}/complete/`).catch(() => {})
       }
+      invalidate('/education/subjects')
+      invalidate(`/education/lessons/${id}/`)
+      invalidate('/education/results')
     } catch {
       alert(T('quiz_error'))
     } finally {
@@ -321,9 +329,9 @@ export default function CourseDetail() {
     </div>
   )
 
-  if (loading) return <p className="page">{T('loading')}</p>
+  if (loading) return <div className="page"><PageLoader label={T('loading')} /></div>
 
-  if (needLogin) {
+  if (lessonError && !user) {
     return (
       <div className="page">
         <div className="empty-state">

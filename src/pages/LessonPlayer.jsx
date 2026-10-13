@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import api from '../api/client'
+import { invalidate, useApi } from '../api/cache'
+import PageLoader from '../components/PageLoader'
 import { tr } from '../i18n/education'
 import { pick, useLang } from '../context/LangContext'
 import { etapeVerrouillee, indiceReprise } from '../lib/learning/lessonRules'
@@ -55,7 +57,6 @@ export default function LessonPlayer({ lessonId, T, onMasteryChange, onLessonCom
   const [results, setResults] = useState({})
   const [hints, setHints] = useState({})
   const [tries, setTries] = useState({})
-  const [loading, setLoading] = useState(true)
   const [failed, setFailed] = useState(false)
   const [checking, setChecking] = useState(false)
   const [revealing, setRevealing] = useState(false)
@@ -71,26 +72,32 @@ export default function LessonPlayer({ lessonId, T, onMasteryChange, onLessonCom
     firstSolved.current = steps.find((s) => s.solved)?.id ?? 0
   }
 
+  /* Le parcours et la progression passent par le cache partage : revenir sur
+     une lecon rend les etapes immediatement, le rafraichissement se fait en
+     silence derriere. */
+  const { data: stepsData, loading: stepsLoading } =
+    useApi(`/education/lessons/${lessonId}/steps/`, { ttlMs: 30000 })
+  const { data: progressData } =
+    useApi(`/education/lessons/${lessonId}/progress/`, { ttlMs: 30000 })
+
   useEffect(() => {
-    let alive = true
-    setLoading(true)
-    Promise.all([
-      api.get(`/education/lessons/${lessonId}/steps/`).catch(() => null),
-      api.get(`/education/lessons/${lessonId}/progress/`).catch(() => null),
-    ]).then(([stepsRes, progressRes]) => {
-      if (!alive) return
-      const list = stepsRes?.data ?? []
-      // Reprise : premiere etape obligatoire non reussie. Regle documentee
-      // dans lib/learning/lessonRules.js.
-      setIndex(indiceReprise(list))
-      setSteps(list)
-      setMastery(progressRes?.data?.mastery ?? null)
-      setLoading(false)
-      solvedOnce.current = new Set(list.filter((s) => s.solved).map((s) => s.id))
-      if (progressRes?.data?.mastery?.is_mastered) celebrated.current = true
-    })
-    return () => { alive = false }
-  }, [lessonId])
+    if (!stepsData) return
+    const list = stepsData
+    // Reprise : premiere etape obligatoire non reussie. Regle documentee
+    // dans lib/learning/lessonRules.js.
+    setIndex(indiceReprise(list))
+    setSteps(list)
+    solvedOnce.current = new Set(list.filter((s) => s.solved).map((s) => s.id))
+  }, [stepsData])
+
+  useEffect(() => {
+    if (!progressData) return
+    setMastery(progressData?.mastery ?? null)
+    if (progressData?.mastery?.is_mastered) celebrated.current = true
+  }, [progressData])
+
+  /* Le chargeur ne sert qu'au premier passage sans le moindre cache. */
+  const loading = stepsLoading && !stepsData
 
   const step = steps[index]
   const question = step?.question ?? null
@@ -174,6 +181,10 @@ export default function LessonPlayer({ lessonId, T, onMasteryChange, onLessonCom
       setResults((prev) => ({ ...prev, [step.id]: data }))
       setTries((prev) => ({ ...prev, [step.id]: stepTries + 1 }))
       if (data.is_correct) {
+        /* La reponse reussie change la progression : les catalogues de
+           matieres et le parcours de cette lecon reussiront a jour. */
+        invalidate('/education/subjects')
+        invalidate(`/education/lessons/${lessonId}/`)
         setSteps((prev) => prev.map((s) => (s.id === step.id ? { ...s, solved: true } : s)))
         if (!solvedOnce.current.has(step.id)) {
           solvedOnce.current.add(step.id)
@@ -232,7 +243,7 @@ export default function LessonPlayer({ lessonId, T, onMasteryChange, onLessonCom
     return () => window.removeEventListener('keydown', onKey)
   }, [question, result, index, checking, canCheck, locked, go, check, revealHint])
 
-  if (loading) return <p className="page">{T('loading')}</p>
+  if (loading) return <PageLoader compact label={T('loading')} />
 
   if (!steps.length) {
     return (

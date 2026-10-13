@@ -2009,6 +2009,14 @@ to{opacity:1;transform:none}
 .lesson-order-media i{display:grid;place-items:center}
 .lesson-row.done .lesson-order-media{background:#1e7140}
 
+/* --- Chargeur propre (animation Lottie fournie) --- */
+.page-loader{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:42vh;padding:26px 16px}
+.page-loader p{margin:0;color:var(--text-soft);font-size:.92rem;font-weight:600}
+.hand-loader{width:150px;height:150px}
+.page-loader.is-compact{min-height:0;padding:14px 8px}
+.page-loader.is-compact .hand-loader{width:96px;height:96px}
+.page-loader-spot{width:150px;height:150px;border-radius:20px;background:rgba(7,31,63,.05)}
+
 /* --- Recommandations visuelles de ressources --- */
 .lesson-extras{scroll-margin-top:90px}
 .resource-body{gap:4px;display:flex;flex-direction:column;min-width:0}
