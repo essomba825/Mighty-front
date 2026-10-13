@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../api/client'
-import PageHeader from '../components/PageHeader'
 import LangToggle from '../components/LangToggle'
 import { useAuth } from '../context/AuthContext'
 import { useLang } from '../context/LangContext'
@@ -23,6 +22,7 @@ export default function Education() {
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+  const [mineOnly, setMineOnly] = useState(false)
 
   useEffect(() => {
     const startedAt = performance.now()
@@ -52,9 +52,10 @@ export default function Education() {
 
   const q = search.trim().toLowerCase()
   const visible = useMemo(() => subjects.filter((s) => {
+    if (mineOnly && user && !(s.lessons_completed > 0 || s.weak_lessons_count > 0)) return false
     if (!q) return true
     return `${s.name} ${s.description ?? ''}`.toLowerCase().includes(q)
-  }), [subjects, q])
+  }), [subjects, q, mineOnly, user])
 
   const byLevel = useMemo(() => LEVELS
     .map((level) => ({ ...level, subjects: visible.filter((s) => s.level === level.value) }))
@@ -70,115 +71,118 @@ export default function Education() {
   const globalProgress = totalLessons
     ? Math.round(totalDone / totalLessons * 100) : 0
 
-  /* Bandeau de remplacement quand l'image est absente ou ne charge pas. Il
-     porte l'icone en filigrane pour que la carte ne paraisse pas cassee. */
-  const placeholder = (s) => (
-    <div className="subject-card-media subject-card-fallback" aria-hidden="true">
-      <i className={`mdi ${s.icon}`} />
-    </div>
-  )
-
+  /* Une carte-matiere compacte, pensee mobile d'abord : icone ronde aux
+     couleurs de la matiere, nom, niveau et nombre de cours, progression reelle
+     (pas simulee) a droite quand l'eleve est connecte. Une matiere vide reste
+     visible mais marquee, jamais cliquable vers une page blanche. */
   const renderCard = (s) => {
-    /* Une matiere sans aucune lecon ne doit pas ressembler a une matiere
-       pleine : le clic ne menait qu'a un « programme en preparation », et rien
-       sur la carte ne l'annoncait. On la marque et on la rend non cliquable
-       plutot que de la masquer, pour que le programme reste lisible. */
     const empty = !s.lessons_count
     const pct = s.lessons_count
       ? Math.round(s.lessons_completed / s.lessons_count * 100) : 0
-    const body = (
+    const cls = `subject-card sc ${empty ? 'is-empty' : ''}`
+    const style = { '--accent': s.color }
+    const inner = (
       <>
-        {/* La carte attend toujours une zone « media » : la pastille de niveau
-            et l'icone sont positionnees en absolu au-dessus d'elle. Sans image,
-            le titre se retrouvait Covered par ces deux elements. Un bandeau
-            teinte a la couleur de la matiere garde la grille reguliere. */}
-        {s.image_url ? (
-          <div className="subject-card-media">
-            <img src={s.image_url} alt="" loading="lazy"
-                 onError={(e) => e.currentTarget.parentElement.replaceWith(
-                   placeholder(s))} />
-          </div>
+        <span className="sc-icon" aria-hidden="true"><i className={`mdi ${s.icon}`} /></span>
+        <span className="sc-meta">
+          <strong>{s.name}</strong>
+          <small>
+            {s.level_display} · {s.lessons_count || 0} {T('lessons')}
+            {user && s.weak_lessons_count > 0 && (
+              <span className="sc-weak">
+                {' '}· {s.weak_lessons_count} {T('weak_spots').toLowerCase()}
+              </span>
+            )}
+          </small>
+        </span>
+        {empty ? (
+          <span className="sc-soon"><i className="mdi mdi-clock-outline" /> {T('coming_soon')}</span>
+        ) : user ? (
+          <span className="sc-progress">
+            <span className="sc-bar"><span style={{ width: `${pct}%` }} /></span>
+            <em>{pct}%</em>
+          </span>
         ) : (
-          placeholder(s)
+          <i className="mdi mdi-chevron-right sc-go" aria-hidden="true" />
         )}
-        <div className="subject-card-top">
-          <span className="subject-icon"><i className={`mdi ${s.icon}`} /></span>
-          <span className="badge-level">{s.level_display}</span>
-        </div>
-        <div className="subject-info">
-          <h3>{s.name}</h3>
-          {s.description && <p>{s.description}</p>}
-        </div>
-        <div className="subject-foot">
-          {empty ? (
-            <>
-              <span className="subject-soon">
-                <i className="mdi mdi-clock-outline" /> {T('preparing')}
-              </span>
-              <span className="subject-badge-soon">{T('coming_soon')}</span>
-            </>
-          ) : (
-            <>
-              <span>
-                <i className="mdi mdi-book-open-variant" /> {s.lessons_count} {T('lessons')}
-              </span>
-              {user && (
-                <div className="subject-progress-wrap">
-                  <div className="subject-progress-bar">
-                    <span style={{ width: `${pct}%`, background: s.color }} />
-                  </div>
-                  <small>{s.lessons_completed}/{s.lessons_count} {T('done')}</small>
-                </div>
-              )}
-              {user && s.weak_lessons_count > 0 && (
-                <span className="subject-weak" title={T('weak_hint')}>
-                  <i className="mdi mdi-alert-circle-outline" /> {s.weak_lessons_count} {T('weak_spots')}
-                </span>
-              )}
-              <i className="mdi mdi-chevron-right subject-go" />
-            </>
-          )}
-        </div>
       </>
     )
     if (empty) {
-      return (
-        <div key={s.id} className="subject-card card is-empty"
-             style={{ '--accent': s.color }} aria-disabled="true">
-          {body}
-        </div>
-      )
+      return <div key={s.id} className={cls} style={style} aria-disabled="true">{inner}</div>
     }
     return (
-      <Link key={s.id} to={`/education/matieres/${s.slug}`}
-            className="subject-card card" style={{ '--accent': s.color }}>
-        {body}
+      <Link key={s.id} to={`/education/matieres/${s.slug}`} className={cls} style={style}>
+        {inner}
+        <i className="mdi mdi-chevron-right sc-go" aria-hidden="true" />
       </Link>
     )
   }
 
   return (
     <div>
-      <PageHeader
-        eyebrow={T('learn')}
-        title={T('title')}
-        sub={T('subtitle')}
-        breadcrumb={T('learn_breadcrumb')}
-        image="/education-hero-illustration.svg"
-      >
-        <LangToggle />
-      </PageHeader>
+      {/* Hero sombre a la maniere du mockup : marque, titre, sous-titre,
+          progression reelle en anneau, recherche et filtres. Tout tient dans
+          la zone de confort du pouce sur telephone. */}
+      <header className="edu-hero2">
+        <div className="edu-hero2-inner">
+          <div className="edu-hero2-top">
+            <span className="edu-hero2-brand">
+              <img src="/logo-mark.png" alt="" />
+              <span>Mega Mighty Sixers</span>
+            </span>
+            <LangToggle />
+          </div>
+
+          <div className="edu-hero2-head">
+            <div className="edu-hero2-titles">
+              <h1>{T('title')}</h1>
+              <p>{T('subtitle')}</p>
+            </div>
+            {user && totalLessons > 0 && (
+              <div className="edu-ring-wrap" title={T('your_progress')}>
+                <span className="edu-ring" style={{ '--p': globalProgress }}>
+                  <em>{globalProgress}%</em>
+                </span>
+              </div>
+            )}
+          </div>
+
+          <div className="edu-hero2-search">
+            <i className="mdi mdi-magnify" />
+            <input value={search} onChange={(e) => setSearch(e.target.value)}
+                   placeholder={T('search')} aria-label={T('search')} />
+          </div>
+
+          {user ? (
+            <div className="edu-chips" role="tablist">
+              <button type="button" role="tab" aria-selected={!mineOnly}
+                      className={`edu-chip ${!mineOnly ? 'active' : ''}`}
+                      onClick={() => setMineOnly(false)}>
+                {T('edu_all')}
+              </button>
+              <button type="button" role="tab" aria-selected={mineOnly}
+                      className={`edu-chip ${mineOnly ? 'active' : ''}`}
+                      onClick={() => setMineOnly(true)}>
+                {T('edu_mine')}
+              </button>
+              {totalWeak > 0 && (
+                <span className="edu-chip edu-chip-warn" title={T('weak_hint')}>
+                  <i className="mdi mdi-alert-circle-outline" /> {totalWeak}
+                </span>
+              )}
+            </div>
+          ) : (
+            <p className="edu-hero2-guest">
+              {T('guest_banner')}{' '}
+              <Link to="/login" className="link-accent">{T('login')}</Link>
+              {' '}{T('or')}{' '}
+              <Link to="/inscription" className="link-accent">{T('signup')}</Link>.
+            </p>
+          )}
+        </div>
+      </header>
 
       <div className="page">
-        {!user && (
-          <p className="edu-banner">
-            <i className="mdi mdi-account-circle-outline" /> {T('guest_banner')}{' '}
-            <Link to="/login" className="link-accent">{T('login')}</Link>
-            {' '}{T('or')}{' '}
-            <Link to="/inscription" className="link-accent">{T('signup')}</Link>.
-          </p>
-        )}
-
         {error ? (
           <div className="empty-state">
             <i className="mdi mdi-server-network-off empty-icon" />
@@ -195,49 +199,17 @@ export default function Education() {
               <span>{T('loading')}</span>
             </div>
             <div className="subject-grid" aria-busy="true">
-              {[1, 2, 3].map((i) => <div key={i} className="card" style={{ padding: 26 }}><div className="skeleton-line w60" /><div className="skeleton-line w90" /></div>)}
+              {[1, 2, 3].map((i) => <div key={i} className="card sc sc-skeleton"><div className="skeleton-line w60" /><div className="skeleton-line w90" /></div>)}
             </div>
           </>
         ) : byLevel.length === 0 ? (
           <div className="empty-state">
             <i className="mdi mdi-school-outline empty-icon" />
-            <h2>{T('no_subject')}</h2>
-            <p>{T('no_subject_hint')}</p>
+            <h2>{mineOnly ? T('edu_mine_empty') : T('no_subject')}</h2>
+            <p>{mineOnly ? T('edu_mine_empty_hint') : T('no_subject_hint')}</p>
           </div>
         ) : (
           <>
-            {user && totalLessons > 0 && (
-              <div className="edu-overview">
-                <div className="edu-overview-figure">
-                  <strong>{globalProgress}%</strong>
-                  <span>{T('your_progress')}</span>
-                </div>
-                <div className="edu-overview-facts">
-                  <span>
-                    <i className="mdi mdi-book-check-outline" />
-                    {totalDone} / {totalLessons} {T('lessons_published')}
-                  </span>
-                  {totalWeak > 0 && (
-                    <span className="edu-overview-weak">
-                      <i className="mdi mdi-alert-circle-outline" />
-                      {totalWeak} {T('weak_spots')}
-                    </span>
-                  )}
-                </div>
-                <div className="subject-progress-bar edu-overview-bar">
-                  <span style={{ width: `${globalProgress}%` }} />
-                </div>
-              </div>
-            )}
-
-            <div className="edu-toolbar">
-              <div className="edu-search">
-                <i className="mdi mdi-magnify" />
-                <input value={search} onChange={(e) => setSearch(e.target.value)}
-                       placeholder={T('search')} aria-label={T('search')} />
-              </div>
-            </div>
-
             {byLevel.map((group) => {
               const ready = group.subjects.filter((s) => s.lessons_count).length
               return (
@@ -252,7 +224,7 @@ export default function Education() {
                       </small>
                     )}
                   </header>
-                  <div className="subject-grid">
+                  <div className="subject-grid subject-grid-list">
                     {group.subjects.map(renderCard)}
                   </div>
                 </section>

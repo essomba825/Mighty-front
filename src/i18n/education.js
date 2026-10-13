@@ -71,6 +71,13 @@ export const T = {
     en: "This content can't be displayed here. Open it in a new tab instead.",
     fr: "Ce contenu ne peut pas s'afficher ici. Ouvre-le dans un nouvel onglet.",
   },
+  edu_all: { en: 'All', fr: 'Toutes' },
+  edu_mine: { en: 'My subjects', fr: 'Mes matières' },
+  edu_mine_empty: { en: 'No subject started yet', fr: 'Aucune matière commencée' },
+  edu_mine_empty_hint: {
+    en: 'Open a lesson and come back: your progress appears here.',
+    fr: 'Ouvre une leçon et reviens : ta progression apparaîtra ici.',
+  },
   no_weak: { en: 'No weak spots, congratulations!', fr: 'Aucune lacune, félicitations !' },
 
   /* ---------- libellés ajoutés (EN base) ---------- */
