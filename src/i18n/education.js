@@ -78,6 +78,10 @@ export const T = {
     en: 'Open a lesson and come back: your progress appears here.',
     fr: 'Ouvre une leçon et reviens : ta progression apparaîtra ici.',
   },
+  hub_title: { en: 'What is inside this lesson', fr: 'Contenu de la leçon' },
+  hub_course_read: { en: 'Read the course', fr: 'Lire le cours' },
+  hub_course_steps: { en: 'Step-by-step course', fr: 'Cours pas à pas' },
+  hub_exercise: { en: 'Exercise', fr: 'Exercice' },
   no_weak: { en: 'No weak spots, congratulations!', fr: 'Aucune lacune, félicitations !' },
 
   /* ---------- libellés ajoutés (EN base) ---------- */

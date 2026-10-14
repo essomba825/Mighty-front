@@ -211,8 +211,9 @@ export default function CourseDetail() {
             const isPassed = result?.passed
             const best = history[quizKey(q.id)]
             return (
-              <section key={q.id}
-                       className={`card quiz-card ${result ? (isPassed ? 'is-passed' : 'is-failed') : ''}`}>
+              <section key={q.id} id={`lesson-quiz-${q.id}`}
+                       className={`card quiz-card ${result ? (isPassed ? 'is-passed' : 'is-failed') : ''}`}
+                       style={{ scrollMarginTop: 84 }}>
                 <div className="quiz-head">
                   <h3>{q.title}</h3>
                   <span className={`quiz-badge ${isPassed ? 'ok' : result ? 'ko' : ''}`}>
@@ -351,6 +352,54 @@ export default function CourseDetail() {
 
   const videoEmbed = lesson.video_url ? youtubeId(lesson.video_url) : null
 
+  /* Hub de la leçon : le choix du type de ressource AVANT de se lancer, comme
+     l'ecran de maquette. On ne montre que ce qui existe vraiment dans les
+     donnees, et on ne simule jamais un etat de progression. */
+  const scrollToId = (elementId) =>
+    document.getElementById(elementId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+
+  const hubItems = []
+  hubItems.push({
+    key: 'cours', tile: 'cours', icon: hasSteps ? 'mdi-footsteps' : 'mdi-book-open-page-variant-outline',
+    title: hasSteps ? T('hub_course_steps') : T('hub_course_read'),
+    meta: `${lesson.estimated_minutes} ${T('min')}`,
+    done: Boolean(completed),
+    onClick: () => scrollToId('lesson-content'),
+  })
+  if (lesson.video_url) {
+    hubItems.push({
+      key: 'video', tile: 'video', icon: 'mdi-play',
+      title: T('lesson_resource_video'), meta: T('rv_watch'),
+      onClick: () => setViewer({ kind: 'video', url: lesson.video_url, title: lesson.title, title_fr: lesson.title_fr }),
+    })
+  }
+  ;(lesson.resources || []).filter((r) => r.kind === 'video').forEach((r) => {
+    hubItems.push({
+      key: `res-video-${r.id}`, tile: 'video', icon: 'mdi-play',
+      title: pick(r.title_fr, r.title, lang), meta: T('lesson_resource_video'),
+      onClick: () => setViewer(r),
+    })
+  })
+  ;(lesson.resources || []).filter((r) => r.kind === 'pdf' || r.kind === 'exam_paper').forEach((r) => {
+    hubItems.push({
+      key: `res-doc-${r.id}`, tile: r.kind, icon: 'mdi-file-pdf-box',
+      title: pick(r.title_fr, r.title, lang),
+      meta: T(r.kind === 'exam_paper' ? 'lesson_resource_examPaper' : 'lesson_resource_pdf'),
+      onClick: () => setViewer(r),
+    })
+  })
+  ;(lesson.quizzes || []).forEach((q) => {
+    const best = history[quizKey(q.id)]
+    const passed = best != null && best >= q.pass_score
+    hubItems.push({
+      key: `quiz-${q.id}`, tile: 'quiz', icon: 'mdi-clipboard-check-outline',
+      title: pick(q.title_fr, q.title, lang) || T('exercises'),
+      meta: `${q.questions_count} ${T('questions')}${best != null ? ` · ${best}%` : ''}`,
+      done: passed,
+      onClick: () => scrollToId(`lesson-quiz-${q.id}`),
+    })
+  })
+
   return (
     <div className="lesson-shell" style={{ '--accent': lesson.subject_color }}>
       {lesson.content && !hasSteps && (
@@ -400,13 +449,36 @@ export default function CourseDetail() {
       </section>
       )}
 
+      {/* Hub : choix du type de ressource, comme dans la maquette */}
       <div className="page lesson-page">
+        <section className="hub card" aria-label={T('hub_title')}>
+          <h2 className="hub-title">{T('hub_title')}</h2>
+          <div className="hub-list">
+            {hubItems.map((item) => (
+              <button key={item.key} type="button" className="hub-item" onClick={item.onClick}>
+                <span className={`hub-tile hub-tile-${item.tile}`}>
+                  <i className={`mdi ${item.icon}`} />
+                </span>
+                <span className="hub-txt">
+                  <strong>{item.title}</strong>
+                  <small>{item.meta}</small>
+                </span>
+                {item.done
+                  ? <i className="mdi mdi-check-circle hub-done" aria-label={T('completed')} />
+                  : <i className="mdi mdi-chevron-right hub-go" aria-hidden="true" />}
+              </button>
+            ))}
+          </div>
+        </section>
+
         {hasSteps ? (
           <>
+            <div id="lesson-content" className="lesson-anchor">
             <LessonPlayer lessonId={id} T={T} onLessonComplete={() => {
               setCompleted(true)
               api.post(`/education/lessons/${id}/complete/`).catch(() => {})
             }} />
+            </div>
             <div className="lesson-grid">
               <div className="lesson-main">{renderExtras()}</div>
             </div>
@@ -439,7 +511,7 @@ export default function CourseDetail() {
           )}
 
           {/* Colonne principale */}
-          <div className="lesson-main">
+          <div className="lesson-main" id="lesson-content">
             {/* Objectifs d'apprentissage */}
             {(() => {
               const objs = (lang === 'fr' && lesson.objectives_fr?.length

@@ -1961,6 +1961,26 @@ to{opacity:1;transform:none}
 }
 @media (max-width:720px){ html, body{overflow-x:clip} }
 
+/* ——— Hub de lecon : choix du type de ressource ——— */
+.hub{margin:6px 0 22px;padding:14px 14px 16px;border-radius:16px}
+.hub-title{margin:0 0 10px;font-family:var(--font-title);font-size:1.02rem;color:var(--navy)}
+.hub-list{display:flex;flex-direction:column;gap:8px}
+.hub-item{display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:#fff;text-align:left;font:inherit;cursor:pointer;transition:border-color .18s,transform .18s}
+.hub-item:hover{border-color:var(--accent,var(--gold));transform:translateX(2px)}
+.hub-item:active{transform:scale(.99)}
+.hub-tile{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:1.15rem;flex-shrink:0}
+.hub-tile-cours{color:var(--navy);background:#2b5c8a1f;border:1px solid #2b5c8a4d}
+.hub-tile-video{color:#fff;background:#c0392b}
+.hub-tile-pdf{color:var(--gold);background:#f2b84b24;border:1px solid #f2b84b59}
+.hub-tile-exam_paper{color:#8e44ad;background:#9b59b61f;border:1px solid #9b59b655}
+.hub-tile-quiz{color:#fff;background:#1e7140}
+.hub-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.hub-txt strong{color:var(--navy);font-size:.92rem;line-height:1.25}
+.hub-txt small{color:var(--text-soft);font-size:.76rem}
+.hub-go{color:var(--text-soft);font-size:1.25rem;flex-shrink:0}
+.hub-done{color:#1e7140;font-size:1.35rem;flex-shrink:0}
+.lesson-anchor{scroll-margin-top:84px}
+
 /* Cartes education : le texte d'un lien ne doit pas etre souligne */
 .subject-card.sc{text-decoration:none}
 .subject-card.sc .sc-meta strong,.subject-card.sc .sc-meta small{text-decoration:none}
