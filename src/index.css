@@ -7185,7 +7185,7 @@ to{opacity:1;transform:none}
    Scoped to .landing-page so the standalone design keeps its own header
    and footer without leaking into the rest of the application.
    ================================================================== */
-.landing-page{--color-navy:#071f3f;--color-navy-light:#0b2d58;--color-ink:#10233d;--color-gold:#f2b84b;--color-gold-light:#ffcc67;--color-cream:#f7f3e9;--color-mist:#edf3f6;--color-sky:#dcebf0;background:#fff;color:var(--color-ink);font-family:"DM Sans",sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.landing-page{--color-navy:#071f3f;--color-navy-light:#0b2d58;--color-ink:#10233d;--color-gold:#f2b84b;--color-gold-light:#ffcc67;--color-cream:#f7f3e9;--color-mist:#edf3f6;--color-sky:#dcebf0;background:#fff;color:var(--color-ink);font-family:"DM Sans",sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
 .landing-page *{box-sizing:border-box}
 .landing-page a{color:inherit;text-decoration:none;-webkit-tap-highlight-color:transparent}
 .landing-page svg.size-3-5{width:14px;height:14px}
@@ -7389,12 +7389,12 @@ to{opacity:1;transform:none}
   .landing-page .logo-copy{display:none}
   .landing-page .header-actions .text-link{display:none}
   .landing-page .button-small{min-height:40px}
-  .landing-page .hero{min-height:auto;padding:64px 20px 90px}
-  .landing-page .hero h1{font-size:clamp(32px,10vw,44px)}
-  .landing-page .hero-copy{font-size:14px;margin-bottom:24px}
+  .landing-page .hero{min-height:650px;padding:78px 24px 100px}
+  .landing-page .hero h1{font-size:48px}
+  .landing-page .hero-copy{font-size:15px}
   .landing-page .hero-actions{flex-direction:column;align-items:stretch}
-  .landing-page .hero-visual{display:none}
-  .landing-page .quick-actions{width:calc(100% - 32px);margin-top:-28px}
+  .landing-page .hero-visual{width:80%;right:-35%}
+  .landing-page .quick-actions{width:calc(100% - 32px)}
   .landing-page .quick-actions>a{padding:18px}
   .landing-page .story{padding-block:90px;grid-template-columns:1fr;gap:80px}
   .landing-page .story-art{min-height:340px}
@@ -7422,40 +7422,6 @@ to{opacity:1;transform:none}
   .landing-page .footer-brand .logo-copy{display:flex}
   .landing-page .footer-links{grid-template-columns:1fr 1fr;gap:40px}
   .landing-page .footer-bottom{gap:12px;flex-direction:column}
-}
-/* Très petits écrans : ZTE Blade A75, Galaxy A-series, viewports ≤390px */
-@media (max-width:390px){
-  .landing-page .section-shell{width:calc(100% - 24px)}
-  .landing-page .announcement{padding-inline:12px;font-size:11px}
-  .landing-page header{height:64px;padding-inline:12px}
-  .landing-page .logo-mark{width:36px;height:32px}
-  .landing-page .logo-copy{display:none}
-  .landing-page .button-small{min-height:38px;padding-inline:14px;font-size:12px}
-  .landing-page .hero{padding:56px 16px 72px}
-  .landing-page .hero h1{font-size:clamp(28px,9vw,38px);letter-spacing:-.03em}
-  .landing-page .hero-kicker{font-size:9px;letter-spacing:.12em}
-  .landing-page .hero-copy{font-size:13px;line-height:1.6;margin:16px 0 22px}
-  .landing-page .button{min-height:48px;font-size:12px;padding:0 18px}
-  .landing-page .quick-actions{margin-top:16px;border-radius:4px}
-  .landing-page .quick-actions>a{padding:14px 16px;min-height:76px}
-  .landing-page .quick-actions strong{font-size:13px}
-  .landing-page .story{padding-block:64px}
-  .landing-page .story-year{font-size:clamp(56px,20vw,80px)}
-  .landing-page .vision,.landing-page .projects,.landing-page .impact,.landing-page .support{padding-block:64px}
-  .landing-page .section-heading h2,.landing-page .support-card h2{font-size:clamp(28px,8vw,36px)}
-  .landing-page .pillar-card{padding:28px 20px;min-height:0}
-  .landing-page .learning-content{padding:56px 16px}
-  .landing-page .learning-photo{min-height:320px}
-  .landing-page .subject-grid a{min-height:64px;padding:12px 14px}
-  .landing-page .impact-grid{gap:24px 0}
-  .landing-page .impact-grid>div{padding:12px 16px}
-  .landing-page .impact-grid strong{font-size:clamp(32px,9vw,44px)}
-  .landing-page .events{padding-block:64px}
-  .landing-page .event-card{padding:20px 16px;gap:14px}
-  .landing-page .support-card{padding:44px 16px}
-  .landing-page .project-content{padding:32px 16px}
-  .landing-page .footer-links{grid-template-columns:1fr;gap:28px}
-  .landing-page .footer-main{padding-block:52px 40px}
 }
 
 /* ==================================================================
