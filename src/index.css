@@ -1959,7 +1959,7 @@ to{opacity:1;transform:none}
   .edu-hero2-brand{font-size:.84rem}
   .edu-hero2-brand span{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 }
-@media (max-width:720px){ html, body{overflow-x:clip} }
+@media (max-width:720px){ html, body{overflow-x:hidden;overflow-x:clip} }
 
 /* ——— Hub de lecon : choix du type de ressource ——— */
 .hub{margin:6px 0 22px;padding:14px 14px 16px;border-radius:16px}
@@ -7383,22 +7383,77 @@ to{opacity:1;transform:none}
 }
 @media (max-width:720px){
   .landing-page .section-shell{width:min(calc(100% - 32px),1180px)}
-  .landing-page .announcement{padding-inline:16px;justify-content:flex-start}
+  .landing-page .announcement{min-height:34px;padding:6px 14px;justify-content:flex-start;font-size:11.5px}
   .landing-page .announcement a{display:none}
-  .landing-page header{height:72px;padding-inline:16px}
+  .landing-page header{height:58px;padding-inline:16px}
+  .landing-page .logo-mark{width:42px;height:40px}
   .landing-page .logo-copy{display:none}
   .landing-page .header-actions .text-link{display:none}
-  .landing-page .button-small{min-height:40px}
-  .landing-page .hero{min-height:650px;padding:78px 24px 100px}
-  .landing-page .hero h1{font-size:48px}
-  .landing-page .hero-copy{font-size:15px}
-  .landing-page .hero-actions{flex-direction:column;align-items:stretch}
-  .landing-page .hero-visual{width:80%;right:-35%}
-  .landing-page .quick-actions{width:calc(100% - 32px)}
+  .landing-page .button-small{min-height:36px;padding-inline:14px;font-size:12px}
+  .landing-page .hero{
+    min-height:calc(100dvh - 92px);
+    min-height:calc(100vh - 92px);
+    padding:clamp(16px,3.5vh,28px) clamp(16px,4.5vw,24px);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    box-sizing:border-box;
+  }
+  .landing-page .hero-orbit{pointer-events:none}
+  .landing-page .hero-content{
+    width:100%;
+    max-width:540px;
+    margin:0 auto;
+  }
+  .landing-page .hero-kicker{
+    margin:0 0 clamp(8px,1.6vh,16px);
+    font-size:clamp(10px,2.5vw,11.5px);
+    letter-spacing:.14em;
+  }
+  .landing-page .hero-kicker span{width:20px}
+  .landing-page .hero h1{
+    font-size:clamp(32px,8vw,44px);
+    letter-spacing:-.035em;
+    line-height:1.06;
+  }
+  .landing-page .hero-copy{
+    font-size:clamp(13px,3.5vw,15px);
+    line-height:1.55;
+    margin:clamp(10px,2vh,18px) 0 clamp(16px,2.6vh,24px);
+    max-width:100%;
+  }
+  .landing-page .hero-actions{
+    flex-direction:column;
+    align-items:stretch;
+    gap:clamp(8px,1.4vh,12px);
+  }
+  .landing-page .hero-actions .button{
+    min-height:clamp(44px,5.5vh,48px);
+    padding:0 20px;
+    font-size:13px;
+  }
+  .landing-page .hero-visual{
+    position:absolute;
+    width:clamp(220px,65vw,340px);
+    height:auto;
+    right:-15%;
+    top:50%;
+    transform:translateY(-50%) rotate(-3deg);
+    opacity:.18;
+    pointer-events:none;
+  }
+  .landing-page .hero-logo{
+    width:100%;
+    height:auto;
+  }
+  .landing-page .quick-actions{
+    width:calc(100% - 32px);
+    margin:24px auto 0;
+  }
   .landing-page .quick-actions>a{padding:18px}
   .landing-page .story{padding-block:90px;grid-template-columns:1fr;gap:80px}
   .landing-page .story-art{min-height:340px}
-  .landing-page .story-badge{width:132px;height:132px;right:-5px}
+  .landing-page .story-badge{width:132px;height:132px;right:0}
   .landing-page .vision,.landing-page .projects,.landing-page .impact,.landing-page .support{padding-block:85px}
   .landing-page .pillar-grid{margin-top:45px}
   .landing-page .projects-heading{align-items:flex-start;flex-direction:column}
