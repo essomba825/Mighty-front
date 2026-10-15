@@ -41,8 +41,14 @@ export default function Education() {
     .filter((group) => group.subjects.length > 0),
   [visible])
 
-  /* Nombre de points a revoir, affiche dans une pastille discrete haut. */
+  /* Progression globale : donne le « ou j'en suis » avant le detail par
+     matiere. Sans cela, huit cartes affichent chacune « 0/10 terminees » et
+     la page repond huit fois a une question posee une seule fois. */
+  const totalLessons = subjects.reduce((n, s) => n + (s.lessons_count ?? 0), 0)
+  const totalDone = subjects.reduce((n, s) => n + (s.lessons_completed ?? 0), 0)
   const totalWeak = subjects.reduce((n, s) => n + (s.weak_lessons_count ?? 0), 0)
+  const globalProgress = totalLessons
+    ? Math.round(totalDone / totalLessons * 100) : 0
 
   /* Une carte-matiere compacte, pensee mobile d'abord : icone ronde aux
      couleurs de la matiere, nom, niveau et nombre de cours, progression reelle

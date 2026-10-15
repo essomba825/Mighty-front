@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
-import api from '../api/client'
+import api, { mediaUrl } from '../api/client'
 import { invalidate, useApi } from '../api/cache'
 import PageLoader from '../components/PageLoader'
 import { tr } from '../i18n/education'
@@ -325,7 +325,7 @@ export default function LessonPlayer({ lessonId, T, onMasteryChange, onLessonCom
           </div>
         )}
 
-        {step.image_url && <img className="lp-image" src={step.image_url} alt="" />}
+        {step.image_url && <img className="lp-image" src={mediaUrl(step.image_url)} alt="" />}
 
         {question && (
           <div className="lp-exercise">
