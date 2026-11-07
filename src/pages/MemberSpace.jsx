@@ -32,15 +32,27 @@ function QuickCard({ to, accent = 'gold', icon, title, sub, badge }) {
 export default function MemberSpace() {
   const { user } = useAuth()
   const { profile } = useProfile()
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const isLearner = LEARNER_ROLES.includes(user.role)
   const isAdmin = ADMIN_ROLES.includes(user.role)
 
   const fullName = `${user.first_name} ${user.last_name}`.trim() || user.username
   const firstName = user.first_name || user.username
   const roleLabel = t(`auth.role.${user.role}`) || user.role
+  const statusLabel = user.status ? t(`admin.users.status.${user.status}`) : null
   const completion = completionOf(profile)
   const completed = completion >= 100
+
+  const memberSince = (() => {
+    if (!user.date_joined) return null
+    const date = new Date(user.date_joined)
+    if (Number.isNaN(date.getTime())) return null
+    try {
+      return date.toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-GB', { month: 'short', year: 'numeric' })
+    } catch {
+      return String(date.getFullYear())
+    }
+  })()
 
   return (
     <div className="ms-page">
@@ -51,61 +63,91 @@ export default function MemberSpace() {
           <span className="ms-crumbs-current">{t('member.breadcrumb')}</span>
         </nav>
 
-        {/* En-tête tableau de bord : identité, rôle et complétion du profil */}
-        <section className="ms-topcard">
-          <div className="ms-topcard-main">
-            <span className="ms-topcard-avatar">
+        {/* Bannière profil : identité, statut, complétion et informations clés */}
+        <section className="ms-banner">
+          <div className="ms-banner-art" aria-hidden="true">
+            <span className="ms-banner-ring ms-banner-ring-1" />
+            <span className="ms-banner-ring ms-banner-ring-2" />
+            <span className="ms-banner-dots" />
+          </div>
+
+          <div className="ms-banner-main">
+            <span className="ms-banner-avatar">
               <ProfileAvatar src={mediaUrl(profile?.photo)} name={fullName} />
-              <span className="ms-topcard-status" aria-hidden="true" />
+              {user.status === 'active' && <span className="ms-banner-dot" aria-hidden="true" />}
             </span>
-            <div className="ms-topcard-id">
-              <span className="ms-role-pill">
-                <i className="mdi mdi-shield-check-outline" aria-hidden="true" />
-                {roleLabel}
-              </span>
-              <h1 className="ms-topcard-title">
-                {t('member.hello')}, <span className="ms-topcard-name">{firstName}</span>
-              </h1>
-              <p className="ms-topcard-sub">{t('member.sub')}</p>
-              <div className="ms-chips">
-                <span className="ms-chip">
-                  <i className="mdi mdi-email-outline" aria-hidden="true" />{user.email}
+
+            <div className="ms-banner-id">
+              <div className="ms-banner-tags">
+                <span className="ms-role-pill">
+                  <i className="mdi mdi-shield-check-outline" aria-hidden="true" />
+                  {roleLabel}
                 </span>
-                {profile?.graduation_year && (
-                  <span className="ms-chip">
-                    <i className="mdi mdi-school-outline" aria-hidden="true" />{t('memberSpace.classOf')} {profile.graduation_year}
-                  </span>
-                )}
-                {profile?.profession && (
-                  <span className="ms-chip">
-                    <i className="mdi mdi-briefcase-outline" aria-hidden="true" />{profile.profession}
-                  </span>
-                )}
-                {profile?.city && (
-                  <span className="ms-chip">
-                    <i className="mdi mdi-map-marker-outline" aria-hidden="true" />{profile.city}
+                {statusLabel && (
+                  <span className={`ms-state-pill is-${user.status}`}>
+                    <i className="mdi mdi-check-decagram-outline" aria-hidden="true" />
+                    {statusLabel}
                   </span>
                 )}
               </div>
+              <h1 className="ms-banner-title">
+                {t('member.hello')}, <span className="ms-banner-name">{firstName}</span>
+              </h1>
+              <p className="ms-banner-sub">{t('member.sub')}</p>
             </div>
+
+            <aside className="ms-banner-score" aria-label={t('member.profileMeter')}>
+              <div className="ms-score-ring" style={{ '--score': `${completion}%` }}>
+                <span>{completion}%</span>
+              </div>
+              <div className="ms-score-text">
+                <p>{t('member.profileMeter')}</p>
+                {completed ? (
+                  <span className="ms-score-done"><i className="mdi mdi-check-decagram" aria-hidden="true" />{t('member.profileComplete')}</span>
+                ) : (
+                  <Link to="/profil" className="ms-score-cta">
+                    {t('member.profileCta')}
+                    <i className="mdi mdi-arrow-right" aria-hidden="true" />
+                  </Link>
+                )}
+              </div>
+            </aside>
           </div>
 
-          <aside className="ms-score" aria-label={t('member.profileMeter')}>
-            <div className="ms-score-ring" style={{ '--score': `${completion}%` }}>
-              <span>{completion}%</span>
+          <dl className="ms-banner-meta">
+            <div className="ms-meta">
+              <dt><i className="mdi mdi-email-outline" aria-hidden="true" />{t('member.meta.email')}</dt>
+              <dd>{user.email}</dd>
             </div>
-            <div className="ms-score-text">
-              <p>{t('member.profileMeter')}</p>
-              {completed ? (
-                <span className="ms-score-done"><i className="mdi mdi-check-decagram" aria-hidden="true" />{t('member.profileComplete')}</span>
-              ) : (
-                <Link to="/profil" className="ms-score-cta">
-                  {t('member.profileCta')}
-                  <i className="mdi mdi-arrow-right" aria-hidden="true" />
-                </Link>
-              )}
+            <div className="ms-meta">
+              <dt><i className="mdi mdi-account-tie-outline" aria-hidden="true" />{t('member.meta.role')}</dt>
+              <dd>{roleLabel}</dd>
             </div>
-          </aside>
+            {memberSince && (
+              <div className="ms-meta">
+                <dt><i className="mdi mdi-calendar-check-outline" aria-hidden="true" />{t('member.meta.memberSince')}</dt>
+                <dd>{memberSince}</dd>
+              </div>
+            )}
+            {profile?.graduation_year && (
+              <div className="ms-meta">
+                <dt><i className="mdi mdi-school-outline" aria-hidden="true" />{t('member.meta.classOf')}</dt>
+                <dd>{profile.graduation_year}</dd>
+              </div>
+            )}
+            {profile?.profession && (
+              <div className="ms-meta">
+                <dt><i className="mdi mdi-briefcase-outline" aria-hidden="true" />{t('member.meta.profession')}</dt>
+                <dd>{profile.profession}</dd>
+              </div>
+            )}
+            {profile?.city && (
+              <div className="ms-meta">
+                <dt><i className="mdi mdi-map-marker-outline" aria-hidden="true" />{t('member.meta.city')}</dt>
+                <dd>{profile.city}</dd>
+              </div>
+            )}
+          </dl>
         </section>
 
         {/* Quick access */}

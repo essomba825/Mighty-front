@@ -7,7 +7,7 @@
 /* Changer ce nom a chaque deploiement important : la strategie "cache d'abord"
    des assets statiques sert sinon l'ancien JS au premier chargement suivant.
    Bumped : nettoie le cache du bundle casse par le moteur de chargement. */
-const VERSION = 'mms-v4'
+const VERSION = 'mms-v5'
 const COQUILLE = `${VERSION}-coquille`
 const STATIQUES = `${VERSION}-statiques`
 
