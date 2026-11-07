@@ -1,0 +1,491 @@
+.admin-exams-page {
+  --exam-ink: #17243b;
+  --exam-muted: #718096;
+  --exam-line: #e4eaf1;
+  --exam-blue: #176fd1;
+}
+
+.admin-exams-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, .85fr);
+  gap: 20px;
+  align-items: start;
+  padding-bottom: 30px;
+}
+
+.admin-exams-panel,
+.admin-exams-catalog {
+  min-width: 0;
+  border: 1px solid var(--exam-line);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 8px 26px rgba(20, 45, 80, .05);
+}
+
+.admin-exams-panel-heading,
+.admin-exams-catalog-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 24px;
+  border-bottom: 1px solid var(--exam-line);
+}
+
+.admin-exams-panel-heading h2,
+.admin-exams-catalog-heading h2 {
+  margin: 4px 0 0;
+  color: var(--exam-ink);
+  font-family: Manrope, sans-serif;
+  font-size: 19px;
+}
+
+.admin-exams-panel-heading p {
+  margin: 6px 0 0;
+  color: var(--exam-muted);
+  font-size: 12px;
+}
+
+.admin-exams-kicker {
+  color: #8a98ab;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .13em;
+}
+
+.admin-exams-tabs {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 10px;
+  background: #f0f4f8;
+}
+
+.admin-exams-tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 7px;
+  color: #68778b;
+  background: transparent;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-exams-tabs button.active {
+  color: #fff;
+  background: #0c2d53;
+  box-shadow: 0 3px 8px rgba(12, 45, 83, .16);
+}
+
+.admin-exams-tabs i { font-size: 15px; }
+
+.admin-exams-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  padding: 22px 24px;
+}
+
+.admin-exams-field {
+  display: grid;
+  min-width: 0;
+  align-content: start;
+  gap: 7px;
+}
+
+.admin-exams-field-wide { grid-column: 1 / -1; }
+
+.admin-exams-field > label,
+.admin-exams-question .admin-exams-field > label {
+  color: #35445a;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.admin-exams-form input:not([type="checkbox"]):not([type="file"]),
+.admin-exams-form select,
+.admin-exams-form textarea,
+.admin-exams-search input {
+  width: 100%;
+  min-width: 0;
+  min-height: 41px;
+  padding: 10px 12px;
+  border: 1px solid #dfe6ee;
+  border-radius: 9px;
+  outline: 0;
+  color: var(--exam-ink);
+  background: #fff;
+  font: inherit;
+  font-size: 12px;
+  transition: border-color .16s, box-shadow .16s;
+}
+
+.admin-exams-form textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+
+.admin-exams-form input:focus,
+.admin-exams-form select:focus,
+.admin-exams-form textarea:focus,
+.admin-exams-search input:focus {
+  border-color: #69a6e8;
+  box-shadow: 0 0 0 3px rgba(23, 111, 209, .1);
+}
+
+.admin-exams-upload {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  min-width: 0;
+  padding: 15px;
+  border: 1px dashed #b7c8da;
+  border-radius: 11px;
+  background: #f8fbff;
+  cursor: pointer;
+}
+
+.admin-exams-upload input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.admin-exams-upload:focus-within {
+  outline: 3px solid rgba(23, 111, 209, .15);
+  border-color: #69a6e8;
+}
+
+.admin-exams-upload-icon {
+  display: grid;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: 11px;
+  color: #1672d5;
+  background: #e7f2ff;
+  font-size: 23px;
+}
+
+.admin-exams-upload-icon.correction {
+  color: #e0445b;
+  background: #fff0f2;
+}
+
+.admin-exams-upload > span:nth-child(2) {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.admin-exams-upload strong {
+  color: #26374e;
+  font-size: 12px;
+}
+
+.admin-exams-upload small {
+  overflow: hidden;
+  color: var(--exam-muted);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-exams-upload-action {
+  margin-left: auto;
+  color: #70839a;
+  font-size: 20px;
+}
+
+.admin-exams-form-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid #edf1f5;
+}
+
+.admin-exams-form-footer > span {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  color: var(--exam-muted);
+  font-size: 10px;
+}
+
+.admin-exams-form-footer > span i {
+  color: #43956b;
+  font-size: 15px;
+}
+
+.admin-exams-form-footer .btn-admin-primary {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-exams-form-footer button:disabled {
+  opacity: .65;
+  cursor: wait;
+}
+
+.admin-exams-notice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border: 1px solid #bfe6cd;
+  border-radius: 10px;
+  color: #236742;
+  background: #f0fbf4;
+  font-size: 12px;
+}
+
+.admin-exams-notice.error {
+  border-color: #f1c4c4;
+  color: #9c3434;
+  background: #fff6f5;
+}
+
+.admin-exams-notice > i { font-size: 17px; }
+.admin-exams-notice span { flex: 1; }
+
+.admin-exams-notice button {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border: 0;
+  border-radius: 6px;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+.admin-exams-catalog { overflow: hidden; }
+
+.admin-exams-catalog-heading strong {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 10px;
+  color: #155da8;
+  background: #eaf4ff;
+  font-size: 13px;
+}
+
+.admin-exams-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin: 16px 18px 10px;
+}
+
+.admin-exams-search > i {
+  position: absolute;
+  left: 12px;
+  color: #8695a7;
+  font-size: 17px;
+}
+
+.admin-exams-search input { padding-left: 38px; }
+
+.admin-exams-table-wrap { max-height: 680px; overflow: auto; }
+.admin-exams-table { width: 100%; border-collapse: collapse; text-align: left; }
+.admin-exams-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 10px 12px;
+  color: #7a8798;
+  background: #f8fafc;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.admin-exams-table th:first-child,
+.admin-exams-table td:first-child { padding-left: 18px; }
+.admin-exams-table td {
+  padding: 12px;
+  border-top: 1px solid #edf1f5;
+  color: #58677a;
+  font-size: 10px;
+  vertical-align: middle;
+}
+.admin-exams-table td:first-child { max-width: 250px; }
+.admin-exams-table td:first-child strong,
+.admin-exams-table td:first-child small { display: block; }
+.admin-exams-table td:first-child strong {
+  overflow: hidden;
+  color: #25364e;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.admin-exams-table td:first-child small {
+  overflow: hidden;
+  margin-top: 3px;
+  color: #8793a2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.admin-exams-status { display: inline-flex; align-items: center; gap: 5px; color: #8691a0; white-space: nowrap; }
+.admin-exams-status.available { color: #248054; }
+.admin-exams-status i { font-size: 14px; }
+.admin-exams-row-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 8px;
+  border: 1px solid #dce8f6;
+  border-radius: 7px;
+  color: #1767b7;
+  background: white;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.admin-exams-row-action:hover { background: #f1f7ff; }
+.admin-exams-empty,
+.admin-exams-load-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 115px;
+  padding: 20px;
+  color: #7e8b9b;
+  font-size: 12px;
+  text-align: center;
+}
+.admin-exams-empty > i,
+.admin-exams-load-error > i { color: #92a2b5; font-size: 20px; }
+.admin-exams-load-error { flex-wrap: wrap; color: #a63d3d; }
+.admin-exams-load-error > span { max-width: 100%; }
+.admin-exams-load-error button {
+  padding: 6px 9px;
+  border: 1px solid #e6c6c6;
+  border-radius: 6px;
+  color: #8e3333;
+  background: #fff;
+  cursor: pointer;
+}
+
+.admin-exams-question-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 0 0;
+}
+.admin-exams-question-heading h3 {
+  margin: 0;
+  color: #26374e;
+  font-family: Manrope, sans-serif;
+  font-size: 14px;
+}
+.admin-exams-question-heading p {
+  margin: 4px 0 0;
+  color: var(--exam-muted);
+  font-size: 10px;
+}
+.admin-exams-add-question {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  padding: 7px 9px;
+  border: 1px solid #d9e7f7;
+  border-radius: 8px;
+  color: #1769bd;
+  background: #f8fbff;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.admin-exams-question {
+  min-width: 0;
+  margin: 0;
+  padding: 15px;
+  border: 1px solid #e4eaf1;
+  border-radius: 11px;
+  background: #fbfcfe;
+}
+.admin-exams-question legend {
+  padding: 0 6px;
+  color: #617189;
+  font-size: 10px;
+  font-weight: 800;
+}
+.admin-exams-question-grid {
+  display: grid;
+  grid-template-columns: .8fr 1.2fr .8fr;
+  gap: 12px;
+}
+.admin-exams-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 12px;
+  border: 1px solid #e6ebf1;
+  border-radius: 9px;
+  background: #fbfcfe;
+  cursor: pointer;
+}
+.admin-exams-check input { flex: 0 0 auto; margin: 2px 0 0; accent-color: #176fd1; }
+.admin-exams-check span { display: grid; gap: 3px; }
+.admin-exams-check strong { color: #34445a; font-size: 11px; }
+.admin-exams-check small { color: #78869a; font-size: 10px; }
+.admin-exams-remove-question {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 12px;
+  padding: 5px 0;
+  border: 0;
+  color: #b24949;
+  background: transparent;
+  font: inherit;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+@media (max-width: 1150px) {
+  .admin-exams-workspace { grid-template-columns: 1fr; }
+  .admin-exams-table-wrap { max-height: 420px; }
+}
+
+@media (max-width: 700px) {
+  .admin-exams-panel-heading,
+  .admin-exams-catalog-heading { align-items: flex-start; flex-direction: column; padding: 18px; }
+  .admin-exams-tabs { width: 100%; }
+  .admin-exams-tabs button { flex: 1; justify-content: center; }
+  .admin-exams-form { grid-template-columns: 1fr; padding: 18px; }
+  .admin-exams-field-wide { grid-column: auto; }
+  .admin-exams-form-footer { align-items: stretch; flex-direction: column; }
+  .admin-exams-form-footer .btn-admin-primary { justify-content: center; }
+  .admin-exams-question-heading { align-items: flex-start; flex-direction: column; }
+  .admin-exams-question-grid { grid-template-columns: 1fr; }
+  .admin-exams-question-grid .admin-exams-field-wide { grid-column: auto; }
+  .admin-exams-table th:nth-child(2),
+  .admin-exams-table td:nth-child(2) { display: none; }
+}

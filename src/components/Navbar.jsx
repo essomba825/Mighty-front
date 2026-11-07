@@ -1,34 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import api from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import { useLang } from '../context/LangContext'
 import LanguageSwitcher from './LanguageSwitcher'
-
-/* Barre d'onglets mobile façon application : les 4 destinations-cles restent
-   sous le pouce sur telephone, au lieu d'un tiroir a ouvrir a chaque trajet. */
-function MobileTabBar({ t }) {
-  return (
-    <nav className="mobile-tabbar" aria-label={t('nav.menu')}>
-      <NavLink to="/" end
-               className={({ isActive }) => `mtb-item${isActive ? ' is-active' : ''}`}>
-        <i className="mdi mdi-home-outline" /><span>{t('nav.home')}</span>
-      </NavLink>
-      <NavLink to="/education"
-               className={({ isActive }) => `mtb-item${isActive ? ' is-active' : ''}`}>
-        <i className="mdi mdi-school-outline" /><span>{t('nav.education')}</span>
-      </NavLink>
-      <NavLink to="/espace-membre"
-               className={({ isActive }) => `mtb-item${isActive ? ' is-active' : ''}`}>
-        <i className="mdi mdi-view-dashboard-outline" /><span>{t('nav.memberArea')}</span>
-      </NavLink>
-      <NavLink to="/profil"
-               className={({ isActive }) => `mtb-item${isActive ? ' is-active' : ''}`}>
-        <i className="mdi mdi-account-outline" /><span>{t('nav.profile')}</span>
-      </NavLink>
-    </nav>
-  )
-}
 
 /* Liens principaux : visibles en ligne dans la barre de bureau. */
 const LIENS_PRINCIPAUX = [
@@ -48,6 +23,11 @@ const LIENS_SUITE = [
 ]
 
 export default function Navbar() {
+  const location = useLocation()
+  if (location.pathname.startsWith('/education')) {
+    return null
+  }
+  const isEducationRoute = false
   const { user, logout } = useAuth()
   const { t } = useLang()
   const [open, setOpen] = useState(false)
@@ -128,6 +108,16 @@ export default function Navbar() {
   const survolOuvre = (setter) => (survol ? () => setter(true) : undefined)
   const survolFerme = (survol ? () => { setOuvertPlus(false); setOuvertCompte(false) } : undefined)
 
+  const liensPrincipaux = isEducationRoute
+    ? LIENS_PRINCIPAUX.filter((l) => l.to !== '/education')
+    : LIENS_PRINCIPAUX
+
+  /* Liens « Plus » : on ajoute l'accès admin au tableau de bord pour les
+     admins/staff, afin qu'il soit facilement accessible. */
+  const liensSuite = user && (user.is_staff || user.role === 'admin')
+    ? [...LIENS_SUITE, { to: '/admin', key: 'admin.title', icon: 'mdi-shield-crown-outline' }]
+    : LIENS_SUITE
+
   const badge = unread > 0 && (
     <span className="nav-notifs-badge" aria-label={t('notif.unread').replace('{n}', unread)}>
       {unread > 9 ? '9+' : unread}
@@ -191,7 +181,7 @@ export default function Navbar() {
       <div className={`navbar-links ${open ? 'open' : ''}`}>
         {/* ---------- Liens principaux ---------- */}
         <div className="nav-group nav-main">
-          {LIENS_PRINCIPAUX.map((l) => (
+          {liensPrincipaux.map((l) => (
             <NavLink
               key={l.to}
               to={l.to}
@@ -209,7 +199,7 @@ export default function Navbar() {
         <div
           className={`nav-group nav-more ${ouvertPlus ? 'open' : ''}`}
           onMouseEnter={survolOuvre(setOuvertPlus)}
-          onMouseLeave={survol ? () => setOuvertPlus(false) : undefined}
+          onMouseLeave={undefined}
         >
           <button
             type="button"
@@ -222,7 +212,7 @@ export default function Navbar() {
             <i className={`mdi mdi-chevron-down ${ouvertPlus ? 'open' : ''}`} />
           </button>
           <div className="nav-more-panel">
-            {LIENS_SUITE.map((l) => (
+            {liensSuite.map((l) => (
               <NavLink key={l.to} to={l.to} onClick={close}>
                 <i className={`mdi ${l.icon}`} />
                 {t(l.key)}
@@ -247,7 +237,7 @@ export default function Navbar() {
           <div
             className={`nav-group nav-account ${ouvertCompte ? 'open' : ''}`}
             onMouseEnter={survolOuvre(setOuvertCompte)}
-            onMouseLeave={survolFerme}
+            onMouseLeave={undefined}
           >
             <button
               type="button"
@@ -321,22 +311,10 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* Accès rapide au back-office (administrateurs / personnel) */}
-          {user && (user.is_staff || user.role === 'admin') && (
-            <NavLink to="/admin" onClick={close} className="mm-admin-tile">
-              <span className="mm-admin-tile-icon"><i className="mdi mdi-shield-crown-outline" /></span>
-              <span className="mm-admin-tile-text">
-                <strong>{t('admin.title')}</strong>
-                <small>{t('admin.platform.title')}</small>
-              </span>
-              <i className="mdi mdi-chevron-right mm-admin-tile-arrow" />
-            </NavLink>
-          )}
-
           {/* Navigation principale en tuiles */}
           <p className="mm-label">{t('nav.section.explore')}</p>
           <nav className="mm-grid">
-            {LIENS_PRINCIPAUX.map((l) => (
+            {liensPrincipaux.map((l) => (
               <NavLink
                 key={l.to}
                 to={l.to}
@@ -360,7 +338,7 @@ export default function Navbar() {
             </button>
             <div className="mm-acc-body">
               <div className="mm-acc-links">
-                {LIENS_SUITE.map((l) => (
+                {liensSuite.map((l) => (
                   <NavLink key={l.to} to={l.to} onClick={close}>
                     <i className={`mdi ${l.icon}`} />
                     {t(l.key)}
@@ -392,9 +370,6 @@ export default function Navbar() {
           </div>
         </div>
       </div>
-
-      {/* Barre d'onglets mobile — rendue seulement sur petit ecran. */}
-      <MobileTabBar t={t} />
     </nav>
   )
 }

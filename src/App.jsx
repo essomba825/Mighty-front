@@ -1,4 +1,4 @@
-﻿import { useEffect } from 'react'
+import { useEffect } from 'react'
 import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router-dom'
 import { useLang } from './context/LangContext'
 import { AuthProvider } from './context/AuthContext'
@@ -24,10 +24,14 @@ import Contribute from './pages/Contribute'
 import BecomePartner from './pages/BecomePartner'
 import Notifications from './pages/Notifications'
 import Education from './pages/Education'
+import EducationHub from './pages/EducationHub'
 import SubjectCurriculum from './pages/SubjectCurriculum'
+import SubjectPapers from './pages/SubjectPapers'
+import PaperDetail from './pages/PaperDetail'
+import ExamPaperView from './pages/ExamPaperView'
+import ResourceContribute from './pages/ResourceContribute'
+import ContributionValidation from './pages/ContributionValidation'
 import DailyReview from './pages/DailyReview'
-import TutorContribute from './pages/TutorContribute'
-import TutorValidation from './pages/TutorValidation'
 import CourseDetail from './pages/CourseDetail'
 import MyResults from './pages/MyResults'
 import MemberCard from './pages/MemberCard'
@@ -43,6 +47,7 @@ import AdminEvents from './pages/admin/AdminEvents'
 import AdminProjects from './pages/admin/AdminProjects'
 import AdminContributions from './pages/admin/AdminContributions'
 import AdminPartnerships from './pages/admin/AdminPartnerships'
+import AdminExams from './pages/admin/AdminExams'
 import NotFound from './pages/NotFound'
 
 /* A chaque changement de page on remonte en haut. Sans cela le navigateur
@@ -59,11 +64,12 @@ function ScrollToTop() {
 function AppFrame() {
   const { pathname } = useLocation()
   const isLandingHome = pathname === '/'
+  const isEducationHub = pathname.startsWith('/education')
 
   return (
     <>
         <ScrollToTop />
-        {!isLandingHome && <Navbar />}
+        {!isLandingHome && !isEducationHub && <Navbar />}
         <InstallPrompt />
         <PushPrompt />
         <Routes>
@@ -78,20 +84,18 @@ function AppFrame() {
           <Route path="/contribuer/:id" element={<Contribute />} />
           <Route path="/partenaires" element={<BecomePartner />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/inscription" element={<Register />} />
-          {/* Catalogue Ã©ducatif public (leÃ§ons/quiz ouverts aux membres connectÃ©s) */}
-          <Route path="/education" element={<Education />} />
-          <Route path="/education/matieres/:slug" element={<SubjectCurriculum />} />
-          {/* Espace membre (compte validÃ© requis) */}
           <Route path="/espace-membre" element={<ProtectedRoute><MemberSpace /></ProtectedRoute>} />
-          <Route path="/profil" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-          <Route path="/annuaire" element={<Directory />} />
-          <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
-          {/* Espace Ã©ducatif dÃ©taillÃ© : la page gÃ¨re elle-mÃªme l'accÃ¨s (login requis cÃ´tÃ© API) */}
-          <Route path="/cours/:id" element={<CourseDetail />} />
+          {/* Catalogue éducatif public (Écrans 1 à 6 de la maquette) */}
+          <Route path="/education" element={<EducationHub />} />
+          <Route path="/education/matieres" element={<SubjectPapers />} />
+          <Route path="/education/matieres/:slug" element={<SubjectPapers />} />
+          <Route path="/education/matieres/:slug/epreuves" element={<SubjectPapers />} />
+          <Route path="/education/epreuves/:id" element={<ExamPaperView />} />
+          <Route path="/education/epreuves" element={<SubjectPapers />} />
+          <Route path="/cours/:id" element={<PaperDetail />} />
+          <Route path="/education/contribuer" element={<ResourceContribute />} />
+          <Route path="/education/valider" element={<ContributionValidation />} />
           <Route path="/education/revision-du-jour" element={<ProtectedRoute><DailyReview /></ProtectedRoute>} />
-          <Route path="/education/contribuer" element={<ProtectedRoute><TutorContribute /></ProtectedRoute>} />
-          <Route path="/education/valider" element={<ProtectedRoute><TutorValidation /></ProtectedRoute>} />
           <Route path="/mes-resultats" element={<ProtectedRoute><MyResults /></ProtectedRoute>} />
           <Route path="/ma-carte" element={<ProtectedRoute><MemberCard /></ProtectedRoute>} />
           <Route path="/mentorat" element={<ProtectedRoute><Mentorship /></ProtectedRoute>} />
@@ -108,6 +112,7 @@ function AppFrame() {
             <Route path="projets"      element={<AdminProjects />} />
             <Route path="contributions" element={<AdminContributions />} />
             <Route path="partenariats" element={<AdminPartnerships />} />
+            <Route path="epreuves" element={<AdminExams />} />
           </Route>
           {/* Route inconnue */}
           <Route path="*" element={<NotFound />} />

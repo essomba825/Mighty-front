@@ -1,0 +1,242 @@
+.epv-page {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  grid-template-rows: 46px minmax(0, 1fr) auto;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  color: #f4f7fb;
+  background: #101923;
+}
+
+.epv-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+  padding: 0 12px 0 16px;
+  background: #071f3f;
+}
+
+.epv-filename {
+  min-width: 0;
+  overflow: hidden;
+  color: #f2f5fa;
+  font-size: .88rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.epv-close {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  color: #c8d2df;
+  background: transparent;
+  font-size: 1.15rem;
+  cursor: pointer;
+  transition: color .15s, background .15s;
+}
+
+.epv-close:hover,
+.epv-close:focus-visible {
+  color: #fff;
+  background: rgba(255, 255, 255, .12);
+}
+
+.epv-document {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
+  background: #202a37;
+}
+
+.epv-pdf {
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  border: 0;
+  background: #202a37;
+}
+
+.epv-document-state {
+  width: 100%;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  color: #d7e0eb;
+  text-align: center;
+}
+
+.epv-error,
+.epv-inline-error,
+.epv-action-error {
+  color: #fecaca !important;
+}
+
+.epv-actions {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 180px);
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  background: #101923;
+}
+
+.epv-actions--with-correction {
+  grid-template-columns: repeat(2, minmax(0, 156px));
+}
+
+.epv-actions button {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 18px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  font: inherit;
+  font-size: .88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter .15s, background .15s;
+}
+
+.epv-actions button:hover:not(:disabled) {
+  filter: brightness(.96);
+}
+
+.epv-actions button:disabled {
+  cursor: not-allowed;
+  opacity: .6;
+}
+
+.epv-action-primary {
+  color: #126bc7;
+  border-color: #d5e0ed !important;
+  background: #fff;
+}
+
+.epv-action-secondary {
+  color: #fff;
+  background: #126bc7;
+}
+
+.epv-action-error {
+  position: absolute;
+  right: 12px;
+  bottom: calc(100% + 4px);
+  left: 12px;
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: rgba(16, 25, 35, .92);
+  font-size: .8rem;
+  text-align: center;
+}
+
+.epv-correction-content {
+  width: 100%;
+  overflow: auto;
+  padding: 18px;
+  color: #26364b;
+  background: #f8fafc;
+}
+
+.epv-coverage-note {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-width: 760px;
+  margin: 0 auto 13px;
+  padding: 12px 16px;
+  border: 1px solid #fed7aa;
+  border-radius: 10px;
+  color: #9a3412;
+  background: #fff7ed;
+  line-height: 1.45;
+}
+
+.epv-coverage-note strong { color: #c2410c; }
+
+.epv-correction-item {
+  max-width: 760px;
+  margin: 0 auto 13px;
+  padding: 16px;
+  border: 1px solid #dbe5ef;
+  border-radius: 11px;
+  background: #fff;
+  line-height: 1.55;
+}
+
+.epv-correction-item h3 {
+  margin: 0 0 8px;
+  color: #155eab;
+  font-size: .95rem;
+}
+
+.epv-correction-item p {
+  margin: 8px 0 0;
+}
+
+.epv-mark-criteria {
+  display: grid;
+  gap: 7px;
+  margin: 12px 0 0;
+  padding: 12px 0 0;
+  border-top: 1px solid #e7edf4;
+  list-style: none;
+}
+
+.epv-mark-criteria li {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  font-size: .9rem;
+}
+
+.epv-mark-criteria li strong { white-space: nowrap; color: #155eab; }
+
+.epv-empty-correction,
+.epv-correction-content > p {
+  margin: 0;
+  padding: 22px;
+  color: #52657d;
+  text-align: center;
+}
+
+@media (max-width: 500px) {
+  .epv-page {
+    grid-template-rows: 44px minmax(0, 1fr) auto;
+  }
+
+  .epv-actions {
+    gap: 9px;
+    padding: 10px 12px calc(12px + env(safe-area-inset-bottom));
+  }
+
+  .epv-actions--with-correction {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .epv-actions button {
+    min-height: 42px;
+    padding: 0 10px;
+    font-size: .82rem;
+  }
+}

@@ -75,6 +75,12 @@ const NAV_GROUPS = [
         label: 'Pedagogic Validation',
         badgeKey: 'coursesPending',
       },
+      {
+        to: '/admin/epreuves',
+        icon: 'mdi-file-document-edit-outline',
+        key: 'exams',
+        label: 'Exam Papers & Marking Schemes',
+      },
     ],
   },
 ]

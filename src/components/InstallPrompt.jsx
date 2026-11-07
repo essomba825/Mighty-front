@@ -200,14 +200,15 @@ export default function InstallPrompt() {
         <i className="mdi mdi-close" />
       </button>
 
-      <div className="pwa-bloc-entete">
-        <img className="pwa-bloc-logo" src="/pwa-192.png" alt="" width="52" height="52" />
+      <div className="pwa-bloc-head">
+        <img className="pwa-bloc-logo" src="/pwa-192.png" alt="" width="56" height="56" />
         <div>
           <strong className="pwa-bloc-titre">{ios ? t('pwa.ios.titre') : t('pwa.android.titre')}</strong>
           <p className="pwa-bloc-sous-titre">{t('pwa.nomCourt')}</p>
         </div>
       </div>
 
+      <div className="pwa-bloc-body">
       <p className="pwa-bloc-desc">{ios ? t('pwa.ios.corps') : t('pwa.installBody')}</p>
 
       {!ios && (
@@ -272,6 +273,7 @@ export default function InstallPrompt() {
           </button>
         </div>
       )}
+      </div>
     </aside>
   )
 }
