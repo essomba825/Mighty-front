@@ -7,7 +7,6 @@ import { useLang } from '../context/LangContext'
 import { mediaUrl } from '../api/client'
 import ProfileAvatar from '../components/ProfileAvatar'
 
-
 export default function Profile() {
   const { user } = useAuth()
   const { profile, loading, save } = useProfile()
@@ -34,7 +33,7 @@ export default function Profile() {
   }, [profile])
 
   const avatar = photoPreview || mediaUrl(profile?.photo)
-  const fullName = `${user.first_name} ${user.last_name}`.trim()
+  const fullName = `${user.first_name} ${user.last_name}`.trim() || user.username
 
   const completion = (() => {
     if (!profile) return 0
@@ -84,20 +83,42 @@ export default function Profile() {
       <div className="page">
         {/* Passeport membre */}
         <div className="ms-hero profile-hero">
-          <span className="ms-avatar">
+          <span className="ms-avatar profile-avatar-ring">
             <ProfileAvatar src={avatar} name={fullName} />
+            <label className="profile-photo-edit" title="Changer la photo">
+              <i className="mdi mdi-camera" />
+              <input type="file" accept="image/*" onChange={pickPhoto} />
+            </label>
           </span>
           <div className="ms-hero-info">
-            <h2>{user.first_name} {user.last_name}</h2>
-            <p>{user.email} · {t(`auth.role.${user.role}`)}</p>
-            {profile?.city && <p>{profile.city}{profile.country ? `, ${profile.country}` : ''}</p>}
+            <h2>{fullName}</h2>
+            <p className="profile-email">{user.email}</p>
+            <p className="profile-role">
+              <i className="mdi mdi-shield-account-outline" /> {t(`auth.role.${user.role}`)}
+            </p>
+            {profile?.city && (
+              <p className="profile-location">
+                <i className="mdi mdi-map-marker-outline" /> {profile.city}{profile.country ? `, ${profile.country}` : ''}
+              </p>
+            )}
           </div>
-          <div className="ms-meter">
-            <p className="ms-meter-label">{t('member.profileMeter')}</p>
-            <div className="ms-meter-track">
-              <span className="ms-meter-fill" style={{ width: `${completion}%` }} />
+          <div className="profile-completion">
+            <div className="profile-completion-ring">
+              <svg viewBox="0 0 80 80" className="profile-ring-svg">
+                <circle cx="40" cy="40" r="34" className="profile-ring-track" />
+                <circle cx="40" cy="40" r="34" className="profile-ring-fill"
+                        style={{ strokeDasharray: `${2 * Math.PI * 34}`, strokeDashoffset: `${2 * Math.PI * 34 * (1 - completion / 100)}` }} />
+              </svg>
+              <div className="profile-ring-label">
+                <strong>{completion}%</strong>
+                <small>complété</small>
+              </div>
             </div>
-            <p className="ms-meter-value">{completion}%</p>
+            {completion < 100 && (
+              <a href="#profile-form" className="profile-complete-cta">
+                <i className="mdi mdi-pencil-outline" /> Compléter
+              </a>
+            )}
           </div>
         </div>
 
@@ -106,14 +127,17 @@ export default function Profile() {
         </p>
 
         {/* Formulaire */}
-        <section className="card profile-card" style={{ maxWidth: 720 }}>
+        <section id="profile-form" className="card profile-card">
           <div className="profile-head">
             <div>
               <h2>{profile ? t('profile.edit') : t('profile.create')}</h2>
-              <p className="profile-sub">
-                {t('profile.formSub')}
-              </p>
+              <p className="profile-sub">{t('profile.formSub')}</p>
             </div>
+            {profile && (
+              <Link to="/ma-carte" className="btn-secondary profile-card-btn">
+                <i className="mdi mdi-card-account-details-outline" /> {t('profile.viewCard')}
+              </Link>
+            )}
           </div>
 
           {message && (
@@ -122,13 +146,14 @@ export default function Profile() {
             </p>
           )}
 
-          <form onSubmit={handleSubmit} className="form">
-            <div className="photo-picker">
-              <span className="photo-picker-preview">
-                {avatar ? <img src={avatar} alt="" /> : <i className="mdi mdi-camera-plus-outline" />}
+          <form onSubmit={handleSubmit} className="form profile-form">
+            <div className="profile-photo-row">
+              <span className="photo-picker-preview profile-photo-preview">
+                {avatar ? <img src={avatar} alt="" /> : <i className="mdi mdi-account-circle-outline" />}
               </span>
-              <label className="photo-picker-label">
-                Photo de profil <span className="optional">{t('profile.photo.hint')}</span>
+              <label className="photo-picker-label profile-photo-label">
+                <span className="photo-picker-title">Photo de profil</span>
+                <span className="optional">{t('profile.photo.hint')}</span>
                 <input type="file" accept="image/*" onChange={pickPhoto} />
               </label>
             </div>
@@ -151,19 +176,16 @@ export default function Profile() {
                      placeholder={t('profile.company.ph')} />
             </label>
             <label>{t('profile.bio')} <span className="optional">{t('profile.optional')}</span>
-              <textarea name="bio" value={form.bio} onChange={update} rows={3}
+              <textarea name="bio" value={form.bio} onChange={update} rows={4}
                         placeholder={t('profile.bio.ph')} />
             </label>
 
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            <div className="profile-actions">
               <button className="btn-primary" disabled={saving}>
                 {saving
                   ? <><i className="fa-solid fa-circle-notch fa-spin" /> {t('profile.saving')}</>
                   : <><i className="fa-solid fa-floppy-disk" /> {t('profile.save')}</>}
               </button>
-              <Link to="/ma-carte" className="btn-secondary">
-                <i className="mdi mdi-card-account-details-outline" /> {t('profile.viewCard')}
-              </Link>
             </div>
           </form>
         </section>
