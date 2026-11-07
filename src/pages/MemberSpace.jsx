@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import PageHeader from '../components/PageHeader'
+import { mediaUrl } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import { useProfile } from '../context/ProfileContext'
 import { useLang } from '../context/LangContext'
@@ -32,58 +32,81 @@ function QuickCard({ to, accent = 'gold', icon, title, sub, badge }) {
 export default function MemberSpace() {
   const { user } = useAuth()
   const { profile } = useProfile()
-  const { t, lang } = useLang()
+  const { t } = useLang()
   const isLearner = LEARNER_ROLES.includes(user.role)
   const isAdmin = ADMIN_ROLES.includes(user.role)
 
   const fullName = `${user.first_name} ${user.last_name}`.trim() || user.username
+  const firstName = user.first_name || user.username
   const roleLabel = t(`auth.role.${user.role}`) || user.role
   const completion = completionOf(profile)
+  const completed = completion >= 100
 
   return (
-    <div>
-      <PageHeader
-        eyebrow={roleLabel}
-        title={`${t('member.hello')} ${user.first_name || user.username}`}
-        sub={t('member.sub')}
-        breadcrumb={t('member.breadcrumb')}
-      />
-
+    <div className="ms-page">
       <div className="page">
-        {/* Member hero */}
-        <div className="ms-hero ms-hero-member">
-          <span className="ms-avatar">
-            <ProfileAvatar name={fullName} />
-          </span>
-          <div className="ms-hero-info">
-            <h2>{fullName}</h2>
-            <p className="ms-member-email">{user.email} · {roleLabel}</p>
-            {profile && (
-              <p className="ms-member-meta">
-                {profile.graduation_year && <span>{t('memberSpace.classOf')} {profile.graduation_year}</span>}
-                {profile.profession && <span> · {profile.profession}</span>}
-                {profile.city && <span> · {profile.city}</span>}
-              </p>
-            )}
+        <nav className="ms-crumbs" aria-label="Fil d'Ariane">
+          <Link to="/"><i className="mdi mdi-home-outline" aria-hidden="true" />{t('nav.home')}</Link>
+          <span className="ms-crumbs-sep" aria-hidden="true">›</span>
+          <span className="ms-crumbs-current">{t('member.breadcrumb')}</span>
+        </nav>
+
+        {/* En-tête tableau de bord : identité, rôle et complétion du profil */}
+        <section className="ms-topcard">
+          <div className="ms-topcard-main">
+            <span className="ms-topcard-avatar">
+              <ProfileAvatar src={mediaUrl(profile?.photo)} name={fullName} />
+              <span className="ms-topcard-status" aria-hidden="true" />
+            </span>
+            <div className="ms-topcard-id">
+              <span className="ms-role-pill">
+                <i className="mdi mdi-shield-check-outline" aria-hidden="true" />
+                {roleLabel}
+              </span>
+              <h1 className="ms-topcard-title">
+                {t('member.hello')}, <span className="ms-topcard-name">{firstName}</span>
+              </h1>
+              <p className="ms-topcard-sub">{t('member.sub')}</p>
+              <div className="ms-chips">
+                <span className="ms-chip">
+                  <i className="mdi mdi-email-outline" aria-hidden="true" />{user.email}
+                </span>
+                {profile?.graduation_year && (
+                  <span className="ms-chip">
+                    <i className="mdi mdi-school-outline" aria-hidden="true" />{t('memberSpace.classOf')} {profile.graduation_year}
+                  </span>
+                )}
+                {profile?.profession && (
+                  <span className="ms-chip">
+                    <i className="mdi mdi-briefcase-outline" aria-hidden="true" />{profile.profession}
+                  </span>
+                )}
+                {profile?.city && (
+                  <span className="ms-chip">
+                    <i className="mdi mdi-map-marker-outline" aria-hidden="true" />{profile.city}
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
-          {profile && (
-            <div className="ms-meter">
-              <div className="ms-meter-heading">
-                <p className="ms-meter-label">{t('member.profileMeter')}</p>
-                <p className="ms-meter-value">{completion}%</p>
-              </div>
-              <div className="ms-meter-track" role="progressbar" aria-valuemin="0" aria-valuemax="100"
-                   aria-valuenow={completion} aria-label={t('member.profileMeter')}>
-                <span className="ms-meter-fill" style={{ width: `${completion}%` }} />
-              </div>
-              {completion < 100 && (
-                <Link to="/profil" className="ms-meter-cta">
-                  <i className="mdi mdi-pencil-outline" /> Compléter mon profil
+
+          <aside className="ms-score" aria-label={t('member.profileMeter')}>
+            <div className="ms-score-ring" style={{ '--score': `${completion}%` }}>
+              <span>{completion}%</span>
+            </div>
+            <div className="ms-score-text">
+              <p>{t('member.profileMeter')}</p>
+              {completed ? (
+                <span className="ms-score-done"><i className="mdi mdi-check-decagram" aria-hidden="true" />{t('member.profileComplete')}</span>
+              ) : (
+                <Link to="/profil" className="ms-score-cta">
+                  {t('member.profileCta')}
+                  <i className="mdi mdi-arrow-right" aria-hidden="true" />
                 </Link>
               )}
             </div>
-          )}
-        </div>
+          </aside>
+        </section>
 
         {/* Quick access */}
         <div className="quick-head">
