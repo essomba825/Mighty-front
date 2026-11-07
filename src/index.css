@@ -7718,7 +7718,7 @@ to{opacity:1;transform:none}
 .ms-banner-dots{position:absolute;left:-70px;bottom:-110px;width:280px;height:280px;border-radius:50%;
   background:radial-gradient(circle,rgba(46,123,167,.3),transparent 66%)}
 
-.ms-banner-main{position:relative;z-index:1;display:flex;align-items:center;gap:24px;padding:30px 32px 26px}
+.ms-banner-main{position:relative;z-index:1;display:flex;align-items:center;gap:24px;padding:30px 32px}
 
 .ms-banner-avatar{position:relative;flex:0 0 104px;width:104px;height:104px;padding:3px;border-radius:50%;
   background:linear-gradient(140deg,var(--gold-light),var(--gold) 45%,rgba(242,184,75,.35));
@@ -7767,15 +7767,6 @@ to{opacity:1;transform:none}
 .ms-score-done{display:inline-flex;align-items:center;gap:6px;color:#8df0b8;font-size:.82rem;font-weight:700}
 .ms-score-done i{font-size:1rem}
 
-.ms-banner-meta{position:relative;z-index:1;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
-  gap:0;margin:0;border-top:1px solid rgba(255,255,255,.09);background:rgba(0,0,0,.16)}
-.ms-meta{position:relative;min-width:0;display:flex;flex-direction:column;gap:3px;padding:14px 32px}
-.ms-meta+.ms-meta::before{content:"";position:absolute;left:0;top:13px;bottom:13px;width:1px;background:rgba(255,255,255,.08)}
-.ms-meta dt{display:flex;align-items:center;gap:6px;margin:0;font-size:.64rem;font-weight:800;letter-spacing:1.2px;
-  text-transform:uppercase;color:#8fa6bf}
-.ms-meta dt i{font-size:.9rem;color:var(--gold)}
-.ms-meta dd{margin:0;font-size:.88rem;font-weight:600;line-height:1.35;color:#eaf1fa;overflow-wrap:anywhere}
-
 @media (max-width:900px){
   .ms-banner-main{flex-wrap:wrap;gap:20px}
   .ms-banner-id{flex:1 1 300px}
@@ -7789,16 +7780,10 @@ to{opacity:1;transform:none}
   .ms-banner-avatar{flex:0 0 78px;width:78px;height:78px}
   .ms-banner-title{font-size:1.5rem}
   .ms-banner-sub{font-size:.86rem}
-  .ms-banner-meta{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .ms-meta{padding:12px 20px}
-  .ms-meta::before{display:none}
-  .ms-meta:nth-child(n+3){border-top:1px solid rgba(255,255,255,.07)}
-  .ms-meta:nth-child(even){border-left:1px solid rgba(255,255,255,.07)}
-  .ms-meta:last-child:nth-child(odd){grid-column:1/-1;border-left:0}
 }
 
 @media (max-width:480px){
-  .ms-banner-main{flex-direction:column;align-items:flex-start;padding:18px 18px 16px;gap:12px}
+  .ms-banner-main{flex-direction:column;align-items:flex-start;padding:20px 18px;gap:12px}
   .ms-banner-avatar{flex:0 0 56px;width:56px;height:56px;padding:2px}
   .ms-banner-id{flex:1 1 auto;width:100%}
   .ms-banner-title{font-size:1.3rem}
@@ -7812,13 +7797,6 @@ to{opacity:1;transform:none}
   .ms-score-ring span{font-size:.82rem}
   .ms-score-text p{font-size:.62rem}
   .ms-score-cta{font-size:.76rem}
-  .ms-banner-meta{grid-template-columns:1fr}
-  .ms-meta{flex-direction:row;align-items:baseline;gap:8px;padding:9px 18px}
-  .ms-meta dt{font-size:.6rem;letter-spacing:1px;white-space:nowrap}
-  .ms-meta dd{font-size:.8rem}
-  .ms-meta:nth-child(n+2){border-top:1px solid rgba(255,255,255,.07)}
-  .ms-meta:nth-child(even){border-left:0}
-  .ms-meta:last-child:nth-child(odd){grid-column:auto}
 }
 
 @media (prefers-reduced-motion:reduce){

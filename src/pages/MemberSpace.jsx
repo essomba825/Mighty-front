@@ -8,12 +8,19 @@ import ProfileAvatar from '../components/ProfileAvatar'
 const LEARNER_ROLES = ['student', 'teacher', 'admin']
 const ADMIN_ROLES = ['admin']
 
+/* Champs qui comptent pour la complétion : sert à la fois au pourcentage et
+   au calcul de ce qu'il reste à renseigner. */
+const PROFILE_FIELDS = ['photo', 'graduation_year', 'profession', 'company', 'city', 'bio']
+
 const completionOf = (profile) => {
   if (!profile) return 0
-  const filled = [profile.photo, profile.graduation_year, profile.profession,
-    profile.company, profile.city, profile.bio].filter(Boolean).length
-  return Math.round((filled / 6) * 100)
+  const filled = PROFILE_FIELDS.filter((field) => profile[field]).length
+  return Math.round((filled / PROFILE_FIELDS.length) * 100)
 }
+
+/* Nombre de champs déjà renseignés (0 quand il n'y a pas encore de profil). */
+const filledCountOf = (profile) =>
+  profile ? PROFILE_FIELDS.filter((field) => profile[field]).length : 0
 
 function QuickCard({ to, accent = 'gold', icon, title, sub, badge }) {
   return (
@@ -32,7 +39,7 @@ function QuickCard({ to, accent = 'gold', icon, title, sub, badge }) {
 export default function MemberSpace() {
   const { user } = useAuth()
   const { profile } = useProfile()
-  const { t, lang } = useLang()
+  const { t } = useLang()
   const isLearner = LEARNER_ROLES.includes(user.role)
   const isAdmin = ADMIN_ROLES.includes(user.role)
 
@@ -41,18 +48,19 @@ export default function MemberSpace() {
   const roleLabel = t(`auth.role.${user.role}`) || user.role
   const statusLabel = user.status ? t(`admin.users.status.${user.status}`) : null
   const completion = completionOf(profile)
+  const filledCount = filledCountOf(profile)
   const completed = completion >= 100
 
-  const memberSince = (() => {
-    if (!user.date_joined) return null
-    const date = new Date(user.date_joined)
-    if (Number.isNaN(date.getTime())) return null
-    try {
-      return date.toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-GB', { month: 'short', year: 'numeric' })
-    } catch {
-      return String(date.getFullYear())
-    }
-  })()
+  /* Message du bandeau : on décrit la situation réelle du membre plutôt qu'un
+     slogan, et on n'affiche jamais deux fois la même information. */
+  const subtitleKey = {
+    pending: 'member.sub.pending',
+    rejected: 'member.sub.rejected',
+  }[user.status]
+    || (completed
+      ? 'member.sub.complete'
+      : (filledCount > 0 ? 'member.sub.partial' : 'member.sub.empty'))
+  const subtitle = t(subtitleKey, { n: PROFILE_FIELDS.length - filledCount })
 
   return (
     <div className="ms-page">
@@ -63,7 +71,7 @@ export default function MemberSpace() {
           <span className="ms-crumbs-current">{t('member.breadcrumb')}</span>
         </nav>
 
-        {/* Bannière profil : identité, statut, complétion et informations clés */}
+        {/* Bannière profil : identité, statut du compte et progression du profil */}
         <section className="ms-banner">
           <div className="ms-banner-art" aria-hidden="true">
             <span className="ms-banner-ring ms-banner-ring-1" />
@@ -93,7 +101,7 @@ export default function MemberSpace() {
               <h1 className="ms-banner-title">
                 {t('member.hello')}, <span className="ms-banner-name">{firstName}</span>
               </h1>
-              <p className="ms-banner-sub">{t('member.sub')}</p>
+              <p className="ms-banner-sub">{subtitle}</p>
             </div>
 
             <aside className="ms-banner-score" aria-label={t('member.profileMeter')}>
@@ -113,41 +121,6 @@ export default function MemberSpace() {
               </div>
             </aside>
           </div>
-
-          <dl className="ms-banner-meta">
-            <div className="ms-meta">
-              <dt><i className="mdi mdi-email-outline" aria-hidden="true" />{t('member.meta.email')}</dt>
-              <dd>{user.email}</dd>
-            </div>
-            <div className="ms-meta">
-              <dt><i className="mdi mdi-account-tie-outline" aria-hidden="true" />{t('member.meta.role')}</dt>
-              <dd>{roleLabel}</dd>
-            </div>
-            {memberSince && (
-              <div className="ms-meta">
-                <dt><i className="mdi mdi-calendar-check-outline" aria-hidden="true" />{t('member.meta.memberSince')}</dt>
-                <dd>{memberSince}</dd>
-              </div>
-            )}
-            {profile?.graduation_year && (
-              <div className="ms-meta">
-                <dt><i className="mdi mdi-school-outline" aria-hidden="true" />{t('member.meta.classOf')}</dt>
-                <dd>{profile.graduation_year}</dd>
-              </div>
-            )}
-            {profile?.profession && (
-              <div className="ms-meta">
-                <dt><i className="mdi mdi-briefcase-outline" aria-hidden="true" />{t('member.meta.profession')}</dt>
-                <dd>{profile.profession}</dd>
-              </div>
-            )}
-            {profile?.city && (
-              <div className="ms-meta">
-                <dt><i className="mdi mdi-map-marker-outline" aria-hidden="true" />{t('member.meta.city')}</dt>
-                <dd>{profile.city}</dd>
-              </div>
-            )}
-          </dl>
         </section>
 
         {/* Quick access */}
