@@ -84,6 +84,7 @@ function AppFrame() {
           <Route path="/contribuer/:id" element={<Contribute />} />
           <Route path="/partenaires" element={<BecomePartner />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/inscription" element={<Register />} />
           <Route path="/espace-membre" element={<ProtectedRoute><MemberSpace /></ProtectedRoute>} />
           {/* Catalogue éducatif public (Écrans 1 à 6 de la maquette) */}
           <Route path="/education" element={<EducationHub />} />

@@ -24,9 +24,6 @@ const LIENS_SUITE = [
 
 export default function Navbar() {
   const location = useLocation()
-  if (location.pathname.startsWith('/education')) {
-    return null
-  }
   const isEducationRoute = false
   const { user, logout } = useAuth()
   const { t } = useLang()
@@ -99,6 +96,11 @@ export default function Navbar() {
       window.removeEventListener('resize', onResize)
     }
   }, [open])
+
+  // La page Education fournit sa propre navigation ; la barre globale est masquée.
+  if (location.pathname.startsWith('/education')) {
+    return null
+  }
 
   const initials = user ? `${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}`.toUpperCase() : ''
 
