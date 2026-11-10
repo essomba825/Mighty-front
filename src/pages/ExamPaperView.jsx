@@ -2,6 +2,7 @@ import { Fragment, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import lottie from 'lottie-web'
 import api from '../api/client'
+import { getCachedPdf, prefetchPaperPdf } from '../utils/pdfCache'
 import lottieData from '../assets/loading-pdf.json'
 import './ExamPaperView.css'
 
@@ -110,10 +111,11 @@ export default function ExamPaperView() {
     paper: location.state?.paper ? normalizePaper(location.state.paper, location.state.paper) : null,
     error: '',
   }))
+  const cachedInitial = getCachedPdf(id)
   const [pdfError, setPdfError] = useState('')
   const [pdfLoadError, setPdfLoadError] = useState('')
-  const [pdfLoading, setPdfLoading] = useState(false)
-  const [pdfDocumentUrl, setPdfDocumentUrl] = useState('')
+  const [pdfLoading, setPdfLoading] = useState(!cachedInitial?.objectUrl)
+  const [pdfDocumentUrl, setPdfDocumentUrl] = useState(cachedInitial?.objectUrl || '')
   const [correctionMode, setCorrectionMode] = useState(isCorrectionRequested)
   const [correctionData, setCorrectionData] = useState(null)
   const [correctionLoading, setCorrectionLoading] = useState(isCorrectionRequested)
@@ -209,36 +211,39 @@ export default function ExamPaperView() {
   }, [correctionData, correctionMode, id])
 
   useEffect(() => {
-    if (!paper || !paper.fileUrl || paper.fileUrl === '#' || correctionMode) {
+    if (correctionMode) {
       setPdfDocumentUrl('')
       setPdfLoading(false)
       return undefined
     }
 
-    let cancelled = false
-    let objectUrl
-    setPdfDocumentUrl('')
-    setPdfLoadError('')
-    setPdfLoading(true)
+    const cached = getCachedPdf(id)
+    if (cached?.objectUrl) {
+      setPdfDocumentUrl(cached.objectUrl)
+      setPdfLoading(false)
+      return undefined
+    }
 
-    api.get(`/exams/papers/${id}/pdf/`, { responseType: 'blob' })
-      .then(({ data }) => {
-        if (cancelled) return
-        objectUrl = URL.createObjectURL(data)
-        setPdfDocumentUrl(objectUrl)
+    let cancelled = false
+    setPdfLoading(true)
+    setPdfLoadError('')
+
+    prefetchPaperPdf(id)
+      .then((url) => {
+        if (!cancelled && url) {
+          setPdfDocumentUrl(url)
+          setPdfLoading(false)
+        }
       })
       .catch(() => {
-        if (!cancelled) setPdfLoadError('Unable to load the PDF file. Please try again later.')
-      })
-      .finally(() => {
-        if (!cancelled) setPdfLoading(false)
+        if (!cancelled) {
+          setPdfLoadError('Unable to load the PDF file. Please try again later.')
+          setPdfLoading(false)
+        }
       })
 
-    return () => {
-      cancelled = true
-      if (objectUrl) URL.revokeObjectURL(objectUrl)
-    }
-  }, [correctionMode, id, paper])
+    return () => { cancelled = true }
+  }, [correctionMode, id])
 
   const openCorrection = () => {
     setCorrectionError('')
@@ -247,22 +252,30 @@ export default function ExamPaperView() {
   }
 
   const downloadPaper = async () => {
-    if (!paper.fileUrl || paper.fileUrl === '#') {
+    if (paper && (!paper.fileUrl || paper.fileUrl === '#')) {
       setPdfError('The PDF file for this paper is not available yet.')
       return
     }
 
     try {
-      const { data } = await api.get(`/exams/papers/${id}/pdf/`, { responseType: 'blob' })
-      const objectUrl = URL.createObjectURL(data)
+      const cached = getCachedPdf(id)
+      let objectUrl = cached?.objectUrl
+
+      if (!objectUrl) {
+        if (cached?.blob) {
+          objectUrl = URL.createObjectURL(cached.blob)
+        } else {
+          objectUrl = await prefetchPaperPdf(id)
+        }
+      }
+
       const anchor = document.createElement('a')
-      const filename = (paper.sourceName || `${paper.title}.pdf`).replace(/[<>:"/\\|?*]+/g, '_')
+      const filename = (paper?.sourceName || `${paper?.title || 'paper'}.pdf`).replace(/[<>:"/\\|?*]+/g, '_')
       anchor.href = objectUrl
       anchor.download = filename.toLowerCase().endsWith('.pdf') ? filename : `${filename}.pdf`
       document.body.appendChild(anchor)
       anchor.click()
       anchor.remove()
-      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000)
       setPdfError('')
     } catch {
       setPdfError('The file download failed. Please try again later.')

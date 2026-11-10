@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import EducationSidebar from '../components/education/EducationSidebar'
 import { useApi } from '../api/cache'
+import { prefetchPaperPdf } from '../utils/pdfCache'
 import api, { mediaUrl } from '../api/client'
 import '../education-hub.css'
 import './SubjectPapers.css'
@@ -234,6 +235,33 @@ function SideIcon({ name }) {
   )
 }
 
+function PapersSkeleton() {
+  return (
+    <div className="sp-skeleton-wrap" aria-label="Loading exam papers" role="status">
+      {[2025, 2024, 2023].map((group) => (
+        <section key={group} className="sp-year-section sp-skeleton-group">
+          <div className="sp-year-head" style={{ pointerEvents: 'none' }}>
+            <span className="sp-skeleton-pill" style={{ width: 100, height: 26, borderRadius: 6 }} />
+            <span className="sp-skeleton-pill" style={{ width: 60, height: 18, borderRadius: 10 }} />
+          </div>
+          <div className="sp-papers sp-papers--open">
+            {[1, 2].map((i) => (
+              <div key={i} className="sp-paper-row sp-skeleton-row" style={{ pointerEvents: 'none' }}>
+                <span className="sp-skeleton-pill" style={{ width: 28, height: 32, borderRadius: 6, flexShrink: 0 }} />
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <span className="sp-skeleton-pill" style={{ width: '65%', height: 18, borderRadius: 4 }} />
+                  <span className="sp-skeleton-pill" style={{ width: '35%', height: 13, borderRadius: 4 }} />
+                </div>
+                <span className="sp-skeleton-pill" style={{ width: 95, height: 26, borderRadius: 13, flexShrink: 0 }} />
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  )
+}
+
 export default function SubjectPapers() {
   const { slug } = useParams()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -262,12 +290,16 @@ export default function SubjectPapers() {
     )
   }, [slug])
 
-  // Résolution du niveau initial via query param
+  // Résolution du niveau initial via query param (priorité au query param)
   const queryLevel = searchParams.get('level')?.toUpperCase()
   const defaultLevel =
-    queryLevel === 'A/L' || queryLevel === 'AL' || slug?.toLowerCase().endsWith('-al')
+    queryLevel === 'A/L' || queryLevel === 'AL'
       ? 'A/L'
-      : 'O/L'
+      : queryLevel === 'O/L' || queryLevel === 'OL'
+        ? 'O/L'
+        : slug?.toLowerCase().endsWith('-al')
+          ? 'A/L'
+          : 'O/L'
 
   const navigate = useNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -351,11 +383,30 @@ export default function SubjectPapers() {
     return `/education/matieres/${subjectSlug}/epreuves?${params.toString()}`
   }
 
+  // Préchargement depuis sessionStorage pour affichage immédiat en 0ms
+  const [cachedRaw] = useState(() => {
+    try {
+      const raw = sessionStorage.getItem('mms_cached_papers')
+      return raw ? JSON.parse(raw) : null
+    } catch {
+      return null
+    }
+  })
+
   /* ── Récupération des épreuves réelles depuis la Base de Données ── */
-  const { data: dbPapers, loading: loadingDbPapers } = useApi('/exams/papers/', { ttlMs: 60000 })
+  const { data: dbPapers, loading: loadingDbPapers } = useApi('/exams/papers/', { ttlMs: 120000 })
+
+  useEffect(() => {
+    if (dbPapers && Array.isArray(Array.isArray(dbPapers) ? dbPapers : dbPapers?.results)) {
+      try {
+        sessionStorage.setItem('mms_cached_papers', JSON.stringify(dbPapers))
+      } catch {}
+    }
+  }, [dbPapers])
 
   const allAvailablePapers = useMemo(() => {
-    const list = Array.isArray(dbPapers) ? dbPapers : (dbPapers?.results || [])
+    const source = dbPapers || cachedRaw
+    const list = Array.isArray(source) ? source : (source?.results || [])
     if (list.length > 0) {
       return list.map((item) => {
         const itemLevel = (item.level || '').toLowerCase()
@@ -378,7 +429,7 @@ export default function SubjectPapers() {
       })
     }
     return []
-  }, [dbPapers])
+  }, [dbPapers, cachedRaw])
 
   /* ── Filtrage des épreuves de la matière actuelle ── */
   const subjectPapers = useMemo(() => {
@@ -612,7 +663,9 @@ export default function SubjectPapers() {
 
       {/* ══ CONTENU PRINCIPAL ═══════════════════════════════ */}
       <main className="sp-main">
-        {grouped.length === 0 ? (
+        {loadingDbPapers && allAvailablePapers.length === 0 ? (
+          <PapersSkeleton />
+        ) : grouped.length === 0 ? (
           <div className="sp-empty">
             <i className="mdi mdi-file-search-outline sp-empty-icon" />
             <p>No papers found for these filters.</p>
@@ -670,6 +723,8 @@ export default function SubjectPapers() {
                       <div
                         key={paper.id}
                         className="sp-paper-row"
+                        onMouseEnter={() => prefetchPaperPdf(paper.id)}
+                        onTouchStart={() => prefetchPaperPdf(paper.id)}
                         onClick={() => toggleMenu(paper.id)}
                         onKeyDown={(event) => {
                           if (event.target === event.currentTarget && (event.key === 'Enter' || event.key === ' ')) {

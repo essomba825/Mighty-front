@@ -1530,3 +1530,31 @@
 .sp-fav-star--active {
   color: #f43f5e;
 }
+
+/* ── Skeleton Loading ── */
+.sp-skeleton-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.sp-skeleton-group {
+  opacity: 0.9;
+}
+
+.sp-skeleton-pill {
+  display: inline-block;
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: spSkeletonPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes spSkeletonPulse {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
