@@ -34,3 +34,4 @@ export function prefetchPaperPdf(paperId) {
 export function getCachedPdf(paperId) {
   return MEMORY_CACHE.get(Number(paperId)) || MEMORY_CACHE.get(String(paperId)) || null
 }
+
