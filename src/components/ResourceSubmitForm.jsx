@@ -3,11 +3,11 @@ import api from '../api/client'
 import './ResourceSubmitForm.css'
 
 const RESOURCE_TYPES = [
-  { value: 'past_paper', label: 'Past Paper / Épreuve' },
-  { value: 'correction', label: 'Correction / Corrigé' },
-  { value: 'notes', label: 'Notes de cours' },
-  { value: 'textbook', label: 'Livre / Manuel' },
-  { value: 'other', label: 'Autre ressource' },
+  { value: 'past_paper', label: 'Past Paper' },
+  { value: 'correction', label: 'Marking Scheme / Solution' },
+  { value: 'notes', label: 'Study Notes' },
+  { value: 'textbook', label: 'Textbook / Syllabus' },
+  { value: 'other', label: 'Other Resource' },
 ]
 
 const LEVELS = [
@@ -39,11 +39,11 @@ export default function ResourceSubmitForm({ onClose, onSuccess }) {
   const handleFile = (f) => {
     if (!f) return
     if (f.type !== 'application/pdf') {
-      setError('Seuls les fichiers PDF sont acceptés.')
+      setError('Only PDF files are accepted.')
       return
     }
     if (f.size > 50 * 1024 * 1024) {
-      setError('Le fichier ne doit pas dépasser 50 Mo.')
+      setError('File size must not exceed 50 MB.')
       return
     }
     setError(null)
@@ -58,8 +58,8 @@ export default function ResourceSubmitForm({ onClose, onSuccess }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!file) { setError('Veuillez joindre un fichier PDF.'); return }
-    if (!form.title.trim()) { setError('Le titre est obligatoire.'); return }
+    if (!file) { setError('Please attach a PDF file.'); return }
+    if (!form.title.trim()) { setError('Title is required.'); return }
 
     setSubmitting(true)
     setError(null)
@@ -79,9 +79,9 @@ export default function ResourceSubmitForm({ onClose, onSuccess }) {
       const data = err.response?.data
       if (data && typeof data === 'object') {
         const msgs = Object.values(data).flat().join(' ')
-        setError(msgs || 'Une erreur est survenue.')
+        setError(msgs || 'An error occurred.')
       } else {
-        setError('Une erreur est survenue. Réessayez.')
+        setError('An error occurred. Please try again.')
       }
     } finally {
       setSubmitting(false)
@@ -97,12 +97,12 @@ export default function ResourceSubmitForm({ onClose, onSuccess }) {
             <i className="mdi mdi-upload-outline" />
           </div>
           <div>
-            <h2 className="rsf-title">Soumettre une ressource</h2>
+            <h2 className="rsf-title">Submit a Resource</h2>
             <p className="rsf-subtitle">
-              Partagez vos épreuves, corrigés ou notes avec la communauté
+              Share your past papers, marking schemes, or study notes with the community
             </p>
           </div>
-          <button className="rsf-close" onClick={onClose} type="button" aria-label="Fermer">
+          <button className="rsf-close" onClick={onClose} type="button" aria-label="Close">
             <i className="mdi mdi-close" />
           </button>
         </div>
@@ -111,7 +111,7 @@ export default function ResourceSubmitForm({ onClose, onSuccess }) {
           {/* Type + Level */}
           <div className="rsf-row">
             <label className="rsf-field">
-              <span>Type de ressource</span>
+              <span>Resource Type</span>
               <select name="resource_type" value={form.resource_type} onChange={handleChange}>
                 {RESOURCE_TYPES.map((t) => (
                   <option key={t.value} value={t.value}>{t.label}</option>
@@ -119,7 +119,7 @@ export default function ResourceSubmitForm({ onClose, onSuccess }) {
               </select>
             </label>
             <label className="rsf-field">
-              <span>Niveau</span>
+              <span>Level</span>
               <select name="level" value={form.level} onChange={handleChange}>
                 {LEVELS.map((l) => (
                   <option key={l.value} value={l.value}>{l.label}</option>
@@ -127,7 +127,7 @@ export default function ResourceSubmitForm({ onClose, onSuccess }) {
               </select>
             </label>
             <label className="rsf-field rsf-field-sm">
-              <span>Année</span>
+              <span>Year</span>
               <select name="year" value={form.year} onChange={handleChange}>
                 {YEARS.map((y) => (
                   <option key={y} value={y}>{y}</option>
@@ -138,12 +138,12 @@ export default function ResourceSubmitForm({ onClose, onSuccess }) {
 
           {/* Title */}
           <label className="rsf-field">
-            <span>Titre <span className="rsf-req">*</span></span>
+            <span>Title <span className="rsf-req">*</span></span>
             <input
               name="title"
               value={form.title}
               onChange={handleChange}
-              placeholder="Ex. Physics Paper 1 (A/L) – 2023"
+              placeholder="e.g. Physics Paper 1 (A/L) – 2023"
               maxLength={255}
               required
             />
@@ -151,13 +151,13 @@ export default function ResourceSubmitForm({ onClose, onSuccess }) {
 
           {/* Description */}
           <label className="rsf-field">
-            <span>Description / notes <span className="rsf-opt">(facultatif)</span></span>
+            <span>Description / notes <span className="rsf-opt">(optional)</span></span>
             <textarea
               name="description"
               value={form.description}
               onChange={handleChange}
               rows={3}
-              placeholder="Décrivez le contenu, la source, l'état du document…"
+              placeholder="Describe document details, paper route, exam session..."
             />
           </label>
 
@@ -183,15 +183,15 @@ export default function ResourceSubmitForm({ onClose, onSuccess }) {
               <>
                 <i className="mdi mdi-file-pdf-box rsf-dz-icon rsf-dz-icon-ok" />
                 <span className="rsf-dz-name">{file.name}</span>
-                <span className="rsf-dz-size">{(file.size / 1024 / 1024).toFixed(1)} Mo</span>
+                <span className="rsf-dz-size">{(file.size / 1024 / 1024).toFixed(1)} MB</span>
               </>
             ) : (
               <>
                 <i className="mdi mdi-cloud-upload-outline rsf-dz-icon" />
                 <span className="rsf-dz-hint">
-                  Glissez votre PDF ici ou <u>cliquez pour parcourir</u>
+                  Drag and drop your PDF here or <u>click to browse</u>
                 </span>
-                <span className="rsf-dz-limit">PDF uniquement · max 50 Mo</span>
+                <span className="rsf-dz-limit">PDF only · max 50 MB</span>
               </>
             )}
           </div>
@@ -204,12 +204,12 @@ export default function ResourceSubmitForm({ onClose, onSuccess }) {
 
           <div className="rsf-footer">
             <button type="button" className="rsf-btn-cancel" onClick={onClose}>
-              Annuler
+              Cancel
             </button>
             <button type="submit" className="rsf-btn-submit" disabled={submitting}>
               {submitting
-                ? <><i className="mdi mdi-loading mdi-spin" /> Envoi en cours…</>
-                : <><i className="mdi mdi-send-outline" /> Soumettre</>}
+                ? <><i className="mdi mdi-loading mdi-spin" /> Submitting…</>
+                : <><i className="mdi mdi-send-outline" /> Submit</>}
             </button>
           </div>
         </form>

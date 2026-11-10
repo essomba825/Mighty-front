@@ -11,8 +11,7 @@ import ResourceSubmitForm from '../components/ResourceSubmitForm'
 const LEARNER_ROLES = ['student', 'teacher', 'admin']
 const ADMIN_ROLES = ['admin']
 
-/* Champs qui comptent pour la complétion : sert à la fois au pourcentage et
-   au calcul de ce qu'il reste à renseigner. */
+/* Fields counting towards completion */
 const PROFILE_FIELDS = ['photo', 'graduation_year', 'profession', 'company', 'city', 'bio']
 
 const completionOf = (profile) => {
@@ -21,7 +20,6 @@ const completionOf = (profile) => {
   return Math.round((filled / PROFILE_FIELDS.length) * 100)
 }
 
-/* Nombre de champs déjà renseignés (0 quand il n'y a pas encore de profil). */
 const filledCountOf = (profile) =>
   profile ? PROFILE_FIELDS.filter((field) => profile[field]).length : 0
 
@@ -41,19 +39,19 @@ function QuickCard({ to, accent = 'gold', icon, title, sub, badge }) {
 
 /* ── Status pill for submissions ── */
 const STATUS_META = {
-  pending:  { label: 'En attente',  color: '#f29408', icon: 'mdi-clock-outline' },
-  approved: { label: 'Approuvé',    color: '#22c55e', icon: 'mdi-check-circle-outline' },
-  rejected: { label: 'Refusé',      color: '#f04f4f', icon: 'mdi-close-circle-outline' },
+  pending:  { label: 'Pending',   color: '#f29408', icon: 'mdi-clock-outline' },
+  approved: { label: 'Approved',  color: '#22c55e', icon: 'mdi-check-circle-outline' },
+  rejected: { label: 'Rejected',  color: '#f04f4f', icon: 'mdi-close-circle-outline' },
 }
 
 function SubmissionRow({ sub }) {
   const meta = STATUS_META[sub.status] || STATUS_META.pending
   const typeLabels = {
-    past_paper: 'Épreuve',
-    correction: 'Corrigé',
-    notes: 'Notes',
-    textbook: 'Manuel',
-    other: 'Autre',
+    past_paper: 'Past Paper',
+    correction: 'Marking Scheme',
+    notes: 'Study Notes',
+    textbook: 'Textbook',
+    other: 'Other',
   }
   return (
     <div className="ms-sub-row">
@@ -88,8 +86,6 @@ export default function MemberSpace() {
   const filledCount = filledCountOf(profile)
   const completed = completion >= 100
 
-  /* Message du bandeau : on décrit la situation réelle du membre plutôt qu'un
-     slogan, et on n'affiche jamais deux fois la même information. */
   const subtitleKey = {
     pending: 'member.sub.pending',
     rejected: 'member.sub.rejected',
@@ -126,20 +122,20 @@ export default function MemberSpace() {
 
   const handleSuccess = () => {
     setShowForm(false)
-    showToast('Votre ressource a été soumise avec succès ! Elle sera examinée par notre équipe.')
+    showToast('Your resource was submitted successfully! It will be reviewed by our team.')
     fetchSubmissions()
   }
 
   return (
     <div className="ms-page">
       <div className="page">
-        <nav className="ms-crumbs" aria-label="Fil d'Ariane">
+        <nav className="ms-crumbs" aria-label="Breadcrumb">
           <Link to="/"><i className="mdi mdi-home-outline" aria-hidden="true" />{t('nav.home')}</Link>
           <span className="ms-crumbs-sep" aria-hidden="true">›</span>
           <span className="ms-crumbs-current">{t('member.breadcrumb')}</span>
         </nav>
 
-        {/* Bannière profil : identité, statut du compte et progression du profil */}
+        {/* Profile banner */}
         <section className="ms-banner">
           <div className="ms-banner-art" aria-hidden="true">
             <span className="ms-banner-ring ms-banner-ring-1" />
@@ -226,13 +222,13 @@ export default function MemberSpace() {
                      sub={t('member.card.events.sub')} />
           {isAdmin && (
             <QuickCard to="/admin" accent="violet" icon="mdi-shield-crown-outline"
-                       title="Tableau de bord admin"
-                       sub="Gérer membres, contenus et statistiques"
+                       title="Admin Dashboard"
+                       sub="Manage members, content, and statistics"
                        badge="Admin" />
           )}
         </div>
 
-        {/* ── Ressources académiques ── */}
+        {/* ── Academic Resources ── */}
         <section className="ms-resources">
           <div className="ms-res-header">
             <div className="ms-res-title-wrap">
@@ -240,15 +236,15 @@ export default function MemberSpace() {
                 <i className="mdi mdi-book-upload-outline" />
               </div>
               <div>
-                <h2 className="ms-res-title">Ressources académiques</h2>
+                <h2 className="ms-res-title">Academic Resources</h2>
                 <p className="ms-res-sub">
-                  Partagez vos épreuves, corrigés et notes avec la communauté
+                  Share your past papers, marking schemes, and study notes with the community
                 </p>
               </div>
             </div>
             <button className="ms-res-cta" onClick={() => setShowForm(true)} type="button">
               <i className="mdi mdi-plus" />
-              Soumettre une ressource
+              Submit a Resource
             </button>
           </div>
 
@@ -257,14 +253,14 @@ export default function MemberSpace() {
             {subsLoading ? (
               <div className="ms-sub-empty">
                 <i className="mdi mdi-loading mdi-spin" style={{ fontSize: '1.4rem', marginBottom: '0.5rem' }} />
-                <span>Chargement…</span>
+                <span>Loading…</span>
               </div>
             ) : submissions.length === 0 ? (
               <div className="ms-sub-empty">
                 <i className="mdi mdi-inbox-outline ms-sub-empty-icon" />
-                <span>Vous n'avez pas encore soumis de ressource.</span>
+                <span>You have not submitted any resources yet.</span>
                 <button className="ms-sub-empty-btn" onClick={() => setShowForm(true)} type="button">
-                  <i className="mdi mdi-upload-outline" /> Soumettre ma première ressource
+                  <i className="mdi mdi-upload-outline" /> Submit my first resource
                 </button>
               </div>
             ) : (
