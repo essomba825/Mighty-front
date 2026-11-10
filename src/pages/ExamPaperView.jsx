@@ -5,7 +5,7 @@ import api, { API_URL } from '../api/client'
 import lottieData from '../assets/loading-pdf.json'
 import './ExamPaperView.css'
 
-function LottieLoader() {
+function LottieLoader({ text = 'Chargement du document…' }) {
   const ref = useRef(null)
   useEffect(() => {
     const anim = lottie.loadAnimation({
@@ -17,7 +17,12 @@ function LottieLoader() {
     })
     return () => anim.destroy()
   }, [])
-  return <div ref={ref} className="epv-lottie-loader" style={{ width: 180, height: 180, margin: '0 auto' }} />
+  return (
+    <div className="epv-loader-wrapper">
+      <div ref={ref} className="epv-lottie-loader" />
+      {text && <p className="epv-loader-text">{text}</p>}
+    </div>
+  )
 }
 
 function normalizePaper(item, fallback) {
@@ -276,17 +281,17 @@ export default function ExamPaperView() {
 
       <section className="epv-document" aria-label={correctionMode ? 'Marking scheme' : 'Exam paper'}>
         {paperLoading ? (
-          <div className="epv-document-state" role="status"><LottieLoader /></div>
+          <div className="epv-document-state" role="status"><LottieLoader text="Chargement de l’épreuve…" /></div>
         ) : paperError ? (
           <div className="epv-document-state epv-error" role="alert">{paperError}</div>
         ) : correctionMode ? (
           <div className="epv-correction-content">
-            {correctionLoading ? <div className="epv-document-state" role="status"><LottieLoader /></div>
+            {correctionLoading ? <div className="epv-document-state" role="status"><LottieLoader text="Chargement du corrigé…" /></div>
               : correctionError ? <p className="epv-inline-error" role="alert">{correctionError}</p>
                 : <>
                   {correctionData?.correction_pdf && (
                     correctionPdfLoading
-                      ? <div className="epv-document-state" role="status"><LottieLoader /></div>
+                      ? <div className="epv-document-state" role="status"><LottieLoader text="Chargement du PDF du corrigé…" /></div>
                       : correctionPdfError
                         ? <p className="epv-inline-error" role="alert">{correctionPdfError}</p>
                         : correctionPdfUrl && (
@@ -301,7 +306,7 @@ export default function ExamPaperView() {
                 </>}
           </div>
         ) : pdfLoading ? (
-          <div className="epv-document-state" role="status"><LottieLoader /></div>
+          <div className="epv-document-state" role="status"><LottieLoader text="Chargement du PDF…" /></div>
         ) : pdfLoadError ? (
           <div className="epv-document-state epv-error" role="alert">{pdfLoadError}</div>
         ) : paper.fileUrl && paper.fileUrl !== '#' ? (

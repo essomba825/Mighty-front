@@ -71,16 +71,54 @@
 
 .epv-document-state {
   width: 100%;
-  display: grid;
-  place-items: center;
-  padding: 24px;
+  height: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
   color: #d7e0eb;
   text-align: center;
 }
 
+.epv-loader-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  animation: epvFadeIn 0.3s ease-out;
+}
+
 .epv-lottie-loader {
-  display: block;
-  margin: 0 auto;
+  width: 220px;
+  height: 220px;
+  max-width: 70vw;
+  max-height: 70vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.25));
+}
+
+.epv-loader-text {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: #94a3b8;
+  letter-spacing: 0.02em;
+}
+
+@keyframes epvFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .epv-error,
