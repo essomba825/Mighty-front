@@ -78,6 +78,11 @@
   text-align: center;
 }
 
+.epv-lottie-loader {
+  display: block;
+  margin: 0 auto;
+}
+
 .epv-error,
 .epv-inline-error,
 .epv-action-error {
