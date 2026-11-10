@@ -50,62 +50,6 @@ const TEST_SUBJECTS = [
 ]
 
 /* ─────────────────────────────────────────────
-   ÉPREUVES PAR MATIÈRE ET NIVEAU
-   ───────────────────────────────────────────── */
-const TEST_PAPERS = [
-  // ── MATHEMATICS ──
-  { id: 101, subjectSlug: 'mathematics', year: 2024, level: 'O/L', session: 1, title: 'Mathematics – Paper 1 (O/L)', type: 'Épreuve', correction: 'available', fileUrl: '#' },
-  { id: 102, subjectSlug: 'mathematics', year: 2024, level: 'O/L', session: 2, title: 'Mathematics – Paper 2 (O/L)', type: 'Épreuve', correction: 'available', fileUrl: '#' },
-  { id: 103, subjectSlug: 'mathematics', year: 2023, level: 'O/L', session: 1, title: 'Mathematics – Paper 1 (O/L)', type: 'Épreuve', correction: 'available', fileUrl: '#' },
-  { id: 104, subjectSlug: 'mathematics', year: 2023, level: 'O/L', session: 2, title: 'Mathematics – Paper 2 (O/L)', type: 'Épreuve', correction: 'pending', fileUrl: '#' },
-  { id: 105, subjectSlug: 'mathematics', year: 2023, level: 'O/L', session: 3, title: 'Mathematics – Paper 3 (O/L)', type: 'Épreuve', correction: 'none', fileUrl: '#' },
-  { id: 106, subjectSlug: 'mathematics', year: 2022, level: 'O/L', session: 1, title: 'Mathematics – Paper 1 (O/L)', type: 'Épreuve', correction: 'available', fileUrl: '#' },
-  { id: 107, subjectSlug: 'mathematics', year: 2022, level: 'O/L', session: 2, title: 'Mathematics – Paper 2 (O/L)', type: 'Épreuve', correction: 'none', fileUrl: '#' },
-  { id: 108, subjectSlug: 'mathematics', year: 2024, level: 'A/L', session: 1, title: 'Pure Maths with Mechanics – Paper 1 (A/L)', type: 'Épreuve', correction: 'available', fileUrl: '#' },
-  { id: 109, subjectSlug: 'mathematics', year: 2024, level: 'A/L', session: 2, title: 'Pure Maths with Mechanics – Paper 2 (A/L)', type: 'Épreuve', correction: 'pending', fileUrl: '#' },
-  { id: 110, subjectSlug: 'mathematics', year: 2023, level: 'A/L', session: 1, title: 'Pure Maths with Statistics – Paper 1 (A/L)', type: 'Épreuve', correction: 'available', fileUrl: '#' },
-  { id: 111, subjectSlug: 'mathematics', year: 2023, level: 'A/L', session: 2, title: 'Pure Maths with Statistics – Paper 2 (A/L)', type: 'Épreuve', correction: 'none', fileUrl: '#' },
-  { id: 112, subjectSlug: 'mathematics', year: 2022, level: 'A/L', session: 1, title: 'Further Mathematics – Paper 1 (A/L)', type: 'Épreuve', correction: 'available', fileUrl: '#' },
-
-  // ── PHYSICS ──
-  { id: 201, subjectSlug: 'physics', year: 2024, level: 'O/L', session: 1, title: 'Physics – Paper 1 MCQ (O/L)', type: 'Épreuve', correction: 'available', fileUrl: '#' },
-  { id: 202, subjectSlug: 'physics', year: 2024, level: 'O/L', session: 2, title: 'Physics – Paper 2 Theory (O/L)', type: 'Épreuve', correction: 'available', fileUrl: '#' },
-  { id: 203, subjectSlug: 'physics', year: 2023, level: 'O/L', session: 1, title: 'Physics – Paper 1 MCQ (O/L)', type: 'Épreuve', correction: 'available', fileUrl: '#' },
-  { id: 204, subjectSlug: 'physics', year: 2023, level: 'O/L', session: 2, title: 'Physics – Paper 2 Theory (O/L)', type: 'Épreuve', correction: 'pending', fileUrl: '#' },
-  { id: 205, subjectSlug: 'physics', year: 2022, level: 'O/L', session: 1, title: 'Physics – Paper 1 MCQ (O/L)', type: 'Épreuve', correction: 'available', fileUrl: '#' },
-  { id: 206, subjectSlug: 'physics', year: 2024, level: 'A/L', session: 1, title: 'Physics – Paper 1 MCQ (A/L)', type: 'Épreuve', correction: 'available', fileUrl: '#' },
-  { id: 207, subjectSlug: 'physics', year: 2024, level: 'A/L', session: 2, title: 'Physics – Paper 2 Theory (A/L)', type: 'Épreuve', correction: 'available', fileUrl: '#' },
-  { id: 208, subjectSlug: 'physics', year: 2024, level: 'A/L', session: 3, title: 'Physics – Paper 3 Practical (A/L)', type: 'Épreuve', correction: 'pending', fileUrl: '#' },
-  { id: 209, subjectSlug: 'physics', year: 2023, level: 'A/L', session: 1, title: 'Physics – Paper 1 MCQ (A/L)', type: 'Épreuve', correction: 'available', fileUrl: '#' },
-  { id: 210, subjectSlug: 'physics', year: 2023, level: 'A/L', session: 2, title: 'Physics – Paper 2 Theory (A/L)', type: 'Épreuve', correction: 'none', fileUrl: '#' },
-  { id: 211, subjectSlug: 'physics', year: 2022, level: 'A/L', session: 1, title: 'Physics – Paper 1 (A/L)', type: 'Épreuve', correction: 'available', fileUrl: '#' },
-
-  // ── CHEMISTRY ──
-  { id: 301, subjectSlug: 'chemistry', year: 2024, level: 'O/L', session: 1, title: 'Chemistry – Paper 1 MCQ (O/L)', type: 'Épreuve', correction: 'available', fileUrl: '#' },
-  { id: 302, subjectSlug: 'chemistry', year: 2024, level: 'O/L', session: 2, title: 'Chemistry – Paper 2 Theory (O/L)', type: 'Épreuve', correction: 'available', fileUrl: '#' },
-  { id: 303, subjectSlug: 'chemistry', year: 2023, level: 'O/L', session: 1, title: 'Chemistry – Paper 1 MCQ (O/L)', type: 'Épreuve', correction: 'available', fileUrl: '#' },
-  { id: 304, subjectSlug: 'chemistry', year: 2023, level: 'O/L', session: 2, title: 'Chemistry – Paper 2 Theory (O/L)', type: 'Épreuve', correction: 'none', fileUrl: '#' },
-  { id: 305, subjectSlug: 'chemistry', year: 2022, level: 'O/L', session: 1, title: 'Chemistry – Paper 1 (O/L)', type: 'Épreuve', correction: 'available', fileUrl: '#' },
-  { id: 306, subjectSlug: 'chemistry', year: 2024, level: 'A/L', session: 1, title: 'Chemistry – Paper 1 MCQ (A/L)', type: 'Épreuve', correction: 'available', fileUrl: '#' },
-  { id: 307, subjectSlug: 'chemistry', year: 2024, level: 'A/L', session: 2, title: 'Chemistry – Paper 2 Theory (A/L)', type: 'Épreuve', correction: 'available', fileUrl: '#' },
-  { id: 308, subjectSlug: 'chemistry', year: 2024, level: 'A/L', session: 3, title: 'Chemistry – Paper 3 Practical (A/L)', type: 'Épreuve', correction: 'pending', fileUrl: '#' },
-  { id: 309, subjectSlug: 'chemistry', year: 2023, level: 'A/L', session: 1, title: 'Chemistry – Paper 1 (A/L)', type: 'Épreuve', correction: 'available', fileUrl: '#' },
-  { id: 310, subjectSlug: 'chemistry', year: 2023, level: 'A/L', session: 2, title: 'Chemistry – Paper 2 (A/L)', type: 'Épreuve', correction: 'none', fileUrl: '#' },
-
-  // ── BIOLOGY ──
-  { id: 401, subjectSlug: 'biology', year: 2024, level: 'O/L', session: 1, title: 'Biology – Paper 1 MCQ (O/L)', type: 'Épreuve', correction: 'available', fileUrl: '#' },
-  { id: 402, subjectSlug: 'biology', year: 2024, level: 'O/L', session: 2, title: 'Biology – Paper 2 Theory (O/L)', type: 'Épreuve', correction: 'available', fileUrl: '#' },
-  { id: 403, subjectSlug: 'biology', year: 2023, level: 'O/L', session: 1, title: 'Biology – Paper 1 MCQ (O/L)', type: 'Épreuve', correction: 'available', fileUrl: '#' },
-  { id: 404, subjectSlug: 'biology', year: 2023, level: 'O/L', session: 2, title: 'Biology – Paper 2 Theory (O/L)', type: 'Épreuve', correction: 'pending', fileUrl: '#' },
-  { id: 405, subjectSlug: 'biology', year: 2022, level: 'O/L', session: 1, title: 'Biology – Paper 1 (O/L)', type: 'Épreuve', correction: 'available', fileUrl: '#' },
-  { id: 406, subjectSlug: 'biology', year: 2024, level: 'A/L', session: 1, title: 'Biology – Paper 1 MCQ (A/L)', type: 'Épreuve', correction: 'available', fileUrl: '#' },
-  { id: 407, subjectSlug: 'biology', year: 2024, level: 'A/L', session: 2, title: 'Biology – Paper 2 Theory (A/L)', type: 'Épreuve', correction: 'available', fileUrl: '#' },
-  { id: 408, subjectSlug: 'biology', year: 2024, level: 'A/L', session: 3, title: 'Biology – Paper 3 Practical (A/L)', type: 'Épreuve', correction: 'none', fileUrl: '#' },
-  { id: 409, subjectSlug: 'biology', year: 2023, level: 'A/L', session: 1, title: 'Biology – Paper 1 (A/L)', type: 'Épreuve', correction: 'available', fileUrl: '#' },
-  { id: 410, subjectSlug: 'biology', year: 2023, level: 'A/L', session: 2, title: 'Biology – Paper 2 (A/L)', type: 'Épreuve', correction: 'pending', fileUrl: '#' },
-]
-
-/* ─────────────────────────────────────────────
    HELPERS & BADGES
    ───────────────────────────────────────────── */
 const BADGE = {
@@ -344,9 +288,9 @@ export default function SubjectPapers() {
   const [favIds, setFavIds] = useState(() => {
     try {
       const raw = localStorage.getItem('mms_fav_papers')
-      return raw ? JSON.parse(raw) : [101, 102, 108, 201, 301]
+      return raw ? JSON.parse(raw) : []
     } catch {
-      return [101, 102, 108, 201, 301]
+      return []
     }
   })
 
@@ -433,7 +377,7 @@ export default function SubjectPapers() {
         }
       })
     }
-    return TEST_PAPERS
+    return []
   }, [dbPapers])
 
   /* ── Filtrage des épreuves de la matière actuelle ── */
