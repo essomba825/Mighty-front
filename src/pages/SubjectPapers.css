@@ -765,397 +765,79 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: .88rem;
+  font-size: .82rem;
   color: var(--sp-text-soft);
-  margin-bottom: 14px;
 }
 
 .sp-breadcrumb-link {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  color: #0966e8;
-  font-weight: 700;
+  gap: 5px;
+  color: #1776e8;
+  font-weight: 600;
   text-decoration: none;
   transition: color .2s;
 }
 .sp-breadcrumb-link:hover {
-  color: #064bbb;
+  color: #0d5cbe;
   text-decoration: underline;
 }
 
 .sp-breadcrumb-sep {
-  color: #94a3b8;
-  font-weight: 400;
+  color: #cbd5e1;
 }
 
 .sp-breadcrumb-current {
-  color: #061d3a;
-  font-weight: 800;
+  color: var(--sp-text);
+  font-weight: 600;
 }
 
 .sp-breadcrumb-badge {
   display: inline-block;
-  padding: 3px 10px;
-  border-radius: 999px;
-  background: #eef5ff;
-  font-size: .78rem;
-  font-weight: 800;
-  color: #0966e8;
-  letter-spacing: 0.02em;
-}
-
-/* ══════════════════════════════════════════════════════
-   UNIFIED HERO & L-SHAPE SIGNATURE BADGE
-   ══════════════════════════════════════════════════════ */
-
-.sp-hero-unified {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-template-rows: auto 1fr;
-  column-gap: 24px;
-  row-gap: 8px;
-  align-items: center;
-  margin-top: 6px;
-  margin-bottom: 22px;
-}
-
-/* ── L-Block: Connected Pill & Icon with Concave Inward Fillet ── */
-.sp-l-block {
-  grid-row: 1 / span 2;
-  grid-column: 1;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  filter: drop-shadow(0 10px 24px rgba(9, 102, 232, 0.32));
-  z-index: 10;
-}
-
-/* Top pill part */
-.sp-l-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 18px 8px 12px;
-  background: var(--badge-grad, linear-gradient(135deg, #3faaff 0%, #0966e8 100%));
-  color: #ffffff;
-  border-radius: 999px 999px 999px 0;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: #e2e8f0;
+  font-size: .72rem;
   font-weight: 700;
-  font-size: 0.95rem;
-  border: none;
-  cursor: pointer;
-  white-space: nowrap;
-  position: relative;
-  z-index: 3;
-  transition: transform 0.15s ease;
-  user-select: none;
-}
-
-.sp-l-pill:hover {
-  filter: brightness(1.05);
-}
-
-.sp-l-symbol {
-  font-family: Georgia, serif;
-  font-size: 1.15rem;
-  line-height: 1;
-  display: inline-block;
-}
-
-.sp-l-name {
-  letter-spacing: -0.01em;
-}
-
-.sp-l-chevron {
-  font-size: 1.1rem;
-  opacity: 0.85;
-  margin-left: 2px;
-}
-
-/* The Inward Concave Fillet Radius connecting the pill and the square icon */
-.sp-l-fillet {
-  position: absolute;
-  top: 35px;
-  left: 62px;
-  width: 16px;
-  height: 16px;
-  background: radial-gradient(circle at 100% 100%, transparent 15px, var(--badge-color, #0966e8) 15.5px);
-  pointer-events: none;
-  z-index: 2;
-}
-
-/* Bottom square icon part */
-.sp-l-icon {
-  width: 62px;
-  height: 62px;
-  background: var(--badge-grad, linear-gradient(135deg, #3faaff 0%, #0966e8 100%));
-  border-radius: 0 16px 16px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #ffffff;
-  margin-top: -1px;
-  position: relative;
-  z-index: 2;
-}
-
-.sp-l-icon-symbol {
-  font-size: 34px;
-  font-family: Georgia, serif;
-  line-height: 1;
-  transform: translateY(-2px);
-}
-
-.sp-l-icon i {
-  font-size: 28px;
-}
-
-/* Dropdown when clicking active pill */
-.sp-l-dropdown {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  min-width: 190px;
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 8px;
-  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.15), 0 2px 6px rgba(0, 0, 0, 0.05);
-  border: 1px solid #e2e8f0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  z-index: 100;
-  animation: spPopDrop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes spPopDrop {
-  from { opacity: 0; transform: translateY(-6px) scale(0.96); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.sp-l-drop-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
-  border-radius: 10px;
-  text-decoration: none;
-  color: #1e293b;
-  font-weight: 600;
-  font-size: 0.88rem;
-  transition: background 0.15s;
-}
-
-.sp-l-drop-item:hover {
-  background: #f1f5f9;
-}
-
-.sp-l-drop-item.active {
-  background: #eef5ff;
-  color: #0966e8;
-}
-
-.sp-l-drop-icon {
-  width: 26px;
-  height: 26px;
-  border-radius: 7px;
-  display: grid;
-  place-items: center;
-  color: #ffffff;
-  font-size: 13px;
-  font-family: Georgia, serif;
-}
-
-/* ── Switcher Pills (Physics, Chemistry, etc.) ── */
-.sp-switcher-pills {
-  grid-row: 1;
-  grid-column: 2;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  overflow-x: auto;
-  padding: 2px 0;
-  scrollbar-width: none;
-}
-.sp-switcher-pills::-webkit-scrollbar {
-  display: none;
-}
-
-.sp-other-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 14px 6px 6px;
-  border-radius: 999px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  color: #334155;
-  font-weight: 600;
-  font-size: 0.88rem;
-  text-decoration: none;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-
-.sp-other-pill:hover {
-  background: #f8fafc;
-  border-color: #cbd5e1;
-  transform: translateY(-1px);
-}
-
-.sp-other-icon {
-  width: 26px;
-  height: 26px;
-  border-radius: 7px;
-  display: grid;
-  place-items: center;
-  color: #ffffff;
-  font-size: 13px;
-  font-family: Georgia, serif;
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.35);
-}
-
-/* ── Title & Description ── */
-.sp-hero-info {
-  grid-row: 2;
-  grid-column: 2;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.sp-hero-title {
-  font-size: 1.85rem;
-  font-weight: 800;
-  color: #061d3a;
-  margin: 0 0 3px;
-  letter-spacing: -0.025em;
-  line-height: 1.15;
-}
-
-.sp-hero-desc {
-  font-size: 0.92rem;
-  color: #556987;
-  margin: 0;
-  line-height: 1.45;
-  max-width: 650px;
-}
-
-/* ── Controls Bar: Segmented Tabs & Year Filter ── */
-.sp-controls-bar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  margin-bottom: 24px;
-}
-
-.sp-segmented-tabs {
-  display: inline-flex;
-  align-items: center;
-  background: #f1f5f9;
-  border-radius: 12px;
-  padding: 4px;
-  gap: 2px;
-}
-
-.sp-seg-tab {
-  padding: 7px 18px;
-  border-radius: 9px;
-  border: none;
-  background: transparent;
   color: #475569;
-  font-weight: 700;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
+}
+
+/* ── Subject Switcher (Pills) ────────────────────────── */
+.sp-subject-switcher {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.sp-sub-pill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-family: inherit;
-}
-
-.sp-seg-tab:hover:not(.sp-seg-tab--active) {
-  color: #0f172a;
-}
-
-.sp-seg-tab--active {
-  background: #061d3a;
-  color: #ffffff !important;
-  box-shadow: 0 3px 8px rgba(6, 29, 58, 0.25);
-}
-
-.sp-seg-divider {
-  width: 1px;
-  height: 16px;
-  background: #cbd5e1;
-  margin: 0 4px;
-}
-
-.sp-heart-icon {
-  color: #f43f5e;
-  font-size: 0.95rem;
-}
-
-.sp-seg-tab--active .sp-heart-icon {
-  color: #ffffff;
-}
-
-.sp-year-box {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-}
-
-.sp-year-select-modern {
-  appearance: none;
-  -webkit-appearance: none;
-  padding: 9px 38px 9px 16px;
+  gap: 8px;
+  padding: 5px 14px 5px 6px;
+  border-radius: 999px;
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  background: #ffffff;
-  color: #1e293b;
-  font-size: 0.9rem;
+  background: #f8fafc;
+  color: var(--sp-text-soft);
+  text-decoration: none;
+  font-size: .84rem;
   font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  transition: all 0.2s ease;
-  font-family: inherit;
+  white-space: nowrap;
+  transition: all .2s ease;
 }
 
-.sp-year-select-modern:hover,
-.sp-year-select-modern:focus {
-  border-color: #94a3b8;
-  outline: none;
+.sp-sub-pill:hover {
+  background: #f1f5f9;
+  color: var(--sp-text);
+  border-color: #cbd5e1;
 }
 
-.sp-year-icon-modern {
-  position: absolute;
-  right: 12px;
-  pointer-events: none;
-  color: #64748b;
-  font-size: 1.1rem;
-}
-
-/* Responsive adjustment */
-@media (max-width: 640px) {
-  .sp-hero-unified {
-    grid-template-columns: auto 1fr;
-    column-gap: 16px;
-  }
-  .sp-hero-title {
-    font-size: 1.45rem;
-  }
-  .sp-hero-desc {
-    font-size: 0.82rem;
-  }
-  .sp-controls-bar {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+.sp-sub-pill--active {
+  background: var(--pill-c, #0966e8);
+  border-color: var(--pill-c, #0966e8);
+  color: #fff !important;
+  box-shadow: 0 4px 14px rgba(9,102,232,.3);
 }
 
 /* ── Toast notification ────────────────────────────── */

@@ -17,9 +17,7 @@ const TEST_SUBJECTS = [
     slug: 'mathematics',
     name: 'Mathematics',
     color: 'blue',
-    symbol: 'π',
     hex: '#0966e8',
-    gradient: 'linear-gradient(135deg, #3faaff 0%, #0966e8 100%)',
     levels: ['O/L', 'A/L'],
     description: 'GCE O/L & GCE A/L Past Papers, Question Papers & Marking Guides',
   },
@@ -28,9 +26,7 @@ const TEST_SUBJECTS = [
     slug: 'physics',
     name: 'Physics',
     color: 'purple',
-    symbol: '⚛',
     hex: '#7546e7',
-    gradient: 'linear-gradient(135deg, #b38aff 0%, #7546e7 100%)',
     levels: ['O/L', 'A/L'],
     description: 'GCE O/L & GCE A/L Physics Mechanics, Electricity, Waves & Solutions',
   },
@@ -39,9 +35,7 @@ const TEST_SUBJECTS = [
     slug: 'chemistry',
     name: 'Chemistry',
     color: 'orange',
-    symbol: '⚗',
     hex: '#f29408',
-    gradient: 'linear-gradient(135deg, #ffc84e 0%, #f29408 100%)',
     levels: ['O/L', 'A/L'],
     description: 'GCE O/L & GCE A/L Organic, Inorganic, Physical Chemistry Papers',
   },
@@ -50,9 +44,7 @@ const TEST_SUBJECTS = [
     slug: 'biology',
     name: 'Biology',
     color: 'green',
-    symbol: '♧',
     hex: '#08a665',
-    gradient: 'linear-gradient(135deg, #3ed69b 0%, #08a665 100%)',
     levels: ['O/L', 'A/L'],
     description: 'GCE O/L & GCE A/L Cell Biology, Physiology, Genetics Papers',
   },
@@ -291,8 +283,6 @@ export default function SubjectPapers() {
         slug: norm,
         name: norm.charAt(0).toUpperCase() + norm.slice(1),
         color,
-        symbol: 'π',
-        gradient: 'linear-gradient(135deg, #3faaff 0%, #0966e8 100%)',
         hex: COLOR_HEX[color] || '#0966e8',
         levels: ['O/L', 'A/L'],
         description: `GCE O/L & A/L ${norm} past papers`,
@@ -316,7 +306,6 @@ export default function SubjectPapers() {
   const [activeLevel, setActiveLevel] = useState(defaultLevel)
   const [selectedYear, setSelectedYear] = useState('all')
   const [openMenuId, setOpenMenuId] = useState(null)
-  const [subjectDropdownOpen, setSubjectDropdownOpen] = useState(false)
   const [collapsed, setCollapsed] = useState({})
   const search = searchParams.get('search') || ''
   const [notification, setNotification] = useState(null)
@@ -485,9 +474,6 @@ export default function SubjectPapers() {
     if (!e.target.closest('.sp-paper-menu-wrap') && !e.target.closest('.sp-paper-row')) {
       setOpenMenuId(null)
     }
-    if (!e.target.closest('.sp-l-block')) {
-      setSubjectDropdownOpen(false)
-    }
   }
 
   const openPaperPage = (paper, view = 'paper') => {
@@ -591,110 +577,66 @@ export default function SubjectPapers() {
             <span className="sp-breadcrumb-badge">{activeLevel}</span>
           </div>
 
-          {/* Unified Subject Hero with L-shape signature badge */}
-          <div className="sp-hero-unified">
-            {/* Left column: L-shaped connected pill & icon */}
-            <div
-              className="sp-l-block"
-              style={{
-                '--badge-grad': currentSubject.gradient || 'linear-gradient(135deg, #3faaff 0%, #0966e8 100%)',
-                '--badge-color': currentSubject.hex || '#0966e8',
-              }}
-            >
-              <button
-                type="button"
-                className="sp-l-pill"
-                onClick={() => setSubjectDropdownOpen((v) => !v)}
-                aria-expanded={subjectDropdownOpen}
-                aria-label={`Select subject, current: ${currentSubject.name}`}
-              >
-                <span className="sp-l-symbol">{currentSubject.symbol || 'π'}</span>
-                <span className="sp-l-name">{currentSubject.name}</span>
-                <i className={`mdi mdi-chevron-${subjectDropdownOpen ? 'up' : 'down'} sp-l-chevron`} />
-              </button>
-
-              <div className="sp-l-fillet" aria-hidden="true" />
-
-              <div className="sp-l-icon">
-                {isAllFavorites ? (
-                  <i className="mdi mdi-heart" />
-                ) : (
-                  <span className="sp-l-icon-symbol">{currentSubject.symbol || 'π'}</span>
-                )}
-              </div>
-
-              {/* Dropdown menu when clicking active pill */}
-              {subjectDropdownOpen && (
-                <div className="sp-l-dropdown">
-                  {TEST_SUBJECTS.map((sub) => (
-                    <Link
-                      key={sub.slug}
-                      to={subjectPath(sub.slug)}
-                      className={`sp-l-drop-item ${normalizeSubject(sub.slug) === normalizeSubject(currentSubject.slug) ? 'active' : ''}`}
-                      onClick={() => setSubjectDropdownOpen(false)}
-                    >
-                      <span className="sp-l-drop-icon" style={{ background: sub.gradient }}>{sub.symbol}</span>
-                      <span>{sub.name}</span>
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Right top: Other subjects pills */}
-            <div className="sp-switcher-pills">
-              {TEST_SUBJECTS.filter((sub) => normalizeSubject(sub.slug) !== normalizeSubject(currentSubject.slug)).map((sub) => (
+          {/* Sélecteur de matière en pastilles */}
+          <div className="sp-subject-switcher">
+            {TEST_SUBJECTS.map((sub) => {
+              const isSelected = !isAllFavorites && normalizeSubject(sub.slug) === normalizeSubject(currentSubject.slug)
+              return (
                 <Link
                   key={sub.slug}
                   to={subjectPath(sub.slug)}
-                  className="sp-other-pill"
+                  className={`sp-sub-pill ${isSelected ? 'sp-sub-pill--active' : ''}`}
+                  style={{ '--pill-c': sub.hex || sub.color }}
                 >
-                  <span className="sp-other-icon" style={{ background: sub.gradient }}>
-                    {sub.symbol}
-                  </span>
+                  <HubSubjectIcon color={sub.color} size="sm" />
                   <span>{sub.name}</span>
                 </Link>
-              ))}
-            </div>
+              )
+            })}
+          </div>
 
-            {/* Right bottom: Title and Description */}
-            <div className="sp-hero-info">
-              <h1 className="sp-hero-title">{pageSubjectName}</h1>
-              <p className="sp-hero-desc">{pageSubjectDescription}</p>
+          {/* Identité de la matière */}
+          <div className="sp-identity">
+            {isAllFavorites
+              ? <span className="sp-hub-icon" style={{ background: 'linear-gradient(145deg, #fb7185, #e11d48)' }}><i className="mdi mdi-heart" /></span>
+              : <HubSubjectIcon color={currentSubject.color || getSubjectColor(currentSubject.slug)} />}
+            <div>
+              <h1 className="sp-subject-name">{pageSubjectName}</h1>
+              <p className="sp-subject-desc">{pageSubjectDescription}</p>
             </div>
           </div>
 
-          {/* Controls: Segmented Level Tabs + Favorites & Year Filter */}
-          <div className="sp-controls-bar">
-            <div className="sp-segmented-tabs" role="tablist">
-              {currentSubject.levels.map((lvl) => (
+          {/* Onglets niveau + sélecteur année */}
+            <div className="sp-controls">
+              <div className="sp-tabs" role="tablist">
+                {currentSubject.levels.map((lvl) => (
+                  <button
+                    key={lvl}
+                    type="button"
+                    role="tab"
+                    id={`sp-tab-${lvl.replace('/', '')}`}
+                    aria-selected={!onlyFavs && activeLevel === lvl}
+                    className={`sp-tab ${!onlyFavs && activeLevel === lvl ? 'sp-tab--active' : ''}`}
+                    onClick={() => handleLevelChange(lvl)}
+                  >
+                    {lvl}
+                  </button>
+                ))}
                 <button
-                  key={lvl}
                   type="button"
                   role="tab"
-                  id={`sp-tab-${lvl.replace('/', '')}`}
-                  aria-selected={!onlyFavs && activeLevel === lvl}
-                  className={`sp-seg-tab ${!onlyFavs && activeLevel === lvl ? 'sp-seg-tab--active' : ''}`}
-                  onClick={() => handleLevelChange(lvl)}
+                  className={`sp-tab ${onlyFavs ? 'sp-tab--active' : ''}`}
+                  onClick={handleFavoritesToggle}
                 >
-                  {lvl}
+                  <i className="mdi mdi-heart" style={{ marginRight: '4px', color: onlyFavs ? '#fff' : '#f43f5e' }} />
+                  Favorites ({favIds.length})
                 </button>
-              ))}
-              <div className="sp-seg-divider" aria-hidden="true" />
-              <button
-                type="button"
-                role="tab"
-                className={`sp-seg-tab sp-seg-tab--fav ${onlyFavs ? 'sp-seg-tab--active' : ''}`}
-                onClick={handleFavoritesToggle}
-              >
-                <i className="mdi mdi-heart sp-heart-icon" /> Favorites ({favIds.length})
-              </button>
-            </div>
+              </div>
 
-            <div className="sp-year-box">
+            <div className="sp-year-wrap">
               <select
                 id="sp-year-filter"
-                className="sp-year-select-modern"
+                className="sp-year-select"
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
                 aria-label="Filter by year"
@@ -706,7 +648,7 @@ export default function SubjectPapers() {
                   </option>
                 ))}
               </select>
-              <i className="mdi mdi-chevron-down sp-year-icon-modern" aria-hidden="true" />
+              <i className="mdi mdi-chevron-down sp-year-arrow" aria-hidden="true" />
             </div>
           </div>
         </div>

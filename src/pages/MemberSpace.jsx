@@ -1,9 +1,12 @@
+import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { mediaUrl } from '../api/client'
+import api from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import { useProfile } from '../context/ProfileContext'
 import { useLang } from '../context/LangContext'
 import ProfileAvatar from '../components/ProfileAvatar'
+import ResourceSubmitForm from '../components/ResourceSubmitForm'
 
 const LEARNER_ROLES = ['student', 'teacher', 'admin']
 const ADMIN_ROLES = ['admin']
@@ -36,6 +39,40 @@ function QuickCard({ to, accent = 'gold', icon, title, sub, badge }) {
   )
 }
 
+/* ── Status pill for submissions ── */
+const STATUS_META = {
+  pending:  { label: 'En attente',  color: '#f29408', icon: 'mdi-clock-outline' },
+  approved: { label: 'Approuvé',    color: '#22c55e', icon: 'mdi-check-circle-outline' },
+  rejected: { label: 'Refusé',      color: '#f04f4f', icon: 'mdi-close-circle-outline' },
+}
+
+function SubmissionRow({ sub }) {
+  const meta = STATUS_META[sub.status] || STATUS_META.pending
+  const typeLabels = {
+    past_paper: 'Épreuve',
+    correction: 'Corrigé',
+    notes: 'Notes',
+    textbook: 'Manuel',
+    other: 'Autre',
+  }
+  return (
+    <div className="ms-sub-row">
+      <div className="ms-sub-info">
+        <span className="ms-sub-type">{typeLabels[sub.resource_type] || sub.resource_type}</span>
+        <span className="ms-sub-title">{sub.title}</span>
+        <span className="ms-sub-meta">
+          {sub.level?.toUpperCase()} {sub.year && `· ${sub.year}`}
+          {sub.subject_name && ` · ${sub.subject_name}`}
+        </span>
+      </div>
+      <span className="ms-sub-status" style={{ '--sc': meta.color }}>
+        <i className={`mdi ${meta.icon}`} />
+        {meta.label}
+      </span>
+    </div>
+  )
+}
+
 export default function MemberSpace() {
   const { user } = useAuth()
   const { profile } = useProfile()
@@ -61,6 +98,37 @@ export default function MemberSpace() {
       ? 'member.sub.complete'
       : (filledCount > 0 ? 'member.sub.partial' : 'member.sub.empty'))
   const subtitle = t(subtitleKey, { n: PROFILE_FIELDS.length - filledCount })
+
+  /* ── Resource submissions state ── */
+  const [showForm, setShowForm] = useState(false)
+  const [submissions, setSubmissions] = useState([])
+  const [subsLoading, setSubsLoading] = useState(false)
+  const [toast, setToast] = useState(null)
+
+  const showToast = (msg, ok = true) => {
+    setToast({ msg, ok })
+    setTimeout(() => setToast(null), 4000)
+  }
+
+  const fetchSubmissions = useCallback(async () => {
+    setSubsLoading(true)
+    try {
+      const { data } = await api.get('/exams/submissions/')
+      setSubmissions(Array.isArray(data?.results) ? data.results : (Array.isArray(data) ? data : []))
+    } catch {
+      /* silently fail – not critical */
+    } finally {
+      setSubsLoading(false)
+    }
+  }, [])
+
+  useEffect(() => { fetchSubmissions() }, [fetchSubmissions])
+
+  const handleSuccess = () => {
+    setShowForm(false)
+    showToast('Votre ressource a été soumise avec succès ! Elle sera examinée par notre équipe.')
+    fetchSubmissions()
+  }
 
   return (
     <div className="ms-page">
@@ -163,7 +231,65 @@ export default function MemberSpace() {
                        badge="Admin" />
           )}
         </div>
+
+        {/* ── Ressources académiques ── */}
+        <section className="ms-resources">
+          <div className="ms-res-header">
+            <div className="ms-res-title-wrap">
+              <div className="ms-res-icon">
+                <i className="mdi mdi-book-upload-outline" />
+              </div>
+              <div>
+                <h2 className="ms-res-title">Ressources académiques</h2>
+                <p className="ms-res-sub">
+                  Partagez vos épreuves, corrigés et notes avec la communauté
+                </p>
+              </div>
+            </div>
+            <button className="ms-res-cta" onClick={() => setShowForm(true)} type="button">
+              <i className="mdi mdi-plus" />
+              Soumettre une ressource
+            </button>
+          </div>
+
+          {/* Submissions list */}
+          <div className="ms-sub-list">
+            {subsLoading ? (
+              <div className="ms-sub-empty">
+                <i className="mdi mdi-loading mdi-spin" style={{ fontSize: '1.4rem', marginBottom: '0.5rem' }} />
+                <span>Chargement…</span>
+              </div>
+            ) : submissions.length === 0 ? (
+              <div className="ms-sub-empty">
+                <i className="mdi mdi-inbox-outline ms-sub-empty-icon" />
+                <span>Vous n'avez pas encore soumis de ressource.</span>
+                <button className="ms-sub-empty-btn" onClick={() => setShowForm(true)} type="button">
+                  <i className="mdi mdi-upload-outline" /> Soumettre ma première ressource
+                </button>
+              </div>
+            ) : (
+              submissions.map((s) => <SubmissionRow key={s.id} sub={s} />)
+            )}
+          </div>
+        </section>
+
       </div>
+
+      {/* Modal form */}
+      {showForm && (
+        <ResourceSubmitForm
+          onClose={() => setShowForm(false)}
+          onSuccess={handleSuccess}
+        />
+      )}
+
+      {/* Toast notification */}
+      {toast && (
+        <div className={`ms-toast ${toast.ok ? 'ms-toast-ok' : 'ms-toast-err'}`}>
+          <i className={`mdi ${toast.ok ? 'mdi-check-circle-outline' : 'mdi-alert-circle-outline'}`} />
+          {toast.msg}
+        </div>
+      )}
     </div>
   )
 }
