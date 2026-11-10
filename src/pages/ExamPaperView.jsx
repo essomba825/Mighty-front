@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import lottie from 'lottie-web'
-import api, { mediaUrl } from '../api/client'
+import api, { API_URL } from '../api/client'
 import lottieData from '../assets/loading-pdf.json'
 import './ExamPaperView.css'
 
@@ -37,7 +37,7 @@ function normalizePaper(item, fallback) {
     level: level.toLowerCase() === 'al' ? 'A/L' : level.toLowerCase() === 'ol' ? 'O/L' : level,
     session,
     sourceName: item.source_name || fallback?.sourceName || '',
-    fileUrl: file && file !== '#' ? mediaUrl(file) : '#',
+    fileUrl: file && file !== '#' ? file : '#',
     correction: Object.hasOwn(item, 'correction_available')
       ? (item.correction_available ? (item.correction_complete === false ? 'partial' : 'available') : 'none')
       : (fallback?.correction || 'none'),
@@ -117,6 +117,9 @@ export default function ExamPaperView() {
   const [correctionPdfLoading, setCorrectionPdfLoading] = useState(false)
   const [correctionPdfError, setCorrectionPdfError] = useState('')
 
+  /* Construit l'URL de streaming directe vers l'API (token signé, valide 5 min) */
+  const buildStreamUrl = (token) => `${API_URL}/exams/papers/stream/?token=${encodeURIComponent(token)}`
+
   useEffect(() => {
     let cancelled = false
     const fallback = location.state?.paper
@@ -180,15 +183,13 @@ export default function ExamPaperView() {
     }
 
     let cancelled = false
-    let objectUrl
     setCorrectionPdfLoading(true)
     setCorrectionPdfError('')
 
-    api.get(`/exams/papers/${id}/correction-pdf/`, { responseType: 'blob' })
+    api.get(`/exams/papers/${id}/correction-pdf-token/`)
       .then(({ data }) => {
         if (cancelled) return
-        objectUrl = URL.createObjectURL(data)
-        setCorrectionPdfUrl(objectUrl)
+        setCorrectionPdfUrl(buildStreamUrl(data.token))
       })
       .catch(() => {
         if (!cancelled) setCorrectionPdfError('Impossible de charger le PDF du corrigé.')
@@ -197,10 +198,7 @@ export default function ExamPaperView() {
         if (!cancelled) setCorrectionPdfLoading(false)
       })
 
-    return () => {
-      cancelled = true
-      if (objectUrl) URL.revokeObjectURL(objectUrl)
-    }
+    return () => { cancelled = true }
   }, [correctionData, correctionMode, id])
 
   useEffect(() => {
@@ -211,16 +209,14 @@ export default function ExamPaperView() {
     }
 
     let cancelled = false
-    let objectUrl
     setPdfDocumentUrl('')
     setPdfLoadError('')
     setPdfLoading(true)
 
-    api.get(`/exams/papers/${id}/pdf/`, { responseType: 'blob' })
+    api.get(`/exams/papers/${id}/pdf-token/`)
       .then(({ data }) => {
         if (cancelled) return
-        objectUrl = URL.createObjectURL(data)
-        setPdfDocumentUrl(objectUrl)
+        setPdfDocumentUrl(buildStreamUrl(data.token))
       })
       .catch(() => {
         if (!cancelled) setPdfLoadError('Unable to load the PDF file. Please try again later.')
@@ -229,10 +225,7 @@ export default function ExamPaperView() {
         if (!cancelled) setPdfLoading(false)
       })
 
-    return () => {
-      cancelled = true
-      if (objectUrl) URL.revokeObjectURL(objectUrl)
-    }
+    return () => { cancelled = true }
   }, [correctionMode, id, paper])
 
   const openCorrection = () => {
