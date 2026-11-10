@@ -1,11 +1,11 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import lottie from 'lottie-web'
-import api, { API_URL } from '../api/client'
+import api from '../api/client'
 import lottieData from '../assets/loading-pdf.json'
 import './ExamPaperView.css'
 
-function LottieLoader({ text = 'Chargement du document…' }) {
+function LottieLoader({ text = 'Loading document…' }) {
   const ref = useRef(null)
   useEffect(() => {
     const anim = lottie.loadAnimation({
@@ -35,7 +35,7 @@ function normalizePaper(item, fallback) {
       : (item.paper_number ?? fallback?.session ?? (item.session === 'other' ? '' : item.session))
   return {
     id: item.id ?? fallback?.id,
-    title: item.title || fallback?.title || 'Épreuve',
+    title: item.title || fallback?.title || 'Exam paper',
     subjectName: item.subject_name || item.subjectName || fallback?.subjectName || '',
     subjectSlug: item.subject_slug || item.subjectSlug || fallback?.subjectSlug || '',
     year: item.year || fallback?.year || '',
@@ -61,8 +61,8 @@ function CorrectionContent({ data }) {
   return <>
     {isPartial && (
       <aside className="epv-coverage-note">
-        <strong>Corrigé partiel</strong>
-        <span>{coverage.note_fr || 'Certaines questions de cette épreuve restent à corriger.'}</span>
+        <strong>Partial marking scheme</strong>
+        <span>{coverage.note_en || coverage.note_fr || 'Some questions for this paper are still being marked.'}</span>
       </aside>
     )}
     {questions.map((item, index) => {
@@ -72,22 +72,22 @@ function CorrectionContent({ data }) {
         <Fragment key={item.question?.id || index}>
           <article className="epv-correction-item">
             <h3>Question {item.question?.number || index + 1}{item.question?.marks ? ` · ${item.question.marks} pt(s)` : ''}</h3>
-            {(item.question?.statement_fr || item.question?.statement) && (
-              <p>{item.question.statement_fr || item.question.statement}</p>
+            {(item.question?.statement_en || item.question?.statement_fr || item.question?.statement) && (
+              <p>{item.question.statement_en || item.question.statement_fr || item.question.statement}</p>
             )}
             {answerText && (
-              <p><strong>Réponse : </strong>
+              <p><strong>Answer: </strong>
                 {answer?.option_label ? `${answer.option_label}. ` : ''}{answerText}
               </p>
             )}
-            {(item.explanation_fr || item.explanation_en) && (
-              <p>{item.explanation_fr || item.explanation_en}</p>
+            {(item.explanation_en || item.explanation_fr) && (
+              <p>{item.explanation_en || item.explanation_fr}</p>
             )}
             {Array.isArray(item.criteria) && item.criteria.length > 0 && (
               <ul className="epv-mark-criteria">
                 {item.criteria.map((criterion, criterionIndex) => (
                   <li key={`${criterion.key || 'criterion'}-${criterionIndex}`}>
-                    <span>{criterion.description_fr || criterion.description_en}</span>
+                    <span>{criterion.description_en || criterion.description_fr}</span>
                     <strong>{criterion.marks} pt(s)</strong>
                   </li>
                 ))}
@@ -121,9 +121,6 @@ export default function ExamPaperView() {
   const [correctionPdfUrl, setCorrectionPdfUrl] = useState('')
   const [correctionPdfLoading, setCorrectionPdfLoading] = useState(false)
   const [correctionPdfError, setCorrectionPdfError] = useState('')
-
-  /* Construit l'URL de streaming directe vers l'API (token signé, valide 5 min) */
-  const buildStreamUrl = (token) => `${API_URL}/exams/papers/stream/?token=${encodeURIComponent(token)}`
 
   useEffect(() => {
     let cancelled = false
@@ -188,22 +185,27 @@ export default function ExamPaperView() {
     }
 
     let cancelled = false
+    let objectUrl
     setCorrectionPdfLoading(true)
     setCorrectionPdfError('')
 
-    api.get(`/exams/papers/${id}/correction-pdf-token/`)
+    api.get(`/exams/papers/${id}/correction-pdf/`, { responseType: 'blob' })
       .then(({ data }) => {
         if (cancelled) return
-        setCorrectionPdfUrl(buildStreamUrl(data.token))
+        objectUrl = URL.createObjectURL(data)
+        setCorrectionPdfUrl(objectUrl)
       })
       .catch(() => {
-        if (!cancelled) setCorrectionPdfError('Impossible de charger le PDF du corrigé.')
+        if (!cancelled) setCorrectionPdfError('Unable to load the marking scheme PDF.')
       })
       .finally(() => {
         if (!cancelled) setCorrectionPdfLoading(false)
       })
 
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+      if (objectUrl) URL.revokeObjectURL(objectUrl)
+    }
   }, [correctionData, correctionMode, id])
 
   useEffect(() => {
@@ -214,14 +216,16 @@ export default function ExamPaperView() {
     }
 
     let cancelled = false
+    let objectUrl
     setPdfDocumentUrl('')
     setPdfLoadError('')
     setPdfLoading(true)
 
-    api.get(`/exams/papers/${id}/pdf-token/`)
+    api.get(`/exams/papers/${id}/pdf/`, { responseType: 'blob' })
       .then(({ data }) => {
         if (cancelled) return
-        setPdfDocumentUrl(buildStreamUrl(data.token))
+        objectUrl = URL.createObjectURL(data)
+        setPdfDocumentUrl(objectUrl)
       })
       .catch(() => {
         if (!cancelled) setPdfLoadError('Unable to load the PDF file. Please try again later.')
@@ -230,7 +234,10 @@ export default function ExamPaperView() {
         if (!cancelled) setPdfLoading(false)
       })
 
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+      if (objectUrl) URL.revokeObjectURL(objectUrl)
+    }
   }, [correctionMode, id, paper])
 
   const openCorrection = () => {
@@ -266,7 +273,7 @@ export default function ExamPaperView() {
     <main className="epv-page">
       <header className="epv-toolbar">
         <span className="epv-filename" title={paper?.sourceName || paper?.title || 'Paper'}>
-          {paperLoading ? 'Loading PDF…' : paperError ? 'Paper unavailable' : (paper.sourceName || paper.title)}
+          {paperLoading ? 'Loading paper…' : paperError ? 'Paper unavailable' : (paper.sourceName || paper.title)}
         </span>
         <button
           type="button"
@@ -281,24 +288,24 @@ export default function ExamPaperView() {
 
       <section className="epv-document" aria-label={correctionMode ? 'Marking scheme' : 'Exam paper'}>
         {paperLoading ? (
-          <div className="epv-document-state" role="status"><LottieLoader text="Chargement de l’épreuve…" /></div>
+          <div className="epv-document-state" role="status"><LottieLoader text="Loading paper…" /></div>
         ) : paperError ? (
           <div className="epv-document-state epv-error" role="alert">{paperError}</div>
         ) : correctionMode ? (
           <div className="epv-correction-content">
-            {correctionLoading ? <div className="epv-document-state" role="status"><LottieLoader text="Chargement du corrigé…" /></div>
+            {correctionLoading ? <div className="epv-document-state" role="status"><LottieLoader text="Loading marking scheme…" /></div>
               : correctionError ? <p className="epv-inline-error" role="alert">{correctionError}</p>
                 : <>
                   {correctionData?.correction_pdf && (
                     correctionPdfLoading
-                      ? <div className="epv-document-state" role="status"><LottieLoader text="Chargement du PDF du corrigé…" /></div>
+                      ? <div className="epv-document-state" role="status"><LottieLoader text="Loading marking scheme PDF…" /></div>
                       : correctionPdfError
                         ? <p className="epv-inline-error" role="alert">{correctionPdfError}</p>
                         : correctionPdfUrl && (
                           <iframe
                             className="epv-pdf"
                             src={correctionPdfUrl}
-                            title={`PDF du corrigé : ${paper.title}`}
+                            title={`Marking scheme PDF: ${paper.title}`}
                           />
                         )
                   )}
@@ -306,12 +313,12 @@ export default function ExamPaperView() {
                 </>}
           </div>
         ) : pdfLoading ? (
-          <div className="epv-document-state" role="status"><LottieLoader text="Chargement du PDF…" /></div>
+          <div className="epv-document-state" role="status"><LottieLoader text="Loading PDF…" /></div>
         ) : pdfLoadError ? (
           <div className="epv-document-state epv-error" role="alert">{pdfLoadError}</div>
         ) : paper.fileUrl && paper.fileUrl !== '#' ? (
           pdfDocumentUrl
-            ? <iframe className="epv-pdf" src={pdfDocumentUrl} title={`Épreuve PDF : ${paper.title}`} />
+            ? <iframe className="epv-pdf" src={pdfDocumentUrl} title={`Exam paper PDF: ${paper.title}`} />
             : <div className="epv-document-state">The PDF file is not available yet.</div>
         ) : (
           <div className="epv-document-state">
