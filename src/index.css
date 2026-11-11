@@ -8263,3 +8263,55 @@ to{opacity:1;transform:none}
   .ms-res-cta { width: 100%; justify-content: center }
   .ms-sub-row { flex-wrap: wrap }
 }
+
+
+/* ===== PageHeader — raffinements : entrée en cascade, parallaxe douce, micro-détails ===== */
+
+/* Liseré doré suivant l'arc du bas, à peine perceptible */
+.page-header::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:calc(var(--ph-dip,60px) + 1px);border-radius:0 0 50% 50%/0 0 calc(var(--ph-dip,60px) + 1px) calc(var(--ph-dip,60px) + 1px);border-bottom:1px solid #f2b84b66;z-index:2;pointer-events:none}
+
+/* Bas du bandeau en véritable arc de cercle profond, calqué sur le tracé de
+   référence (creux ≈ 40 % de la largeur, cercle de rayon ≈ largeur/2) :
+   rayons horizontaux de 50 % — les deux courbes se rejoignent au centre, aucun
+   segment droit ; la courbe part verticalement au ras des bords et descend
+   jusqu'à son point bas au centre. Plafonné sur grand écran pour rester sobre.
+   Le padding-bottom épouse la courbe (l'arc monte à ~55 % du creux aux bords du
+   texte) : le contenu, la barre de recherche de News comprise, ne la touche jamais. */
+.page-header{--ph-dip:min(40vw,200px);border-radius:0 0 50% 50%/0 0 var(--ph-dip) var(--ph-dip);padding-bottom:calc(var(--ph-dip)*.55 + 30px)}
+
+/* Sur écrans moyens (~600px), le sous-titre (560px) s'approcherait des flancs
+   de l'arc qui remontent : borné à 86 % du viewport, il reste sous la courbe */
+.page-header-sub{max-width:min(560px,86vw)}
+
+/* Typographie : équilibre des lignes, rythme plus net */
+.page-header h1{line-height:1.15;letter-spacing:.01em;text-wrap:balance}
+.page-header-sub{text-wrap:balance;text-shadow:0 1px 18px #071f3f66}
+
+/* Parallaxe douce : les couches décoratives suivent le pointeur (--ph-px / --ph-py posés par le composant) */
+.ph-orbs{transform:translate3d(calc(var(--ph-px,0)*18px),calc(var(--ph-py,0)*12px),0);transition:transform .7s cubic-bezier(.2,.7,.3,1)}
+.ph-photo{transform:scale(1.08) translate3d(calc(var(--ph-px,0)*-12px),calc(var(--ph-py,0)*-8px),0);transition:transform .7s cubic-bezier(.2,.7,.3,1)}
+.ph-orb{transition:opacity .8s ease}
+.page-header:hover .ph-orb{opacity:.62}
+
+/* Fil d'Ariane : soulignement qui se dessine + focus visible soigné */
+.breadcrumb a{position:relative;padding-bottom:2px}
+.breadcrumb a::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .3s cubic-bezier(.22,1,.36,1)}
+.breadcrumb a:hover::after,.breadcrumb a:focus-visible::after{transform:scaleX(1)}
+.breadcrumb a:focus-visible{outline:2px solid #f2b84b80;outline-offset:3px;border-radius:2px}
+
+/* Filet central : se trace en entrée, puis losange doré au centre (la lueur d'origine est conservée) */
+.ph-flourish{animation:phFlourishGrow .9s cubic-bezier(.22,1,.36,1) .26s both,flourishGlow 3.5s ease-in-out infinite}
+@keyframes phFlourishGrow{from{width:0}to{width:72px}}
+.ph-flourish::after{content:"";position:absolute;left:50%;top:50%;width:5px;height:5px;background:var(--gold);transform:translate(-50%,-50%) rotate(45deg);box-shadow:0 0 10px #f2b84b80;animation:phGem .5s ease .9s both}
+@keyframes phGem{from{opacity:0}to{opacity:1}}
+
+/* Entrée en cascade du contenu, rejouée à chaque navigation */
+@media (prefers-reduced-motion:no-preference){
+.page-header .breadcrumb{animation:phRise .7s cubic-bezier(.22,1,.36,1) .05s both}
+.page-header .ph-eyebrow{animation:phRise .7s cubic-bezier(.22,1,.36,1) .13s both}
+.page-header h1{animation:phRise .8s cubic-bezier(.22,1,.36,1) .2s both}
+.page-header .page-header-sub{animation:phRise .8s cubic-bezier(.22,1,.36,1) .32s both}
+.page-header .ph-eyebrow .ph-line{animation:phLine .6s cubic-bezier(.22,1,.36,1) .22s both}
+}
+@keyframes phRise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes phLine{from{transform:scaleX(0)}to{transform:scaleX(1)}}

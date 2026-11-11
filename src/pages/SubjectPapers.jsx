@@ -8,6 +8,11 @@ import api, { mediaUrl } from '../api/client'
 import '../education-hub.css'
 import './SubjectPapers.css'
 
+import bannerMath    from '../assets/subjects/banner-mathematics.jpg'
+import bannerPhysics from '../assets/subjects/banner-physics.jpg'
+import bannerChem    from '../assets/subjects/banner-chemistry.jpg'
+import bannerBio     from '../assets/subjects/banner-biology.jpg'
+
 /* ─────────────────────────────────────────────
    MATIÈRES DISPONIBLES
    ───────────────────────────────────────────── */
@@ -19,7 +24,8 @@ const TEST_SUBJECTS = [
     color: 'blue',
     hex: '#0966e8',
     levels: ['O/L', 'A/L'],
-    description: 'GCE O/L & GCE A/L Past Papers, Question Papers & Marking Guides',
+    description: 'Numbers, logic and problem solving',
+    banner: bannerMath,
   },
   {
     id: 2,
@@ -28,7 +34,8 @@ const TEST_SUBJECTS = [
     color: 'purple',
     hex: '#7546e7',
     levels: ['O/L', 'A/L'],
-    description: 'GCE O/L & GCE A/L Physics Mechanics, Electricity, Waves & Solutions',
+    description: 'Explore the laws of the universe',
+    banner: bannerPhysics,
   },
   {
     id: 3,
@@ -37,7 +44,8 @@ const TEST_SUBJECTS = [
     color: 'orange',
     hex: '#f29408',
     levels: ['O/L', 'A/L'],
-    description: 'GCE O/L & GCE A/L Organic, Inorganic, Physical Chemistry Papers',
+    description: 'Discover the building blocks of matter',
+    banner: bannerChem,
   },
   {
     id: 4,
@@ -46,7 +54,8 @@ const TEST_SUBJECTS = [
     color: 'green',
     hex: '#08a665',
     levels: ['O/L', 'A/L'],
-    description: 'GCE O/L & GCE A/L Cell Biology, Physiology, Genetics Papers',
+    description: 'Life, nature and living things',
+    banner: bannerBio,
   },
 ]
 
@@ -595,62 +604,120 @@ export default function SubjectPapers() {
             })}
           </div>
 
-          {/* Identité de la matière */}
-          <div className="sp-identity">
-            {isAllFavorites
-              ? <span className="sp-hub-icon" style={{ background: 'linear-gradient(145deg, #fb7185, #e11d48)' }}><i className="mdi mdi-heart" /></span>
-              : <HubSubjectIcon color={currentSubject.color || getSubjectColor(currentSubject.slug)} />}
-            <div>
-              <h1 className="sp-subject-name">{pageSubjectName}</h1>
-              <p className="sp-subject-desc">{pageSubjectDescription}</p>
-            </div>
-          </div>
+          {/* ── BANNER : image + controls all-in-one (matches mockup exactly) ── */}
+          {!isAllFavorites && currentSubject.banner ? (
+            <div className="sp-banner-wrap">
+              {/* Background image — illustration is baked in on the left */}
+              <img
+                src={currentSubject.banner}
+                alt={currentSubject.name}
+                className="sp-banner-img"
+              />
 
-          {/* Onglets niveau + sélecteur année */}
-            <div className="sp-controls">
-              <div className="sp-tabs" role="tablist">
-                {currentSubject.levels.map((lvl) => (
+              {/* Right-side text panel */}
+              <div className="sp-banner-right">
+                <h1 className="sp-banner-title">{currentSubject.name}</h1>
+                <p className="sp-banner-desc">{currentSubject.description}</p>
+
+                {/* O/L · A/L · | · Favorites — same row as mockup */}
+                <div className="sp-banner-controls" role="tablist">
+                  {currentSubject.levels.map((lvl) => (
+                    <button
+                      key={lvl}
+                      type="button"
+                      role="tab"
+                      aria-selected={!onlyFavs && activeLevel === lvl}
+                      className={`sp-btab ${!onlyFavs && activeLevel === lvl ? 'sp-btab--active' : ''}`}
+                      onClick={() => handleLevelChange(lvl)}
+                    >
+                      {lvl}
+                    </button>
+                  ))}
+                  <span className="sp-btab-sep" aria-hidden="true" />
                   <button
-                    key={lvl}
                     type="button"
                     role="tab"
-                    id={`sp-tab-${lvl.replace('/', '')}`}
-                    aria-selected={!onlyFavs && activeLevel === lvl}
-                    className={`sp-tab ${!onlyFavs && activeLevel === lvl ? 'sp-tab--active' : ''}`}
-                    onClick={() => handleLevelChange(lvl)}
+                    className={`sp-btab sp-btab--fav ${onlyFavs ? 'sp-btab--active' : ''}`}
+                    onClick={handleFavoritesToggle}
                   >
-                    {lvl}
+                    <i className="mdi mdi-heart sp-btab-heart" />
+                    Favorites ({favIds.length})
                   </button>
-                ))}
-                <button
-                  type="button"
-                  role="tab"
-                  className={`sp-tab ${onlyFavs ? 'sp-tab--active' : ''}`}
-                  onClick={handleFavoritesToggle}
-                >
-                  <i className="mdi mdi-heart" style={{ marginRight: '4px', color: onlyFavs ? '#fff' : '#f43f5e' }} />
-                  Favorites ({favIds.length})
-                </button>
+                </div>
               </div>
 
-            <div className="sp-year-wrap">
-              <select
-                id="sp-year-filter"
-                className="sp-year-select"
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(e.target.value)}
-                aria-label="Filter by year"
-              >
-                <option value="all">All years ({filtered.length})</option>
-                {allYears.map((y) => (
-                  <option key={y} value={y}>
-                    {y}
-                  </option>
-                ))}
-              </select>
-              <i className="mdi mdi-chevron-down sp-year-arrow" aria-hidden="true" />
+              {/* Year selector — bottom-left of the card */}
+              <div className="sp-banner-year">
+                <i className="mdi mdi-calendar-outline" aria-hidden="true" />
+                <select
+                  className="sp-banner-year-select"
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(e.target.value)}
+                  aria-label="Filter by year"
+                >
+                  <option value="all">All years ({filtered.length})</option>
+                  {allYears.map((y) => (
+                    <option key={y} value={y}>{y}</option>
+                  ))}
+                </select>
+                <i className="mdi mdi-chevron-down sp-banner-year-arrow" aria-hidden="true" />
+              </div>
             </div>
-          </div>
+          ) : (
+            /* ── Fallback : favorites / no-banner header + controls ── */
+            <>
+              {isAllFavorites && (
+                <div className="sp-identity">
+                  <span className="sp-hub-icon" style={{ background: 'linear-gradient(145deg, #fb7185, #e11d48)' }}>
+                    <i className="mdi mdi-heart" />
+                  </span>
+                  <div>
+                    <h1 className="sp-subject-name">{pageSubjectName}</h1>
+                    <p className="sp-subject-desc">{pageSubjectDescription}</p>
+                  </div>
+                </div>
+              )}
+              <div className="sp-controls">
+                <div className="sp-tabs" role="tablist">
+                  {currentSubject.levels.map((lvl) => (
+                    <button
+                      key={lvl}
+                      type="button"
+                      role="tab"
+                      aria-selected={!onlyFavs && activeLevel === lvl}
+                      className={`sp-tab ${!onlyFavs && activeLevel === lvl ? 'sp-tab--active' : ''}`}
+                      onClick={() => handleLevelChange(lvl)}
+                    >
+                      {lvl}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    role="tab"
+                    className={`sp-tab ${onlyFavs ? 'sp-tab--active' : ''}`}
+                    onClick={handleFavoritesToggle}
+                  >
+                    <i className="mdi mdi-heart" style={{ marginRight: '4px', color: onlyFavs ? '#fff' : '#f43f5e' }} />
+                    Favorites ({favIds.length})
+                  </button>
+                </div>
+                <div className="sp-year-wrap">
+                  <select
+                    className="sp-year-select"
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(e.target.value)}
+                    aria-label="Filter by year"
+                  >
+                    <option value="all">All years ({filtered.length})</option>
+                    {allYears.map((y) => (
+                      <option key={y} value={y}>{y}</option>
+                    ))}
+                  </select>
+                  <i className="mdi mdi-chevron-down sp-year-arrow" aria-hidden="true" />
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </header>
 
