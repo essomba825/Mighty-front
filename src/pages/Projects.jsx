@@ -140,21 +140,21 @@ export default function Projects() {
       {/* Bandeau d'impact */}
       <section className="impact-band">
         <div className="section-inner impact-grid">
-          <div className="impact-item" {...reveal(0)}>
+          <div {...reveal(0)} className="impact-item reveal">
             <span className="impact-icon"><i className="mdi mdi-hand-heart" /></span>
             <div className="impact-text">
               <p className="impact-value"><CountUp value={totalCollected} suffix=" FCFA" locale={locale} /></p>
               <p className="impact-label">{t('projects.collected')}</p>
             </div>
           </div>
-          <div className="impact-item" {...reveal(1)}>
+          <div {...reveal(1)} className="impact-item reveal">
             <span className="impact-icon"><i className="mdi mdi-rocket-launch" /></span>
             <div className="impact-text">
               <p className="impact-value"><CountUp value={activeProjects.length} locale={locale} /></p>
               <p className="impact-label">{t('projects.funding')}</p>
             </div>
           </div>
-          <div className="impact-item" {...reveal(2)}>
+          <div {...reveal(2)} className="impact-item reveal">
             <span className="impact-icon"><i className="mdi mdi-bank-outline" /></span>
             <div className="impact-text">
               <p className="impact-value"><CountUp value={projects.reduce((s, p) => s + Number(p.budget || 0), 0)} suffix=" FCFA" locale={locale} /></p>
@@ -189,7 +189,7 @@ export default function Projects() {
           <>
             {/* Projet vedette */}
             {featured && !filter && (
-              <article className="project-featured reveal" {...reveal(0)}>
+              <article {...reveal(0)} className="project-featured reveal">
                 {featured.image && (
                   <div className="project-featured-media">
                     <img src={mediaUrl(featured.image)} alt={featured.title} />
@@ -234,7 +234,7 @@ export default function Projects() {
               {others.map((p, i) => {
                 const s = STATUS[p.status] || STATUS.active
                 return (
-                  <article key={p.id} className="project-card" {...reveal(i)}>
+                  <article key={p.id} {...reveal(i)} className="project-card reveal">
                     {p.image && (
                       <div className="event-media">
                         <img src={mediaUrl(p.image)} alt={p.title} loading="lazy" />
