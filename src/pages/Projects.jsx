@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import api, { mediaUrl } from '../api/client'
 import PageHeader from '../components/PageHeader'
 import { useLang } from '../context/LangContext'
+import '../projects-interactions.css'
 
 const STATUS = {
   active: { labelKey: 'active', icon: 'mdi-rocket-launch', className: 'badge-active' },
@@ -20,7 +21,17 @@ const FILTERS = [
 const fmt = (n, locale) => Number(n).toLocaleString(locale)
 const percentOf = (p) => p.budget > 0 ? Math.min(Math.round((p.amount_collected / p.budget) * 100), 100) : 0
 
-/* Barre de progression animée à l'apparition */
+/* Apparition en cascade, désactivée si l'utilisateur préfère réduire les animations */
+function useReveal() {
+  const reduced = typeof window !== 'undefined'
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  return (i = 0) => reduced ? {} : {
+    className: 'reveal',
+    style: { '--i': i },
+  }
+}
+
+/* Barre de progression : remplissage doux + lueur discrète */
 function AnimatedProgress({ percent }) {
   const ref = useRef(null)
   const [width, setWidth] = useState(0)
@@ -34,7 +45,8 @@ function AnimatedProgress({ percent }) {
     return () => obs.disconnect()
   }, [percent])
   return (
-    <div className="progress" ref={ref}>
+    <div className="progress" ref={ref} role="progressbar"
+         aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100}>
       <div className="progress-bar" style={{ width: `${width}%` }} />
     </div>
   )
@@ -42,7 +54,7 @@ function AnimatedProgress({ percent }) {
 
 function Skeleton() {
   return (
-    <div className="skeleton-wrap">
+    <div className="skeleton-wrap" aria-hidden="true">
       {[0, 1, 2].map((i) => (
         <div key={i} className="skeleton-card">
           <div className="skeleton-img" />
@@ -55,7 +67,7 @@ function Skeleton() {
   )
 }
 
-/* Chiffre qui compte (effet compteur), format compact lisible */
+/* Chiffre qui compte, format compact lisible */
 function CountUp({ value, suffix = '', locale = 'en-GB' }) {
   const ref = useRef(null)
   const [display, setDisplay] = useState(0)
@@ -79,7 +91,6 @@ function CountUp({ value, suffix = '', locale = 'en-GB' }) {
     return () => obs.disconnect()
   }, [value])
 
-  // compactage : 2 100 000 -> "2,1 M" (lisible sur mobile)
   let shown = fmt(display, locale)
   if (display >= 1000000) shown = (display / 1000000).toLocaleString(locale, { maximumFractionDigits: 1 }) + ' M'
   else if (display >= 10000) shown = Math.round(display / 1000) + ' k'
@@ -89,15 +100,27 @@ function CountUp({ value, suffix = '', locale = 'en-GB' }) {
 export default function Projects() {
   const { t, lang } = useLang()
   const locale = lang === 'fr' ? 'fr-FR' : 'en-GB'
+  const reveal = useReveal()
   const [projects, setProjects] = useState([])
   const [filter, setFilter] = useState('')
   const [loading, setLoading] = useState(true)
+  const tabsRef = useRef(null)
 
   useEffect(() => {
     api.get('/projects/')
       .then(({ data }) => setProjects(data.results ?? data))
       .finally(() => setLoading(false))
   }, [])
+
+  /* Glissement doux de l'indicateur d'onglet actif */
+  useEffect(() => {
+    const wrap = tabsRef.current
+    if (!wrap) return
+    const active = wrap.querySelector('.tabs button.active')
+    if (!active) return
+    wrap.style.setProperty('--tab-left', `${active.offsetLeft}px`)
+    wrap.style.setProperty('--tab-width', `${active.offsetWidth}px`)
+  }, [filter, loading])
 
   const shown = projects.filter((p) => !filter || p.status === filter)
   const activeProjects = projects.filter((p) => p.status === 'active')
@@ -117,21 +140,21 @@ export default function Projects() {
       {/* Bandeau d'impact */}
       <section className="impact-band">
         <div className="section-inner impact-grid">
-          <div className="impact-item">
+          <div className="impact-item" {...reveal(0)}>
             <span className="impact-icon"><i className="mdi mdi-hand-heart" /></span>
             <div className="impact-text">
               <p className="impact-value"><CountUp value={totalCollected} suffix=" FCFA" locale={locale} /></p>
               <p className="impact-label">{t('projects.collected')}</p>
             </div>
           </div>
-          <div className="impact-item">
+          <div className="impact-item" {...reveal(1)}>
             <span className="impact-icon"><i className="mdi mdi-rocket-launch" /></span>
             <div className="impact-text">
               <p className="impact-value"><CountUp value={activeProjects.length} locale={locale} /></p>
               <p className="impact-label">{t('projects.funding')}</p>
             </div>
           </div>
-          <div className="impact-item">
+          <div className="impact-item" {...reveal(2)}>
             <span className="impact-icon"><i className="mdi mdi-bank-outline" /></span>
             <div className="impact-text">
               <p className="impact-value"><CountUp value={projects.reduce((s, p) => s + Number(p.budget || 0), 0)} suffix=" FCFA" locale={locale} /></p>
@@ -142,10 +165,11 @@ export default function Projects() {
       </section>
 
       <div className="page">
-        {/* Filtres par statut */}
-        <div className="tabs">
+        {/* Filtres par statut, indicateur glissant */}
+        <div className="tabs" ref={tabsRef} role="tablist" aria-label={t('projects.title')}>
           {FILTERS.map((f) => (
-            <button key={f.value} className={filter === f.value ? 'active' : ''}
+            <button key={f.value} role="tab" aria-selected={filter === f.value}
+                    className={filter === f.value ? 'active' : ''}
                     onClick={() => setFilter(f.value)}>
               <i className={`mdi ${f.icon}`} /> {t(`projects.filter.${f.labelKey}`)}
               <span className="tab-count">
@@ -156,7 +180,7 @@ export default function Projects() {
         </div>
 
         {loading ? <Skeleton /> : shown.length === 0 ? (
-          <div className="empty-state">
+          <div className="empty-state reveal">
             <i className="mdi mdi-briefcase-variant-outline empty-icon" />
             <h2>{t('projects.empty')}</h2>
             <p>{t('projects.emptyHint')}</p>
@@ -165,7 +189,7 @@ export default function Projects() {
           <>
             {/* Projet vedette */}
             {featured && !filter && (
-              <article className="project-featured">
+              <article className="project-featured reveal" {...reveal(0)}>
                 {featured.image && (
                   <div className="project-featured-media">
                     <img src={mediaUrl(featured.image)} alt={featured.title} />
@@ -203,12 +227,14 @@ export default function Projects() {
               </article>
             )}
 
-            {/* Autres projets */}
-            <div className="events-grid" style={{ marginTop: featured && !filter ? 30 : 0 }}>
-              {others.map((p) => {
+            {/* Autres projets : la grille est re-montée à chaque filtre pour rejouer la cascade */}
+            <div key={filter}
+                 className="events-grid"
+                 style={{ marginTop: featured && !filter ? 30 : 0 }}>
+              {others.map((p, i) => {
                 const s = STATUS[p.status] || STATUS.active
                 return (
-                  <article key={p.id} className="project-card">
+                  <article key={p.id} className="project-card" {...reveal(i)}>
                     {p.image && (
                       <div className="event-media">
                         <img src={mediaUrl(p.image)} alt={p.title} loading="lazy" />
@@ -245,9 +271,9 @@ export default function Projects() {
         )}
 
         {/* Bandeau partenaires */}
-        <div className="projects-cta card">
+        <div className="projects-cta card reveal">
           <div>
-              <h3><i className="fa-solid fa-handshake" style={{ color: 'var(--gold)' }} /> {t('projects.sponsorTitle')}</h3>
+            <h3><i className="fa-solid fa-handshake" style={{ color: 'var(--gold)' }} /> {t('projects.sponsorTitle')}</h3>
             <p>{t('projects.sponsor')}</p>
           </div>
           <Link to="/partenaires" className="btn-primary">{t('projects.becomePartner')}</Link>

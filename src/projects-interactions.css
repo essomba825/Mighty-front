@@ -1,0 +1,145 @@
+/* ===== Interactions élégantes — page Projets ===== */
+
+/* 1. Apparition en cascade */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  animation: rise .6s cubic-bezier(.22, 1, .36, 1) forwards;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+@keyframes rise {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 2. Progression : remplissage doux + lueur discrète */
+.progress {
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, .07);
+}
+.progress-bar {
+  height: 100%;
+  border-radius: inherit;
+  position: relative;
+  background: linear-gradient(90deg, var(--gold), #d9a93e);
+  transition: width 1.2s cubic-bezier(.22, 1, .36, 1);
+}
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%);
+  transform: translateX(-100%);
+  animation: sheen 2.8s ease-in-out infinite;
+}
+@keyframes sheen {
+  0%, 60% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* 3. Cartes : survol feutré */
+.project-card {
+  transition: transform .35s cubic-bezier(.22, 1, .36, 1), box-shadow .35s;
+  will-change: transform;
+}
+.project-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 45px -20px rgba(0, 0, 0, .28);
+}
+.event-media {
+  overflow: hidden;
+}
+.event-media img,
+.project-featured-media img {
+  transition: transform .7s cubic-bezier(.22, 1, .36, 1);
+}
+.project-card:hover .event-media img,
+.project-featured:hover .project-featured-media img {
+  transform: scale(1.045);
+}
+
+/* 4. Onglets : indicateur glissant */
+.tabs {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tabs::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: var(--tab-left, 0);
+  width: var(--tab-width, 0);
+  height: 100%;
+  border-radius: 999px;
+  background: var(--gold);
+  opacity: .14;
+  transition: left .35s cubic-bezier(.22, 1, .36, 1), width .35s cubic-bezier(.22, 1, .36, 1);
+  pointer-events: none;
+}
+.tabs button {
+  position: relative;
+  z-index: 1;
+  transition: color .25s;
+}
+.tab-count {
+  transition: transform .25s, background .25s;
+}
+.tabs button.active .tab-count {
+  transform: scale(1.08);
+}
+
+/* 5. Boutons : flèche qui glisse */
+.btn-text-gold .fa-arrow-right,
+.btn-primary .fa-hand-holding-heart {
+  transition: transform .3s;
+}
+.btn-text-gold:hover .fa-arrow-right {
+  transform: translateX(5px);
+}
+.btn-primary:hover .fa-hand-holding-heart {
+  transform: scale(1.12);
+}
+
+/* 6. Skeleton : shimmer */
+.skeleton-img,
+.skeleton-line {
+  position: relative;
+  overflow: hidden;
+  background: rgba(0, 0, 0, .06);
+}
+.skeleton-img::after,
+.skeleton-line::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 20%, rgba(255,255,255,.55) 50%, transparent 80%);
+  animation: shimmer 1.6s infinite;
+}
+@keyframes shimmer {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+
+/* 7. Accessibilité clavier */
+.tabs button:focus-visible,
+.btn-primary:focus-visible,
+.btn-text-gold:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+/* 8. Accessibilité mouvement */
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .progress-bar,
+  .progress-bar::after,
+  .skeleton-img::after,
+  .skeleton-line::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+}
